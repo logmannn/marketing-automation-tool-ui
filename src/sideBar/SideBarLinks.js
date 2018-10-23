@@ -63,7 +63,7 @@ export default class SideBarLinks extends Component {
         id: 1,
         text: "dashboard",
         icon: "home",
-        current: true
+        current: false
       },
       {
         id: 2,
@@ -79,12 +79,18 @@ export default class SideBarLinks extends Component {
       },
       {
         id: 4,
+        text: "Automation",
+        icon: "sitemap",
+        current: true
+      },
+      {
+        id: 5,
         text: "reports",
         icon: "chart-bar",
         current: false
       },
       {
-        id: 5,
+        id: 6,
         text: "my account",
         icon: "cog",
         current: false
