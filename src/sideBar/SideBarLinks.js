@@ -3,6 +3,16 @@ import { Logo } from "../common/Logo";
 import Link from "./Link";
 import styled from "styled-components";
 
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faUser,
+  faQuestionCircle,
+  faAngleDoubleLeft
+} from "@fortawesome/free-solid-svg-icons";
+
+library.add(faUser, faQuestionCircle, faAngleDoubleLeft);
+
 const SidebarDiv = styled.div`
   background: #21242a;
 
@@ -21,6 +31,29 @@ const SidebarDiv = styled.div`
   text-transform: capitalize;
 
   padding-bottom: 1rem;
+`;
+
+const SmallLinks = styled.div`
+  max-width: 100%;
+
+  display: flex;
+
+  margin-top: 0.25rem;
+`;
+
+const SmallLink = styled.a`
+  padding: 0.9rem;
+
+  cursor: pointer;
+
+  color: #bab9ba;
+  font-weight: lighter;
+
+  border-right: 1px solid #21242a;
+
+  &:hover {
+    color: #fff;
+  }
 `;
 
 export default class SideBarLinks extends Component {
@@ -59,12 +92,30 @@ export default class SideBarLinks extends Component {
     ];
 
     return (
-      <SidebarDiv>
-        <Logo />
-        {Links.map(link => (
-          <Link key={link.id} text={link.text} icon={link.icon} />
-        ))}
-      </SidebarDiv>
+      <>
+        <SidebarDiv>
+          <Logo />
+          {Links.map(link => (
+            <Link
+              key={link.id}
+              text={link.text}
+              icon={link.icon}
+              current={link.current}
+            />
+          ))}
+        </SidebarDiv>
+        <SmallLinks>
+          <SmallLink>
+            <FontAwesomeIcon icon="user" /> Profile
+          </SmallLink>
+          <SmallLink>
+            <FontAwesomeIcon icon="question-circle" /> Help
+          </SmallLink>
+          <SmallLink>
+            <FontAwesomeIcon icon="angle-double-left" />
+          </SmallLink>
+        </SmallLinks>
+      </>
     );
   }
 }

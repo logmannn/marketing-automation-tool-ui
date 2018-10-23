@@ -38,7 +38,7 @@ export default class Link extends Component {
     library.add(fas);
 
     return (
-      <LinkDiv>
+      <LinkDiv className={this.props.current ? "current" : ""}>
         <FontAwesomeIcon icon={this.props.icon} />
         {this.props.text}
       </LinkDiv>
