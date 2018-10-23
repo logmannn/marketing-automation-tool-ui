@@ -11,7 +11,7 @@ const SidebarDiv = styled.div`
 
   width: 100%;
   max-width: 230px;
-  height: 100vh;
+  height: 100%;
 
   background: #161a1f;
 `;
@@ -19,7 +19,7 @@ const SidebarDiv = styled.div`
 export default class SideBar extends Component {
   constructor(props) {
     super(props);
-    this.state = { isHidden: false };
+    this.state = { isHidden: null };
   }
   hideShow = () => {
     this.setState({
@@ -30,7 +30,12 @@ export default class SideBar extends Component {
   render() {
     return (
       <SidebarDiv
-        className={this.state.isHidden ? "slideLeftHide" : "slideLeftShow"}
+        className={
+          "disable-css-transitions " +
+          (this.state.isHidden === true && "slideLeftHide") +
+          " " +
+          (this.state.isHidden === false && "slideLeftShow")
+        }
       >
         <SideBarLinks isHidden={this.state.isHidden} hideShow={this.hideShow} />
       </SidebarDiv>

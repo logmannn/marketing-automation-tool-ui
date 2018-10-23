@@ -21,6 +21,7 @@ const SidebarDiv = styled.div`
   left: 0;
 
   max-width: 100%;
+  height: 100vh
 
   display: flex;
 
@@ -30,7 +31,7 @@ const SidebarDiv = styled.div`
 
   text-transform: capitalize;
 
-  padding-bottom: 1rem;
+  overflow-y: scroll
 `;
 
 const SmallLinks = styled.div`
@@ -39,6 +40,9 @@ const SmallLinks = styled.div`
   display: flex;
 
   margin-top: 0.25rem;
+  margin-bottom: 3.5rem;
+
+  color: #bab9ba;
 `;
 
 const SmallLink = styled.a`
@@ -53,6 +57,21 @@ const SmallLink = styled.a`
 
   &:hover {
     color: #fff;
+  }
+`;
+
+const Toggle = styled.div`
+  cursor: pointer;
+
+  color: #161a1f;
+  font-weight: lighter;
+
+  position: absolute;
+  top: 50%;
+  left: 240px;
+
+  &:hover {
+    color: #21242a;
   }
 `;
 
@@ -101,6 +120,13 @@ export default class SideBarLinks extends Component {
 
     return (
       <>
+        <Toggle onClick={this.props.hideShow}>
+          {!this.props.isHidden ? (
+            <FontAwesomeIcon icon="angle-double-left" />
+          ) : (
+            <FontAwesomeIcon icon="angle-double-right" />
+          )}
+        </Toggle>
         <SidebarDiv>
           <Logo />
           {Links.map(link => (
@@ -111,22 +137,16 @@ export default class SideBarLinks extends Component {
               current={link.current}
             />
           ))}
+
+          <SmallLinks>
+            <SmallLink>
+              <FontAwesomeIcon icon="user" /> Profile
+            </SmallLink>
+            <SmallLink>
+              <FontAwesomeIcon icon="question-circle" /> Help
+            </SmallLink>
+          </SmallLinks>
         </SidebarDiv>
-        <SmallLinks>
-          <SmallLink>
-            <FontAwesomeIcon icon="user" /> Profile
-          </SmallLink>
-          <SmallLink>
-            <FontAwesomeIcon icon="question-circle" /> Help
-          </SmallLink>
-          <SmallLink onClick={this.props.hideShow}>
-            {!this.props.isHidden ? (
-              <FontAwesomeIcon icon="angle-double-left" />
-            ) : (
-              <FontAwesomeIcon icon="angle-double-right" />
-            )}
-          </SmallLink>
-        </SmallLinks>
       </>
     );
   }
