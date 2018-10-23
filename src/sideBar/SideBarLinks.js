@@ -58,6 +58,8 @@ const SmallLink = styled.a`
 
 export default class SideBarLinks extends Component {
   render() {
+    console.log(this.props);
+
     const Links = [
       {
         id: 1,
@@ -117,8 +119,12 @@ export default class SideBarLinks extends Component {
           <SmallLink>
             <FontAwesomeIcon icon="question-circle" /> Help
           </SmallLink>
-          <SmallLink>
-            <FontAwesomeIcon icon="angle-double-left" />
+          <SmallLink onClick={this.props.hideShow}>
+            {!this.props.isHidden ? (
+              <FontAwesomeIcon icon="angle-double-left" />
+            ) : (
+              <FontAwesomeIcon icon="angle-double-right" />
+            )}
           </SmallLink>
         </SmallLinks>
       </>

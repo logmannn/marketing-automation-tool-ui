@@ -17,10 +17,22 @@ const SidebarDiv = styled.div`
 `;
 
 export default class SideBar extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { isHidden: false };
+  }
+  hideShow = () => {
+    this.setState({
+      isHidden: !this.state.isHidden
+    });
+  };
+
   render() {
     return (
-      <SidebarDiv>
-        <SideBarLinks />
+      <SidebarDiv
+        className={this.state.isHidden ? "slideLeftHide" : "slideLeftShow"}
+      >
+        <SideBarLinks isHidden={this.state.isHidden} hideShow={this.hideShow} />
       </SidebarDiv>
     );
   }
