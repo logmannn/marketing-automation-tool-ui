@@ -10,6 +10,7 @@
     "npm": "^6.4.1",
     "react": "^16.5.2",
     "react-dom": "^16.5.2",
+    "react-draggable": "^3.0.5",
     "react-scripts": "2.0.5",
     "styled-components": "^4.0.2"
   },
