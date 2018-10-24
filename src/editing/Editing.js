@@ -39,6 +39,10 @@ export default class Editing extends Component {
           {
             x: 1,
             y: 1
+          },
+          {
+            x: 75,
+            y: 75
           }
         ]
       ]
@@ -116,6 +120,24 @@ export default class Editing extends Component {
                 <div>
                   x: {deltaPositions[0][1].x.toFixed(0)}, y:{" "}
                   {deltaPositions[0][1].y.toFixed(0)}
+                </div>
+              </div>
+            </Draggable>
+            <Draggable
+              defaultPosition={{
+                x: deltaPositions[0][2].x,
+                y: deltaPositions[0][2].y
+              }} // in the future this will not be used and it will be taken from the server
+              onDrag={this.handleDrag}
+              bounds="parent"
+              {...dragHandlers}
+              handle="strong"
+            >
+              <div className="box" style={{ width: "150px" }}>
+                <strong id="2">Grab Here</strong>
+                <div>
+                  x: {deltaPositions[0][2].x.toFixed(0)}, y:{" "}
+                  {deltaPositions[0][2].y.toFixed(0)}
                 </div>
               </div>
             </Draggable>
