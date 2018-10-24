@@ -6,7 +6,7 @@ const EditingDiv = styled.div`
 
   border: 2px solid #c7c6c7;
 
-  width: calc(100vw - 4px);
+  width: calc(100vw - 234px);
   height: calc(100vh - 4px);
 
   z-index: 1;
