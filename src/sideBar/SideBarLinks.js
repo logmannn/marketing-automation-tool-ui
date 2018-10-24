@@ -21,7 +21,7 @@ const SidebarDiv = styled.div`
   left: 0;
 
   max-width: 100%;
-  height: 100vh
+  height: auto;
 
   display: flex;
 
@@ -31,18 +31,25 @@ const SidebarDiv = styled.div`
 
   text-transform: capitalize;
 
-  overflow-y: scroll
+  overflow-y: scroll;
 `;
 
 const SmallLinks = styled.div`
   max-width: 100%;
 
   display: flex;
+  justify-content: space-evenly;
 
-  margin-top: 0.25rem;
-  margin-bottom: 3.5rem;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
 
   color: #bab9ba;
+
+  background: #161a1f;
+
+  & > :first-child {
+    border-right: 1px solid #21242a;
+  }
 `;
 
 const SmallLink = styled.a`
@@ -52,8 +59,6 @@ const SmallLink = styled.a`
 
   color: #bab9ba;
   font-weight: lighter;
-
-  border-right: 1px solid #21242a;
 
   &:hover {
     color: #fff;
@@ -75,10 +80,14 @@ const Toggle = styled.div`
   }
 `;
 
+const OverflowScroll = styled.div`
+  height: 100%;
+
+  overflow-y: scroll;
+`;
+
 export default class SideBarLinks extends Component {
   render() {
-    console.log(this.props);
-
     const Links = [
       {
         id: 1,
@@ -120,24 +129,25 @@ export default class SideBarLinks extends Component {
 
     return (
       <>
-        <Toggle onClick={this.props.hideShow}>
+        <Toggle onClick={() => this.props.hideShow()}>
           {!this.props.isHidden ? (
             <FontAwesomeIcon icon="angle-double-left" />
           ) : (
             <FontAwesomeIcon icon="angle-double-right" />
           )}
         </Toggle>
-        <SidebarDiv>
-          <Logo />
-          {Links.map(link => (
-            <Link
-              key={link.id}
-              text={link.text}
-              icon={link.icon}
-              current={link.current}
-            />
-          ))}
-
+        <OverflowScroll>
+          <SidebarDiv>
+            <Logo />
+            {Links.map(link => (
+              <Link
+                key={link.id}
+                text={link.text}
+                icon={link.icon}
+                current={link.current}
+              />
+            ))}
+          </SidebarDiv>
           <SmallLinks>
             <SmallLink>
               <FontAwesomeIcon icon="user" /> Profile
@@ -146,7 +156,7 @@ export default class SideBarLinks extends Component {
               <FontAwesomeIcon icon="question-circle" /> Help
             </SmallLink>
           </SmallLinks>
-        </SidebarDiv>
+        </OverflowScroll>
       </>
     );
   }

@@ -1,6 +1,5 @@
-import React, { Component } from "react";
+import React from "react";
 import styled from "styled-components";
-import SideBarLinks from "./SideBarLinks";
 
 const SidebarDiv = styled.div`
   position: relative;
@@ -11,34 +10,24 @@ const SidebarDiv = styled.div`
 
   width: 100%;
   max-width: 230px;
-  height: 100%;
+  height: 100vh;
 
   background: #161a1f;
+
+  z-index: 2;
 `;
 
-export default class SideBar extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { isHidden: null };
-  }
-  hideShow = () => {
-    this.setState({
-      isHidden: !this.state.isHidden
-    });
-  };
+const SideBar = ({ children }) => (
+  <SidebarDiv
+    className={
+      "disable-css-transitions " +
+      (children.props.isHidden === true && "slideLeftHide") +
+      " " +
+      (children.props.isHidden === false && "slideLeftShow")
+    }
+  >
+    {children}
+  </SidebarDiv>
+);
 
-  render() {
-    return (
-      <SidebarDiv
-        className={
-          "disable-css-transitions " +
-          (this.state.isHidden === true && "slideLeftHide") +
-          " " +
-          (this.state.isHidden === false && "slideLeftShow")
-        }
-      >
-        <SideBarLinks isHidden={this.state.isHidden} hideShow={this.hideShow} />
-      </SidebarDiv>
-    );
-  }
-}
+export default SideBar;

@@ -12,4 +12,4 @@ const LogoDiv = styled.div`
   font-size: 1.5rem;
 `;
 
-export const Logo = () => <LogoDiv>Your Logo</LogoDiv>;
+export const Logo = () => <LogoDiv>OpenEmail</LogoDiv>;
