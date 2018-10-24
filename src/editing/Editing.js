@@ -21,20 +21,27 @@ export default class Editing extends Component {
     super(props);
     this.state = {
       activeDrags: 0,
-      deltaPosition: {
-        x: 25,
-        y: 25
-      }
+      deltaPositions: [],
+      loading: true
     };
   }
 
   componentDidMount() {
     this.setState({
+      loading: false,
       activeDrags: 0,
-      deltaPosition: {
-        x: 25,
-        y: 25
-      }
+      deltaPositions: [
+        [
+          {
+            x: 25,
+            y: 25
+          },
+          {
+            x: 1,
+            y: 1
+          }
+        ]
+      ]
     });
   }
 
@@ -47,20 +54,22 @@ export default class Editing extends Component {
   };
 
   handleDrag = (e, ui) => {
-    console.log("ui.x: " + ui.x);
-    console.log("ui.deltaX: " + ui.deltaX);
-
+    // console.log(e.target.id);
+    const items = this.state.deltaPositions;
+    console.log(items);
+    items[0][e.target.id] = {
+      x: ui.x + ui.deltaX,
+      y: ui.y + ui.deltaY
+    };
+    console.log(items);
     this.setState({
-      deltaPosition: {
-        x: ui.x + ui.deltaX,
-        y: ui.y + ui.deltaY
-      }
+      deltaPositions: items
     });
   };
 
   render() {
     const dragHandlers = { onStart: this.onStart, onStop: this.onStop };
-    const { deltaPosition } = this.state;
+    const { deltaPositions, loading } = this.state;
     return (
       <EditingDiv
         className={
@@ -70,19 +79,48 @@ export default class Editing extends Component {
           (this.props.isHidden === false && "editingSmall")
         }
       >
-        <Draggable
-          defaultPosition={{ x: deltaPosition.x, y: deltaPosition.y }} // in the future this will not be used and it will be taken from the server
-          onDrag={this.handleDrag}
-          bounds="parent"
-          {...dragHandlers}
-        >
-          <div className="box" style={{ width: "150px" }}>
-            <div>I track my deltas</div>
-            <div>
-              x: {deltaPosition.x.toFixed(0)}, y: {deltaPosition.y.toFixed(0)}
-            </div>
-          </div>
-        </Draggable>
+        {loading ? (
+          "loading"
+        ) : (
+          <>
+            <Draggable
+              defaultPosition={{
+                x: deltaPositions[0][0].x,
+                y: deltaPositions[0][0].y
+              }} // in the future this will not be used and it will be taken from the server
+              onDrag={this.handleDrag}
+              bounds="parent"
+              {...dragHandlers}
+              handle="strong"
+            >
+              <div className="box" style={{ width: "150px" }}>
+                <strong id="0">Grab Here</strong>
+                <div>
+                  x: {deltaPositions[0][0].x.toFixed(0)}, y:{" "}
+                  {deltaPositions[0][0].y.toFixed(0)}
+                </div>
+              </div>
+            </Draggable>
+            <Draggable
+              defaultPosition={{
+                x: deltaPositions[0][1].x,
+                y: deltaPositions[0][1].y
+              }} // in the future this will not be used and it will be taken from the server
+              onDrag={this.handleDrag}
+              bounds="parent"
+              {...dragHandlers}
+              handle="strong"
+            >
+              <div className="box" style={{ width: "150px" }}>
+                <strong id="1">Grab Here</strong>
+                <div>
+                  x: {deltaPositions[0][1].x.toFixed(0)}, y:{" "}
+                  {deltaPositions[0][1].y.toFixed(0)}
+                </div>
+              </div>
+            </Draggable>
+          </>
+        )}
       </EditingDiv>
     );
   }
