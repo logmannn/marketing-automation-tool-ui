@@ -22,12 +22,8 @@ export default class Editing extends Component {
     this.state = {
       activeDrags: 0,
       deltaPosition: {
-        x: 0,
-        y: 0
-      },
-      controlledPosition: {
-        x: -400,
-        y: 200
+        x: 25,
+        y: 25
       }
     };
   }
@@ -36,12 +32,8 @@ export default class Editing extends Component {
     this.setState({
       activeDrags: 0,
       deltaPosition: {
-        x: 0,
-        y: 0
-      },
-      controlledPosition: {
-        x: -400,
-        y: 200
+        x: 25,
+        y: 25
       }
     });
   }
@@ -55,21 +47,18 @@ export default class Editing extends Component {
   };
 
   handleDrag = (e, ui) => {
-    // console.log(e);
-    // console.log(ui.deltaX);
-    // console.log(ui.deltaY);
-    console.log(this.state);
-    const { x, y } = this.state.deltaPosition;
+    console.log("ui.x: " + ui.x);
+    console.log("ui.deltaX: " + ui.deltaX);
+
     this.setState({
       deltaPosition: {
-        x: x + ui.deltaX,
-        y: y + ui.deltaY
+        x: ui.x + ui.deltaX,
+        y: ui.y + ui.deltaY
       }
     });
   };
 
   render() {
-    console.log(this.state);
     const dragHandlers = { onStart: this.onStart, onStop: this.onStop };
     const { deltaPosition } = this.state;
     return (
@@ -81,27 +70,13 @@ export default class Editing extends Component {
           (this.props.isHidden === false && "editingSmall")
         }
       >
-        {/* <Draggable
-          // axis="xy"
-          // grid={[25, 25]}
-          handle=".handle"
-          defaultPosition={{ x: 0, y: 0 }}
-          position={null}
-          // onStart={this.handleStart}
+        <Draggable
+          defaultPosition={{ x: deltaPosition.x, y: deltaPosition.y }} // in the future this will not be used and it will be taken from the server
           onDrag={this.handleDrag}
-          // onStop={this.handleStop}
+          bounds="parent"
+          {...dragHandlers}
         >
-          <div>
-            <div className="handle">Drag from here</div>
-            <div>This readme is really dragging on...</div>
-            <div>I track my deltas</div>
-            <div>
-              x: {deltaPosition.x.toFixed(0)}, y: {deltaPosition.y.toFixed(0)}
-            </div>
-          </div>
-        </Draggable> */}
-        <Draggable onDrag={this.handleDrag} {...dragHandlers}>
-          <div className="box">
+          <div className="box" style={{ width: "150px" }}>
             <div>I track my deltas</div>
             <div>
               x: {deltaPosition.x.toFixed(0)}, y: {deltaPosition.y.toFixed(0)}
