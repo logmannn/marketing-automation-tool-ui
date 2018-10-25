@@ -11,6 +11,37 @@
 .slideLeftShow {
   animation: slideLeftShow 0.5s forwards;
 }
+
+.show {
+  z-index: 3;
+
+  position: absolute;
+}
+
+.hidden {
+  z-index: 1;
+}
+
+.disable {
+  pointer-events: none;
+}
+
+.notDisabled {
+  display: inherit;
+}
+
+.react-draggable-dragging {
+  z-index: 3;
+}
+
+.noPointerEvents {
+  pointer-events: none;
+}
+
+.giantGrab {
+  color: blue;
+}
+
 @keyframes slideLeftHide {
   from {
     transform: translate(0%);

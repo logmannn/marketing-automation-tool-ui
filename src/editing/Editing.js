@@ -18,6 +18,10 @@ const EditingDiv = styled.div`
 
 const Box = styled.div`
   position: absolute;
+
+  background: green;
+
+  padding: 20px;
 `;
 
 export default class Editing extends Component {
@@ -26,7 +30,8 @@ export default class Editing extends Component {
     this.state = {
       activeDrags: 0,
       deltaPositions: [],
-      loading: true
+      loading: true,
+      currentItem: ""
     };
   }
 
@@ -53,23 +58,27 @@ export default class Editing extends Component {
     });
   }
 
-  onStart = () => {
-    this.setState({ activeDrags: this.state.activeDrags + 1 });
+  onStart = e => {
+    if (!isNaN(e.target.id)) {
+      this.setState({
+        currentItem: e.target.id
+      });
+    }
+    this.setState({
+      activeDrags: this.state.activeDrags + 1
+    });
   };
 
   onStop = () => {
-    this.setState({ activeDrags: this.state.activeDrags - 1 });
+    this.setState({ activeDrags: this.state.activeDrags - 1, currentItem: "" });
   };
 
   handleDrag = (e, ui) => {
-    // console.log(e.target.id);
     const items = this.state.deltaPositions;
-    console.log(items);
     items[0][e.target.id] = {
       x: ui.x + ui.deltaX,
       y: ui.y + ui.deltaY
     };
-    console.log(items);
     this.setState({
       deltaPositions: items
     });
@@ -77,7 +86,7 @@ export default class Editing extends Component {
 
   render() {
     const dragHandlers = { onStart: this.onStart, onStop: this.onStop };
-    const { deltaPositions, loading } = this.state;
+    const { deltaPositions, loading, currentItem, activeDrags } = this.state;
     return (
       <EditingDiv
         className={
@@ -95,14 +104,24 @@ export default class Editing extends Component {
               defaultPosition={{
                 x: deltaPositions[0][0].x,
                 y: deltaPositions[0][0].y
-              }} // in the future this will not be used and it will be taken from the server
+              }}
               onDrag={this.handleDrag}
               bounds="parent"
               {...dragHandlers}
               handle="strong"
             >
-              <Box className="box" style={{ width: "150px" }}>
-                <strong id="0">Grab Here</strong>
+              <Box
+                className={"box " + (currentItem === "0" ? "show" : "hidden")}
+                style={{ width: "150px" }}
+              >
+                <strong
+                  id="0"
+                  className={
+                    currentItem !== "0" && activeDrags === 1 ? "disable" : ""
+                  }
+                >
+                  0 Grab Here
+                </strong>
                 <div>
                   x: {deltaPositions[0][0].x.toFixed(0)}, y:{" "}
                   {deltaPositions[0][0].y.toFixed(0)}
@@ -113,14 +132,24 @@ export default class Editing extends Component {
               defaultPosition={{
                 x: deltaPositions[0][1].x,
                 y: deltaPositions[0][1].y
-              }} // in the future this will not be used and it will be taken from the server
+              }}
               onDrag={this.handleDrag}
               bounds="parent"
               {...dragHandlers}
               handle="strong"
             >
-              <Box className="box" style={{ width: "150px" }}>
-                <strong id="1">Grab Here</strong>
+              <Box
+                className={"box " + (currentItem === "1" ? "show" : "hidden")}
+                style={{ width: "150px" }}
+              >
+                <strong
+                  id="1"
+                  className={
+                    currentItem !== "1" && activeDrags === 1 ? "disable" : ""
+                  }
+                >
+                  Grab Here
+                </strong>
                 <div>
                   x: {deltaPositions[0][1].x.toFixed(0)}, y:{" "}
                   {deltaPositions[0][1].y.toFixed(0)}
@@ -131,14 +160,24 @@ export default class Editing extends Component {
               defaultPosition={{
                 x: deltaPositions[0][2].x,
                 y: deltaPositions[0][2].y
-              }} // in the future this will not be used and it will be taken from the server
+              }}
               onDrag={this.handleDrag}
               bounds="parent"
               {...dragHandlers}
               handle="strong"
             >
-              <Box className="box" style={{ width: "150px" }}>
-                <strong id="2">Grab Here</strong>
+              <Box
+                className={"box " + (currentItem === "2" ? "show" : "hidden")}
+                style={{ width: "150px" }}
+              >
+                <strong
+                  id="2"
+                  className={
+                    currentItem !== "2" && activeDrags === 1 ? "disable" : ""
+                  }
+                >
+                  Grab Here
+                </strong>
                 <div>
                   x: {deltaPositions[0][2].x.toFixed(0)}, y:{" "}
                   {deltaPositions[0][2].y.toFixed(0)}
