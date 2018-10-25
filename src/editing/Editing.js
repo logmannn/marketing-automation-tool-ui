@@ -1,8 +1,7 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 
-import Draggable from "react-draggable";
-import ReactHoverObserver from "react-hover-observer";
+import DraggableCore from "react-draggable";
 
 const EditingDiv = styled.div`
   position: absolute;
@@ -96,21 +95,27 @@ export default class Editing extends Component {
       // const x = this.state.deltaPositions[0][this.state.currentItem].x;
       // const y = this.state.deltaPositions[0][this.state.currentItem].y;
 
-      // // console.log(x);
-      // // console.log(y);
+      const x = parseInt(
+        document
+          .getElementById("box" + this.state.currentItem)
+          .style.transform.match(/\((.*?)px,/)[1]
+      );
+      const y = parseInt(
+        document
+          .getElementById("box" + this.state.currentItem)
+          .style.transform.match(/, (.*?)px/)[1]
+      );
 
-      // let boxToResetPosition = (document.getElementById(
-      //   "box" + this.state.currentItem
-      // ).style.transform = `translate(${x}px, ${y}px)`);
-
-      // const item = this.state.deltaPositions[0][this.state.currentItem];
-      // // items[0][this.state.currentItem] = {
-      // //   x: ui.x + ui.deltaX,
-      // //   y: ui.y + ui.deltaY
-      // // };
-      // this.setState({
-      //   deltaPositions: items
-      // });
+      const items = this.state.deltaPositions;
+      items[0][this.state.currentItem] = {
+        x,
+        y
+      };
+      // console.log(items[0][this.state.currentItem]);
+      // console.log([{ x, y }]);
+      this.setState({
+        deltaPositions: items
+      });
     }
   };
 
@@ -136,7 +141,7 @@ export default class Editing extends Component {
           "loading"
         ) : (
           <>
-            <Draggable
+            <DraggableCore
               defaultPosition={{
                 x: deltaPositions[0][0].x,
                 y: deltaPositions[0][0].y
@@ -168,8 +173,8 @@ export default class Editing extends Component {
                   {deltaPositions[0][0].y.toFixed(0)}
                 </div>
               </Box>
-            </Draggable>
-            <Draggable
+            </DraggableCore>
+            <DraggableCore
               defaultPosition={{
                 x: deltaPositions[0][1].x,
                 y: deltaPositions[0][1].y
@@ -199,8 +204,8 @@ export default class Editing extends Component {
                   {deltaPositions[0][1].y.toFixed(0)}
                 </div>
               </Box>
-            </Draggable>
-            <Draggable
+            </DraggableCore>
+            <DraggableCore
               defaultPosition={{
                 x: deltaPositions[0][2].x,
                 y: deltaPositions[0][2].y
@@ -229,7 +234,7 @@ export default class Editing extends Component {
                   {deltaPositions[0][2].y.toFixed(0)}
                 </div>
               </Box>
-            </Draggable>
+            </DraggableCore>
           </>
         )}
       </EditingDiv>
