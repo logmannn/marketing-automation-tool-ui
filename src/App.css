@@ -38,8 +38,18 @@
   pointer-events: none;
 }
 
-.giantGrab {
-  color: blue;
+.grabbable {
+  cursor: move;
+}
+
+.example__observer {
+  flex: 1;
+  height: 200px;
+  display: flex;
+  position: relative;
+  border: solid 1px #c5cae9;
+  border-radius: 4px;
+  transition: border 0.2s ease-in-out;
 }
 
 @keyframes slideLeftHide {

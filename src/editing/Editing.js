@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import styled from "styled-components";
 
 import Draggable from "react-draggable";
+import ReactHoverObserver from "react-hover-observer";
 
 const EditingDiv = styled.div`
   position: absolute;
@@ -75,6 +76,7 @@ export default class Editing extends Component {
 
   handleDrag = (e, ui) => {
     const items = this.state.deltaPositions;
+
     items[0][e.target.id] = {
       x: ui.x + ui.deltaX,
       y: ui.y + ui.deltaY
@@ -83,110 +85,141 @@ export default class Editing extends Component {
       deltaPositions: items
     });
   };
+  // onStart = (e, ui) => {
+  //   console.log("start");
+  // };
+
+  // onStop = (e, ui) => {
+  //   console.log("stop");
+  // };
 
   render() {
     const dragHandlers = { onStart: this.onStart, onStop: this.onStop };
     const { deltaPositions, loading, currentItem, activeDrags } = this.state;
+
     return (
-      <EditingDiv
-        className={
-          "disable-css-transitions " +
-          (this.props.isHidden === true && "editingFull") +
-          " " +
-          (this.props.isHidden === false && "editingSmall")
-        }
-      >
-        {loading ? (
-          "loading"
-        ) : (
-          <>
-            <Draggable
-              defaultPosition={{
-                x: deltaPositions[0][0].x,
-                y: deltaPositions[0][0].y
-              }}
-              onDrag={this.handleDrag}
-              bounds="parent"
-              {...dragHandlers}
-              handle="strong"
-            >
-              <Box
-                className={"box " + (currentItem === "0" ? "show" : "hidden")}
-                style={{ width: "150px" }}
-              >
-                <strong
-                  id="0"
-                  className={
-                    currentItem !== "0" && activeDrags === 1 ? "disable" : ""
-                  }
+      <ReactHoverObserver>
+        {({ isHovering }) => (
+          <EditingDiv
+            className={
+              "disable-css-transitions " +
+              (this.props.isHidden === true && "editingFull") +
+              " " +
+              (this.props.isHidden === false && "editingSmall")
+            }
+          >
+            {loading ? (
+              "loading"
+            ) : (
+              <>
+                <Draggable
+                  defaultPosition={{
+                    x: deltaPositions[0][0].x,
+                    y: deltaPositions[0][0].y
+                  }}
+                  onDrag={this.handleDrag}
+                  onStart={this.handleStart}
+                  onStop={this.handleStop}
+                  position={null}
+                  bounds="parent"
+                  {...dragHandlers}
+                  handle="strong"
                 >
-                  0 Grab Here
-                </strong>
-                <div>
-                  x: {deltaPositions[0][0].x.toFixed(0)}, y:{" "}
-                  {deltaPositions[0][0].y.toFixed(0)}
-                </div>
-              </Box>
-            </Draggable>
-            <Draggable
-              defaultPosition={{
-                x: deltaPositions[0][1].x,
-                y: deltaPositions[0][1].y
-              }}
-              onDrag={this.handleDrag}
-              bounds="parent"
-              {...dragHandlers}
-              handle="strong"
-            >
-              <Box
-                className={"box " + (currentItem === "1" ? "show" : "hidden")}
-                style={{ width: "150px" }}
-              >
-                <strong
-                  id="1"
-                  className={
-                    currentItem !== "1" && activeDrags === 1 ? "disable" : ""
-                  }
+                  <Box
+                    className={
+                      "box " + (currentItem === "0" ? "show" : "hidden")
+                    }
+                    style={{ width: "150px" }}
+                  >
+                    <strong
+                      id="0"
+                      className={
+                        "grabbable " +
+                        (currentItem !== "0" && activeDrags === 1
+                          ? "disable "
+                          : "")
+                      }
+                    >
+                      0 Grab Here
+                    </strong>
+                    <div>
+                      x: {deltaPositions[0][0].x.toFixed(0)}, y:{" "}
+                      {deltaPositions[0][0].y.toFixed(0)}
+                    </div>
+                  </Box>
+                </Draggable>
+                <Draggable
+                  defaultPosition={{
+                    x: deltaPositions[0][1].x,
+                    y: deltaPositions[0][1].y
+                  }}
+                  position={null}
+                  onDrag={this.handleDrag}
+                  bounds="parent"
+                  {...dragHandlers}
+                  handle="strong"
                 >
-                  Grab Here
-                </strong>
-                <div>
-                  x: {deltaPositions[0][1].x.toFixed(0)}, y:{" "}
-                  {deltaPositions[0][1].y.toFixed(0)}
-                </div>
-              </Box>
-            </Draggable>
-            <Draggable
-              defaultPosition={{
-                x: deltaPositions[0][2].x,
-                y: deltaPositions[0][2].y
-              }}
-              onDrag={this.handleDrag}
-              bounds="parent"
-              {...dragHandlers}
-              handle="strong"
-            >
-              <Box
-                className={"box " + (currentItem === "2" ? "show" : "hidden")}
-                style={{ width: "150px" }}
-              >
-                <strong
-                  id="2"
-                  className={
-                    currentItem !== "2" && activeDrags === 1 ? "disable" : ""
-                  }
+                  <Box
+                    className={
+                      "box " + (currentItem === "1" ? "show" : "hidden")
+                    }
+                    style={{ width: "150px" }}
+                  >
+                    <strong
+                      id="1"
+                      className={
+                        "grabbable " +
+                        (currentItem !== "1" && activeDrags === 1
+                          ? "disable"
+                          : "")
+                      }
+                    >
+                      Grab Here
+                    </strong>
+                    <div>
+                      x: {deltaPositions[0][1].x.toFixed(0)}, y:{" "}
+                      {deltaPositions[0][1].y.toFixed(0)}
+                    </div>
+                  </Box>
+                </Draggable>
+                <Draggable
+                  defaultPosition={{
+                    x: deltaPositions[0][2].x,
+                    y: deltaPositions[0][2].y
+                  }}
+                  onDrag={this.handleDrag}
+                  bounds="parent"
+                  {...dragHandlers}
+                  handle="strong"
                 >
-                  Grab Here
-                </strong>
-                <div>
-                  x: {deltaPositions[0][2].x.toFixed(0)}, y:{" "}
-                  {deltaPositions[0][2].y.toFixed(0)}
-                </div>
-              </Box>
-            </Draggable>
-          </>
+                  <Box
+                    className={
+                      "box " + (currentItem === "2" ? "show" : "hidden")
+                    }
+                    style={{ width: "150px" }}
+                  >
+                    <strong
+                      id="2"
+                      className={
+                        "grabbable " +
+                        (currentItem !== "2" && activeDrags === 1
+                          ? "disable"
+                          : "")
+                      }
+                    >
+                      Grab Here
+                    </strong>
+                    <div>
+                      x: {deltaPositions[0][2].x.toFixed(0)}, y:{" "}
+                      {deltaPositions[0][2].y.toFixed(0)}
+                    </div>
+                  </Box>
+                </Draggable>
+              </>
+            )}
+          </EditingDiv>
         )}
-      </EditingDiv>
+      </ReactHoverObserver>
     );
   }
 }
