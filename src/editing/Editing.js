@@ -18,7 +18,9 @@ const EditingContent = styled.div`
 
   overflow: scroll;
 
-  border: 2px #c7c6c7 solid;
+  border-right: 2px #c7c6c7 solid;
+  border-bottom: 2px #c7c6c7 solid;
+
   padding: 2px;
 `;
 
@@ -29,6 +31,28 @@ const Box = styled.div`
   user-select: none;
 
   padding: 20px;
+`;
+
+const LeftSideBar = styled.div`
+  position: fixed;
+  left: 230px;
+  top: 0;
+
+  background: #c7c6c7;
+
+  width: 2px;
+  height: 100%;
+`;
+
+const TopSideBar = styled.div`
+  position: fixed;
+  left: 0;
+  top: 0;
+
+  width: 100vw;
+  height: 2px;
+
+  background: #c7c6c7;
 `;
 
 export default class Editing extends Component {
@@ -82,10 +106,19 @@ export default class Editing extends Component {
 
   handleDrag = (e, ui) => {
     const items = this.state.deltaPositions;
+    let x = ui.x + ui.deltaX;
+    if (x < 0) {
+      x = 0;
+    }
+
+    let y = ui.y + ui.deltaY;
+    if (y < 0) {
+      y = 0;
+    }
 
     items[0][e.target.id] = {
-      x: ui.x + ui.deltaX,
-      y: ui.y + ui.deltaY
+      x: x,
+      y: y
     };
     this.setState({
       deltaPositions: items
@@ -131,8 +164,6 @@ export default class Editing extends Component {
     const { deltaPositions, loading, currentItem, activeDrags } = this.state;
 
     return (
-      // <ReactHoverObserver>
-      //   {({ isHovering }) => (
       <EditingDiv
         id="EditingDiv"
         className={
@@ -141,9 +172,17 @@ export default class Editing extends Component {
           " " +
           (this.props.isHidden === false && "editingSmall")
         }
-        // onMouseOver={this.onMouseOver}
         onMouseLeave={this.onMouseLeave}
       >
+        <LeftSideBar
+          className={
+            "disable-css-transitions " +
+            (this.props.isHidden === true && "LeftSidebarBefore") +
+            " " +
+            (this.props.isHidden === false && "LeftSidebarAfter")
+          }
+        />
+        <TopSideBar />
         {loading ? (
           "loading"
         ) : (
@@ -253,8 +292,6 @@ export default class Editing extends Component {
           </>
         )}
       </EditingDiv>
-      //   )}
-      // </ReactHoverObserver>
     );
   }
 }
