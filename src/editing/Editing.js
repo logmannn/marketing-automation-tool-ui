@@ -16,6 +16,10 @@ const EditingDiv = styled.div`
   left: 230px;
 `;
 
+const Box = styled.div`
+  position: absolute;
+`;
+
 export default class Editing extends Component {
   constructor(props) {
     super(props);
@@ -33,16 +37,16 @@ export default class Editing extends Component {
       deltaPositions: [
         [
           {
-            x: 25,
-            y: 25
+            x: 0,
+            y: 0
           },
           {
-            x: 1,
-            y: 1
+            x: 300,
+            y: 200
           },
           {
-            x: 75,
-            y: 75
+            x: 300,
+            y: 200
           }
         ]
       ]
@@ -97,13 +101,13 @@ export default class Editing extends Component {
               {...dragHandlers}
               handle="strong"
             >
-              <div className="box" style={{ width: "150px" }}>
+              <Box className="box" style={{ width: "150px" }}>
                 <strong id="0">Grab Here</strong>
                 <div>
                   x: {deltaPositions[0][0].x.toFixed(0)}, y:{" "}
                   {deltaPositions[0][0].y.toFixed(0)}
                 </div>
-              </div>
+              </Box>
             </Draggable>
             <Draggable
               defaultPosition={{
@@ -115,13 +119,13 @@ export default class Editing extends Component {
               {...dragHandlers}
               handle="strong"
             >
-              <div className="box" style={{ width: "150px" }}>
+              <Box className="box" style={{ width: "150px" }}>
                 <strong id="1">Grab Here</strong>
                 <div>
                   x: {deltaPositions[0][1].x.toFixed(0)}, y:{" "}
                   {deltaPositions[0][1].y.toFixed(0)}
                 </div>
-              </div>
+              </Box>
             </Draggable>
             <Draggable
               defaultPosition={{
@@ -133,13 +137,13 @@ export default class Editing extends Component {
               {...dragHandlers}
               handle="strong"
             >
-              <div className="box" style={{ width: "150px" }}>
+              <Box className="box" style={{ width: "150px" }}>
                 <strong id="2">Grab Here</strong>
                 <div>
                   x: {deltaPositions[0][2].x.toFixed(0)}, y:{" "}
                   {deltaPositions[0][2].y.toFixed(0)}
                 </div>
-              </div>
+              </Box>
             </Draggable>
           </>
         )}
