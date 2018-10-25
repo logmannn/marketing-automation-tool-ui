@@ -19,12 +19,14 @@ const EditingContent = styled.div`
   overflow: scroll;
 
   border: 2px #c7c6c7 solid;
+  padding: 2px;
 `;
 
 const Box = styled.div`
   position: absolute;
 
   background: green;
+  user-select: none;
 
   padding: 20px;
 `;

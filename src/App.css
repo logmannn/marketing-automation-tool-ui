@@ -40,6 +40,7 @@
 
 .grabbable {
   cursor: move;
+  user-select: none;
 }
 
 .example__observer {
