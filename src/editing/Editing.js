@@ -73,16 +73,14 @@ export default class Editing extends Component {
       deltaPositions: [
         [
           {
-            x: 0,
-            y: 0
-          },
-          {
+            key: 0,
             x: 300,
             y: 200
           },
           {
-            x: 300,
-            y: 200
+            key: 1,
+            x: 1,
+            y: 1
           }
         ]
       ]
@@ -106,17 +104,22 @@ export default class Editing extends Component {
 
   handleDrag = (e, ui) => {
     const items = this.state.deltaPositions;
+
+    // console.log(ui.x + " " + ui.deltaX);
+    // console.log(ui.y + " " + ui.deltaY);
+
     let x = ui.x + ui.deltaX;
     if (x < 0) {
       x = 0;
     }
 
-    let y = ui.y + ui.deltaY;
+    let y = Math.abs(ui.y + ui.deltaY);
     if (y < 0) {
       y = 0;
     }
 
     items[0][e.target.id] = {
+      key: parseInt(e.target.id),
       x: x,
       y: y
     };
@@ -131,10 +134,6 @@ export default class Editing extends Component {
       let element = document.getElementById("EditingDiv");
       element.dispatchEvent(new Event("mouseup"));
 
-      // // set position of draggable item according to what is in its state
-      // const x = this.state.deltaPositions[0][this.state.currentItem].x;
-      // const y = this.state.deltaPositions[0][this.state.currentItem].y;
-
       const x = parseInt(
         document
           .getElementById("box" + this.state.currentItem)
@@ -146,13 +145,14 @@ export default class Editing extends Component {
           .style.transform.match(/, (.*?)px/)[1]
       );
 
+      console.log(x + " " + y);
+
       const items = this.state.deltaPositions;
       items[0][this.state.currentItem] = {
+        key: this.state.currentItem,
         x,
         y
       };
-      // console.log(items[0][this.state.currentItem]);
-      // console.log([{ x, y }]);
       this.setState({
         deltaPositions: items
       });
@@ -162,6 +162,9 @@ export default class Editing extends Component {
   render() {
     const dragHandlers = { onStart: this.onStart, onStop: this.onStop };
     const { deltaPositions, loading, currentItem, activeDrags } = this.state;
+
+    const key = 0;
+    const key1 = 1;
 
     return (
       <EditingDiv
@@ -188,106 +191,55 @@ export default class Editing extends Component {
         ) : (
           <>
             <EditingContent>
-              <DraggableCore
-                defaultPosition={{
-                  x: deltaPositions[0][0].x,
-                  y: deltaPositions[0][0].y
-                }}
-                onStart={this.handleStart}
-                onDrag={this.handleDrag}
-                onStop={this.handleStop}
-                position={null}
-                bounds="parent"
-                {...dragHandlers}
-                handle="strong"
-              >
-                <Box
-                  id="box0"
-                  className={"box " + (currentItem === "0" ? "show" : "hidden")}
-                  style={{ width: "150px" }}
+              {deltaPositions[0].map(step => (
+                <DraggableCore
+                  defaultPosition={{
+                    x: deltaPositions[0][step.key].x,
+                    y: deltaPositions[0][step.key].y
+                  }}
+                  onStart={this.handleStart}
+                  onDrag={this.handleDrag}
+                  onStop={this.handleStop}
+                  position={null}
+                  bounds="parent"
+                  {...dragHandlers}
+                  handle="strong"
                 >
-                  <strong
-                    id="0"
+                  <Box
+                    id={`box${step.key}`}
                     className={
-                      "grabbable " +
-                      (currentItem !== "0" && activeDrags === 1
-                        ? "disable "
-                        : "")
+                      "box " +
+                      (currentItem === `${deltaPositions[0][step.key].key}`
+                        ? "show"
+                        : "hidden")
                     }
+                    style={{ width: "150px" }}
                   >
-                    0 Grab Here
-                  </strong>
-                  <div>
-                    x: {deltaPositions[0][0].x.toFixed(0)}, y:{" "}
-                    {deltaPositions[0][0].y.toFixed(0)}
-                  </div>
-                </Box>
-              </DraggableCore>
-              <DraggableCore
-                defaultPosition={{
-                  x: deltaPositions[0][1].x,
-                  y: deltaPositions[0][1].y
-                }}
-                position={null}
-                onDrag={this.handleDrag}
-                bounds="parent"
-                {...dragHandlers}
-                handle="strong"
-              >
-                <Box
-                  id="box1"
-                  className={"box " + (currentItem === "1" ? "show" : "hidden")}
-                  style={{ width: "150px" }}
-                >
-                  <strong
-                    id="1"
-                    className={
-                      "grabbable " +
-                      (currentItem !== "1" && activeDrags === 1
-                        ? "disable"
-                        : "")
-                    }
-                  >
-                    Grab Here
-                  </strong>
-                  <div>
-                    x: {deltaPositions[0][1].x.toFixed(0)}, y:{" "}
-                    {deltaPositions[0][1].y.toFixed(0)}
-                  </div>
-                </Box>
-              </DraggableCore>
-              <DraggableCore
-                defaultPosition={{
-                  x: deltaPositions[0][2].x,
-                  y: deltaPositions[0][2].y
-                }}
-                onDrag={this.handleDrag}
-                bounds="parent"
-                {...dragHandlers}
-                handle="strong"
-              >
-                <Box
-                  id="box2"
-                  className={"box " + (currentItem === "2" ? "show" : "hidden")}
-                  style={{ width: "150px" }}
-                >
-                  <strong
-                    id="2"
-                    className={
-                      "grabbable " +
-                      (currentItem !== "2" && activeDrags === 1
-                        ? "disable"
-                        : "")
-                    }
-                  >
-                    Grab Here
-                  </strong>
-                  <div>
-                    x: {deltaPositions[0][2].x.toFixed(0)}, y:{" "}
-                    {deltaPositions[0][2].y.toFixed(0)}
-                  </div>
-                </Box>
-              </DraggableCore>
+                    <strong
+                      id={`${deltaPositions[0][step.key].key}`}
+                      className={
+                        "grabbable " +
+                        (currentItem !== `${deltaPositions[0][step.key].key}` &&
+                        activeDrags === 1
+                          ? "disable "
+                          : "")
+                      }
+                    >
+                      {deltaPositions[0][step.key].key} Grab Here
+                    </strong>
+                    <div>
+                      x:{" "}
+                      {deltaPositions[0][
+                        deltaPositions[0][step.key].key
+                      ].x.toFixed(0)}
+                      , y:{" "}
+                      {deltaPositions[0][
+                        deltaPositions[0][step.key].key
+                      ].y.toFixed(0)}
+                    </div>
+                  </Box>
+                </DraggableCore>
+              ))}
             </EditingContent>
           </>
         )}
