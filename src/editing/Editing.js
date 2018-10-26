@@ -96,7 +96,9 @@ export default class Editing extends Component {
       deltaPositions: [],
       loading: true,
       currentItem: "",
-      intervalId: 0
+      intervalId: 0,
+      mouseX: 0,
+      mouseY: 0
     };
   }
 
@@ -120,12 +122,14 @@ export default class Editing extends Component {
           }
         ]
       ],
-      intervalId: 0
+      intervalId: 0,
+      mouseX: 0,
+      mouseY: 0
     });
   }
 
-  timer = () => {
-    console.log("e");
+  timer = e => {
+    console.log(e);
   };
 
   onStart = e => {
@@ -138,7 +142,7 @@ export default class Editing extends Component {
     this.setState({
       activeDrags: this.state.activeDrags + 1
     });
-    let intervalId = setInterval(this.timer, 300);
+    let intervalId = setInterval(this.checkForScroll, 50);
     this.setState({ intervalId: intervalId });
   };
 
@@ -172,25 +176,27 @@ export default class Editing extends Component {
       // icon: this.state.deltaPositions[0][parseInt(e.target.id)].icon
     };
     this.setState({
-      deltaPositions: items
+      deltaPositions: items,
+      mouseX: e.clientX,
+      mouseY: e.clientY
     });
   };
 
-  checkForScroll = e => {
-    console.log("checkForScroll");
-    let sizeOfScroll = 10;
+  checkForScroll = () => {
+    // console.log(this.state.mouseX);
+    let sizeOfScroll = 50;
     let sizeOfInfluence = 50;
     let height = document.getElementById("LeftSideBar").clientHeight;
     let width;
     let xMouse;
     if (this.props.isHidden === true) {
-      xMouse = e.clientX;
+      xMouse = this.state.mouseX;
       width = document.getElementById("TopSideBar").clientWidth;
     } else {
-      xMouse = e.clientX - 230;
+      xMouse = this.state.mouseX - 230;
       width = document.getElementById("TopSideBar").clientWidth - 230;
     }
-    let ymouse = e.clientY;
+    let ymouse = this.state.mouseY;
 
     let moveX = 0;
     let moveY = 0;
