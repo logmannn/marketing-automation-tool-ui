@@ -151,6 +151,50 @@ export default class Editing extends Component {
     this.setState({
       deltaPositions: items
     });
+
+    // while (this.state.activeDrags === 1) {
+    //   setTimeout(console.log("test"), 2000);
+
+    // while (this.state.activeDrags === 1) {
+    setTimeout(this.checkForScroll(e), 100);
+    // }
+  };
+
+  checkForScroll = e => {
+    let sizeOfScroll = 10;
+    let sizeOfInfluence = 50;
+    let height = document.getElementById("LeftSideBar").clientHeight;
+    let width;
+    let xMouse;
+    if (this.props.isHidden === true) {
+      xMouse = e.clientX;
+      width = document.getElementById("TopSideBar").clientWidth;
+    } else {
+      xMouse = e.clientX - 230;
+      width = document.getElementById("TopSideBar").clientWidth - 230;
+    }
+    let ymouse = e.clientY;
+
+    let moveX = 0;
+    let moveY = 0;
+    if (xMouse < sizeOfInfluence) {
+      // console.log("left");
+      moveX = moveX - sizeOfScroll;
+    }
+    if (ymouse < sizeOfInfluence) {
+      // console.log("top");
+      moveY = moveY - sizeOfScroll;
+    }
+    if (xMouse > width - sizeOfInfluence) {
+      // console.log("right");
+      moveX = moveX + sizeOfScroll;
+    }
+    if (ymouse > height - sizeOfInfluence) {
+      // console.log("bottom");
+      moveY = moveY + sizeOfScroll;
+    }
+
+    window.scrollBy(moveX, moveY);
   };
 
   onMouseLeave = () => {
@@ -183,32 +227,6 @@ export default class Editing extends Component {
     }
   };
 
-  onMouseMove = e => {
-    let sizeOfInfluence = 20;
-    let height = document.getElementById("LeftSideBar").clientHeight;
-    let width = document.getElementById("TopSideBar").clientWidth - 230;
-    let x;
-    if (this.props.isHidden === true) {
-      x = 0;
-    } else {
-      x = e.clientX - 230;
-    }
-    let y = e.clientY;
-
-    if (x < sizeOfInfluence) {
-      console.log("left");
-    }
-    if (y < sizeOfInfluence) {
-      console.log("top");
-    }
-    if (x > width - sizeOfInfluence) {
-      console.log("right");
-    }
-    if (y > height - sizeOfInfluence) {
-      console.log("bottom");
-    }
-  };
-
   render() {
     const dragHandlers = { onStart: this.onStart, onStop: this.onStop };
     const { deltaPositions, loading, currentItem, activeDrags } = this.state;
@@ -223,7 +241,6 @@ export default class Editing extends Component {
           (this.props.isHidden === false && "editingSmall")
         }
         onMouseLeave={this.onMouseLeave}
-        onMouseMove={this.onMouseMove}
       >
         <LeftSideBar
           id="LeftSideBar"
