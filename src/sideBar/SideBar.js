@@ -19,6 +19,7 @@ const SidebarDiv = styled.div`
 
 const SideBar = ({ children }) => (
   <SidebarDiv
+    id="SidebarDiv"
     className={
       "disable-css-transitions " +
       (children.props.isHidden === true && "slideLeftHide") +

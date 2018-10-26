@@ -70,8 +70,6 @@ const Icon = styled.section`
   width: 50px;
   height: 50px;
 
-  /* border-radius: 7px; */
-
   display: flex;
   justify-content: center;
   align-items: center;
@@ -185,6 +183,32 @@ export default class Editing extends Component {
     }
   };
 
+  onMouseMove = e => {
+    let sizeOfInfluence = 20;
+    let height = document.getElementById("LeftSideBar").clientHeight;
+    let width = document.getElementById("TopSideBar").clientWidth - 230;
+    let x;
+    if (this.props.isHidden === true) {
+      x = 0;
+    } else {
+      x = e.clientX - 230;
+    }
+    let y = e.clientY;
+
+    if (x < sizeOfInfluence) {
+      console.log("left");
+    }
+    if (y < sizeOfInfluence) {
+      console.log("top");
+    }
+    if (x > width - sizeOfInfluence) {
+      console.log("right");
+    }
+    if (y > height - sizeOfInfluence) {
+      console.log("bottom");
+    }
+  };
+
   render() {
     const dragHandlers = { onStart: this.onStart, onStop: this.onStop };
     const { deltaPositions, loading, currentItem, activeDrags } = this.state;
@@ -199,8 +223,10 @@ export default class Editing extends Component {
           (this.props.isHidden === false && "editingSmall")
         }
         onMouseLeave={this.onMouseLeave}
+        onMouseMove={this.onMouseMove}
       >
         <LeftSideBar
+          id="LeftSideBar"
           className={
             "disable-css-transitions " +
             (this.props.isHidden === true && "LeftSidebarBefore") +
@@ -208,7 +234,7 @@ export default class Editing extends Component {
             (this.props.isHidden === false && "LeftSidebarAfter")
           }
         />
-        <TopSideBar />
+        <TopSideBar id="TopSideBar" />
         {loading ? (
           "loading"
         ) : (
