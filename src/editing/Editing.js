@@ -45,6 +45,8 @@ const TopSideBar = styled.div`
   height: 2px;
 
   background: #c7c6c7;
+
+  z-index: 4;
 `;
 
 const Box = styled.div`
@@ -79,6 +81,13 @@ const Icon = styled.section`
   background-position: center;
 `;
 
+const IconContent = styled.div`
+  width: 150px;
+
+  display: flex;
+  justify-content: center;
+`;
+
 export default class Editing extends Component {
   constructor(props) {
     super(props);
@@ -86,7 +95,8 @@ export default class Editing extends Component {
       activeDrags: 0,
       deltaPositions: [],
       loading: true,
-      currentItem: ""
+      currentItem: "",
+      intervalId: 0
     };
   }
 
@@ -109,11 +119,17 @@ export default class Editing extends Component {
             icon: Drip
           }
         ]
-      ]
+      ],
+      intervalId: 0
     });
   }
 
+  timer = () => {
+    console.log("e");
+  };
+
   onStart = e => {
+    // console.log("start");
     if (!isNaN(e.target.id)) {
       this.setState({
         currentItem: e.target.id
@@ -122,10 +138,17 @@ export default class Editing extends Component {
     this.setState({
       activeDrags: this.state.activeDrags + 1
     });
+    let intervalId = setInterval(this.timer, 300);
+    this.setState({ intervalId: intervalId });
   };
 
   onStop = () => {
-    this.setState({ activeDrags: this.state.activeDrags - 1, currentItem: "" });
+    // console.log("stop");
+    this.setState({
+      activeDrags: this.state.activeDrags - 1,
+      currentItem: ""
+    });
+    clearInterval(this.state.intervalId);
   };
 
   handleDrag = (e, ui) => {
@@ -151,16 +174,10 @@ export default class Editing extends Component {
     this.setState({
       deltaPositions: items
     });
-
-    // while (this.state.activeDrags === 1) {
-    //   setTimeout(console.log("test"), 2000);
-
-    // while (this.state.activeDrags === 1) {
-    setTimeout(this.checkForScroll(e), 100);
-    // }
   };
 
   checkForScroll = e => {
+    console.log("checkForScroll");
     let sizeOfScroll = 10;
     let sizeOfInfluence = 50;
     let height = document.getElementById("LeftSideBar").clientHeight;
@@ -217,7 +234,7 @@ export default class Editing extends Component {
       const items = this.state.deltaPositions;
       items[0][this.state.currentItem] = {
         ...items[0][this.state.currentItem],
-        key: this.state.currentItem,
+        key: parseInt(this.state.currentItem),
         x,
         y
       };
@@ -263,9 +280,9 @@ export default class Editing extends Component {
                     x: deltaPositions[0][step.key].x,
                     y: deltaPositions[0][step.key].y
                   }}
-                  onStart={this.handleStart}
+                  onStart={this.onStart}
                   onDrag={this.handleDrag}
-                  onStop={this.handleStop}
+                  onStop={this.onStop}
                   position={null}
                   bounds="parent"
                   {...dragHandlers}
@@ -300,16 +317,18 @@ export default class Editing extends Component {
                         }}
                       />
                     </IconWrapper>
-                    <div>
-                      x:{" "}
-                      {deltaPositions[0][
-                        deltaPositions[0][step.key].key
-                      ].x.toFixed(0)}
-                      , y:{" "}
-                      {deltaPositions[0][
-                        deltaPositions[0][step.key].key
-                      ].y.toFixed(0)}
-                    </div>
+                    <IconContent>
+                      <div>
+                        x:{" "}
+                        {deltaPositions[0][
+                          deltaPositions[0][step.key].key
+                        ].x.toFixed(0)}
+                        , y:{" "}
+                        {deltaPositions[0][
+                          deltaPositions[0][step.key].key
+                        ].y.toFixed(0)}
+                      </div>
+                    </IconContent>
                   </Box>
                 </DraggableCore>
               ))}
