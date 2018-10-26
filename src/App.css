@@ -53,6 +53,10 @@
   transition: border 0.2s ease-in-out;
 }
 
+.drip {
+  background: green;
+}
+
 @keyframes slideLeftHide {
   from {
     transform: translate(0%);

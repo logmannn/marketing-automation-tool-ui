@@ -11,6 +11,8 @@ const EditingDiv = styled.div`
 
   top: 0;
   left: 230px;
+
+  overflow: hidden;
 `;
 
 const EditingContent = styled.div`
@@ -112,13 +114,15 @@ export default class Editing extends Component {
             key: 0,
             x: 300,
             y: 200,
-            icon: Drip
+            icon: Drip,
+            background: "green"
           },
           {
             key: 1,
             x: 1,
             y: 1,
-            icon: Drip
+            icon: Drip,
+            background: "red"
           }
         ]
       ],
@@ -309,17 +313,19 @@ export default class Editing extends Component {
                       <Icon
                         id={`${deltaPositions[0][step.key].key}`}
                         className={
-                          "icon grabbable " +
+                          `icon grabbable ${deltaPositions[0][step.key].icon}` +
                           (currentItem !==
                             `${deltaPositions[0][step.key].key}` &&
                           activeDrags === 1
-                            ? "disable "
-                            : "")
+                            ? " disable "
+                            : " ")
                         }
                         style={{
                           backgroundImage: `url(${
                             deltaPositions[0][step.key].icon
-                          })`
+                          })`,
+                          backgroundColor:
+                            deltaPositions[0][step.key].background
                         }}
                       />
                     </IconWrapper>
