@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-
 import DraggableCore from "react-draggable";
+
+import Background from "../common/drip.svg";
 
 const EditingDiv = styled.div`
   position: absolute;
@@ -22,15 +23,6 @@ const EditingContent = styled.div`
   border-bottom: 2px #c7c6c7 solid;
 
   padding: 2px;
-`;
-
-const Box = styled.div`
-  position: absolute;
-
-  background: green;
-  user-select: none;
-
-  padding: 20px;
 `;
 
 const LeftSideBar = styled.div`
@@ -55,6 +47,33 @@ const TopSideBar = styled.div`
   background: #c7c6c7;
 `;
 
+const Box = styled.div`
+  position: absolute;
+
+  user-select: none;
+
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+`;
+
+const IconWrapper = styled.section`
+  width: 50px;
+  height: 50px;
+
+  background-color: green;
+
+  border-radius: 7px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background-size: 25px;
+  background-repeat: no-repeat;
+  background-position: center;
+`;
+
 export default class Editing extends Component {
   constructor(props) {
     super(props);
@@ -75,12 +94,14 @@ export default class Editing extends Component {
           {
             key: 0,
             x: 300,
-            y: 200
+            y: 200,
+            icon: Background
           },
           {
             key: 1,
             x: 1,
-            y: 1
+            y: 1,
+            icon: Background
           }
         ]
       ]
@@ -105,9 +126,6 @@ export default class Editing extends Component {
   handleDrag = (e, ui) => {
     const items = this.state.deltaPositions;
 
-    // console.log(ui.x + " " + ui.deltaX);
-    // console.log(ui.y + " " + ui.deltaY);
-
     let x = ui.x + ui.deltaX;
     if (x < 0) {
       x = 0;
@@ -119,9 +137,11 @@ export default class Editing extends Component {
     }
 
     items[0][e.target.id] = {
+      ...items[0][e.target.id],
       key: parseInt(e.target.id),
       x: x,
       y: y
+      // icon: this.state.deltaPositions[0][parseInt(e.target.id)].icon
     };
     this.setState({
       deltaPositions: items
@@ -145,10 +165,9 @@ export default class Editing extends Component {
           .style.transform.match(/, (.*?)px/)[1]
       );
 
-      console.log(x + " " + y);
-
       const items = this.state.deltaPositions;
       items[0][this.state.currentItem] = {
+        ...items[0][this.state.currentItem],
         key: this.state.currentItem,
         x,
         y
@@ -162,9 +181,6 @@ export default class Editing extends Component {
   render() {
     const dragHandlers = { onStart: this.onStart, onStop: this.onStop };
     const { deltaPositions, loading, currentItem, activeDrags } = this.state;
-
-    const key = 0;
-    const key1 = 1;
 
     return (
       <EditingDiv
@@ -203,7 +219,8 @@ export default class Editing extends Component {
                   position={null}
                   bounds="parent"
                   {...dragHandlers}
-                  handle="strong"
+                  handle="section"
+                  key={step.key}
                 >
                   <Box
                     id={`box${step.key}`}
@@ -215,18 +232,21 @@ export default class Editing extends Component {
                     }
                     style={{ width: "150px" }}
                   >
-                    <strong
+                    <IconWrapper
                       id={`${deltaPositions[0][step.key].key}`}
                       className={
-                        "grabbable " +
+                        "icon grabbable " +
                         (currentItem !== `${deltaPositions[0][step.key].key}` &&
                         activeDrags === 1
                           ? "disable "
                           : "")
                       }
-                    >
-                      {deltaPositions[0][step.key].key} Grab Here
-                    </strong>
+                      style={{
+                        backgroundImage: `url(${
+                          deltaPositions[0][step.key].icon
+                        })`
+                      }}
+                    />
                     <div>
                       x:{" "}
                       {deltaPositions[0][
