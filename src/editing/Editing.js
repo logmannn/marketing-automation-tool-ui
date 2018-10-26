@@ -280,7 +280,7 @@ export default class Editing extends Component {
                         ? "show"
                         : "hidden")
                     }
-                    style={{ width: "150px" }}
+                    style={{ width: "50px" }}
                   >
                     <IconWrapper>
                       <Icon
