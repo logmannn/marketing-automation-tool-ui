@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import styled from "styled-components";
 import DraggableCore from "react-draggable";
 
-import Background from "../common/drip.svg";
+import Drip from "../common/drip.svg";
 
 const EditingDiv = styled.div`
   position: absolute;
@@ -57,13 +57,20 @@ const Box = styled.div`
   flex-direction: column;
 `;
 
-const IconWrapper = styled.section`
+const IconWrapper = styled.div`
+  border-radius: 7px;
+
+  background: green;
+
+  height: 50px;
+  width: 50px;
+`;
+
+const Icon = styled.section`
   width: 50px;
   height: 50px;
 
-  background-color: green;
-
-  border-radius: 7px;
+  /* border-radius: 7px; */
 
   display: flex;
   justify-content: center;
@@ -95,13 +102,13 @@ export default class Editing extends Component {
             key: 0,
             x: 300,
             y: 200,
-            icon: Background
+            icon: Drip
           },
           {
             key: 1,
             x: 1,
             y: 1,
-            icon: Background
+            icon: Drip
           }
         ]
       ]
@@ -232,21 +239,24 @@ export default class Editing extends Component {
                     }
                     style={{ width: "150px" }}
                   >
-                    <IconWrapper
-                      id={`${deltaPositions[0][step.key].key}`}
-                      className={
-                        "icon grabbable " +
-                        (currentItem !== `${deltaPositions[0][step.key].key}` &&
-                        activeDrags === 1
-                          ? "disable "
-                          : "")
-                      }
-                      style={{
-                        backgroundImage: `url(${
-                          deltaPositions[0][step.key].icon
-                        })`
-                      }}
-                    />
+                    <IconWrapper>
+                      <Icon
+                        id={`${deltaPositions[0][step.key].key}`}
+                        className={
+                          "icon grabbable " +
+                          (currentItem !==
+                            `${deltaPositions[0][step.key].key}` &&
+                          activeDrags === 1
+                            ? "disable "
+                            : "")
+                        }
+                        style={{
+                          backgroundImage: `url(${
+                            deltaPositions[0][step.key].icon
+                          })`
+                        }}
+                      />
+                    </IconWrapper>
                     <div>
                       x:{" "}
                       {deltaPositions[0][
