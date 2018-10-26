@@ -132,10 +132,6 @@ export default class Editing extends Component {
     });
   }
 
-  timer = e => {
-    console.log(e);
-  };
-
   onStart = e => {
     // console.log("start");
     if (!isNaN(e.target.id)) {
@@ -256,7 +252,14 @@ export default class Editing extends Component {
 
   render() {
     const dragHandlers = { onStart: this.onStart, onStop: this.onStop };
-    const { deltaPositions, loading, currentItem, activeDrags } = this.state;
+    const {
+      deltaPositions,
+      loading,
+      currentItem,
+      activeDrags,
+      mouseX,
+      mouseY
+    } = this.state;
 
     return (
       <EditingDiv
