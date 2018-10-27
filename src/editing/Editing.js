@@ -39,6 +39,8 @@ const LeftSideBar = styled.div`
 
   width: 2px;
   height: 100%;
+
+  z-index: 4;
 `;
 
 const TopSideBar = styled.div`
@@ -93,7 +95,8 @@ export default class Editing extends Component {
       mouseX: 0,
       mouseY: 0,
       offsetX: 0,
-      offsetY: 0
+      offsetY: 0,
+      start: false
     });
   }
 
@@ -114,18 +117,28 @@ export default class Editing extends Component {
 
     let moveX = 0;
     let moveY = 0;
+    let scrolling: false;
+
     if (xMouse < sizeOfInfluence) {
       moveX = moveX - sizeOfScroll;
+      scrolling = true;
     }
     if (ymouse < sizeOfInfluence) {
       moveY = moveY - sizeOfScroll;
+      scrolling = true;
     }
     if (xMouse > width - sizeOfInfluence) {
       moveX = moveX + sizeOfScroll;
+      scrolling = true;
     }
     if (ymouse > height - sizeOfInfluence) {
       moveY = moveY + sizeOfScroll;
+      scrolling = true;
     }
+
+    this.setState({
+      scrolling
+    });
 
     window.scrollBy(moveX, moveY);
   };
@@ -160,22 +173,9 @@ export default class Editing extends Component {
     this.setState({
       deltaPositions: items,
       mouseX: e.clientX,
-      mouseY: e.clientY
+      mouseY: e.clientY,
+      start: false
     });
-
-    if (
-      e.offsetX <= 50 &&
-      e.offsetY <= 50 &&
-      e.offsetX >= 0 &&
-      e.offsetY >= 0 &&
-      e.offsetX !== this.state.offsetX &&
-      e.offsetY !== this.state.offsetY
-    ) {
-      this.setState({
-        offsetX: e.offsetX,
-        offsetY: e.offsetY
-      });
-    }
   };
 
   onControlledDragStop = (e, position) => {
@@ -186,9 +186,17 @@ export default class Editing extends Component {
   onStart = (e, position) => {
     const itemNumber = position.node.id;
     let intervalId = setInterval(this.checkForScroll, 100);
+
     this.setState({
       activeDrags: this.state.activeDrags + 1,
-      intervalId: intervalId
+      intervalId: intervalId,
+      start: true,
+      offsetX:
+        e.clientX -
+        document.getElementById(itemNumber).getBoundingClientRect().x,
+      offsetY:
+        e.clientY -
+        document.getElementById(itemNumber).getBoundingClientRect().y
     });
     if (!isNaN(itemNumber)) {
       this.setState({
@@ -220,7 +228,8 @@ export default class Editing extends Component {
     this.setState({
       deltaPositions: items,
       mouseX: e.clientX,
-      mouseY: e.clientY
+      mouseY: e.clientY,
+      start: false
     });
   };
 
@@ -234,7 +243,9 @@ export default class Editing extends Component {
       mouseY,
       currentItem,
       offsetX,
-      offsetY
+      offsetY,
+      start,
+      scrolling
     } = this.state;
 
     return (
@@ -263,7 +274,8 @@ export default class Editing extends Component {
         ) : (
           <>
             {!isNaN(currentItem) &&
-              activeDrags === 1 && (
+              activeDrags === 1 &&
+              start === false && (
                 <div
                   style={{
                     position: "fixed",
@@ -286,9 +298,9 @@ export default class Editing extends Component {
                     id={step.key}
                     style={{ position: "absolute" }}
                     className={
-                      activeDrags === 1 &&
-                      parseInt(currentItem) === step.key &&
-                      "noOpacity"
+                      scrolling === true && parseInt(currentItem) === step.key
+                        ? "noOpacity"
+                        : "opacity"
                     }
                   >
                     <Step item={deltaPositions[0][step.key]} />

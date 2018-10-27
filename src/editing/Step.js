@@ -40,6 +40,9 @@ const IconContent = styled.div`
 
   display: flex;
   justify-content: center;
+
+  border: 1px solid black;
+  background: white;
 `;
 
 export default class Step extends Component {
