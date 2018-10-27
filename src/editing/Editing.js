@@ -190,6 +190,8 @@ export default class Editing extends Component {
   // };
 
   onControlledDrag = (e, position) => {
+    console.log(e);
+
     let { x, y } = position;
     if (x < 0) {
       x = 0;
@@ -212,7 +214,9 @@ export default class Editing extends Component {
     this.setState({
       deltaPositions: items,
       mouseX: e.clientX,
-      mouseY: e.clientY
+      mouseY: e.clientY,
+      offsetX: e.offsetX,
+      offsetY: e.offsetY
     });
   };
 
@@ -271,7 +275,9 @@ export default class Editing extends Component {
       mouseX,
       mouseY,
       controlledPosition,
-      currentItem
+      currentItem,
+      offsetX,
+      offsetY
     } = this.state;
 
     return (
@@ -304,8 +310,8 @@ export default class Editing extends Component {
                 <div
                   style={{
                     position: "fixed",
-                    left: `${mouseX}px`,
-                    top: `${mouseY}px`
+                    left: `calc(${mouseX}px - ${offsetX}px)`,
+                    top: `calc(${mouseY}px - ${offsetY}px)`
                   }}
                 >
                   <Step item={deltaPositions[0][parseInt(currentItem)]} />
