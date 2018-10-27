@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import DraggableCore from "react-draggable";
 import Draggable from "react-draggable";
 import Step from "./Step";
 
@@ -55,14 +54,6 @@ const TopSideBar = styled.div`
   z-index: 4;
 `;
 
-const Follow = styled.div`
-  background: red;
-  width: 50px;
-  height: 50px;
-
-  position: fixed;
-`;
-
 export default class Editing extends Component {
   constructor(props) {
     super(props);
@@ -106,23 +97,9 @@ export default class Editing extends Component {
     });
   }
 
-  // onStart = e => {
-  //   // console.log("start");
-  //   if (!isNaN(e.target.id)) {
-  //     this.setState({
-  //       currentItem: e.target.id
-  //     });
-  //   }
-  //   this.setState({
-  //     activeDrags: this.state.activeDrags + 1
-  //   });
-  //   let intervalId = setInterval(this.checkForScroll, 50);
-  //   this.setState({ intervalId: intervalId });
-  // };
-
   checkForScroll = () => {
-    let sizeOfScroll = 50;
-    let sizeOfInfluence = 50;
+    let sizeOfScroll = 100;
+    let sizeOfInfluence = 80;
     let height = document.getElementById("LeftSideBar").clientHeight;
     let width;
     let xMouse;
@@ -151,19 +128,6 @@ export default class Editing extends Component {
     }
 
     window.scrollBy(moveX, moveY);
-
-    // const itemNumber = this.state.currentItem;
-
-    // const items = this.state.deltaPositions;
-    // items[0][itemNumber] = {
-    //   ...items[0][itemNumber],
-    //   x: items[0][itemNumber].x + 1,
-    //   y: items[0][itemNumber].y + 1
-    // };
-
-    // this.setState({
-    //   deltaPositions: items
-    // });
   };
 
   // I actually prefer to not use this...
@@ -173,22 +137,6 @@ export default class Editing extends Component {
   //     let element = document.getElementById("EditingDiv");
   //     element.dispatchEvent(new Event("mouseup"));
   //   }
-  // };
-
-  // For controlled component
-  // adjustXPos = (e, position) => {
-  //   e.preventDefault();
-  //   e.stopPropagation();
-  //   const { x, y } = this.state.controlledPosition;
-  //   this.setState({ controlledPosition: { x: x - 10, y } });
-  // };
-
-  // adjustYPos = (e, position) => {
-  //   e.preventDefault();
-  //   e.stopPropagation();
-  //   const { controlledPosition } = this.state;
-  //   const { x, y } = controlledPosition;
-  //   this.setState({ controlledPosition: { x, y: y - 10 } });
   // };
 
   onControlledDrag = (e, position) => {
@@ -208,8 +156,6 @@ export default class Editing extends Component {
       x: x,
       y: y
     };
-
-    // console.log(document.getElementById(itemNumber).getBoundingClientRect());
 
     this.setState({
       deltaPositions: items,
@@ -286,7 +232,6 @@ export default class Editing extends Component {
       activeDrags,
       mouseX,
       mouseY,
-      controlledPosition,
       currentItem,
       offsetX,
       offsetY
@@ -323,8 +268,7 @@ export default class Editing extends Component {
                   style={{
                     position: "fixed",
                     left: `calc(${mouseX}px - ${offsetX}px)`,
-                    top: `calc(${mouseY}px - ${offsetY}px)`,
-                    border: "1px solid black"
+                    top: `calc(${mouseY}px - ${offsetY}px)`
                   }}
                 >
                   <Step item={deltaPositions[0][parseInt(currentItem)]} />
@@ -338,7 +282,15 @@ export default class Editing extends Component {
                   onDrag={this.onControlledDrag}
                   key={step.key}
                 >
-                  <div id={step.key} style={{ position: "absolute" }}>
+                  <div
+                    id={step.key}
+                    style={{ position: "absolute" }}
+                    className={
+                      activeDrags === 1 &&
+                      parseInt(currentItem) === step.key &&
+                      "noOpacity"
+                    }
+                  >
                     <Step item={deltaPositions[0][step.key]} />
                   </div>
                 </Draggable>
