@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import styled from "styled-components";
 import DraggableCore from "react-draggable";
 import Draggable from "react-draggable";
+import Step from "./Step";
 
 import Drip from "../common/drip.svg";
 
@@ -26,6 +27,8 @@ const EditingContent = styled.div`
   border-bottom: 2px #c7c6c7 solid;
 
   padding: 2px;
+
+  position: relative;
 `;
 
 const LeftSideBar = styled.div`
@@ -52,45 +55,6 @@ const TopSideBar = styled.div`
   z-index: 4;
 `;
 
-const Box = styled.div`
-  position: absolute;
-
-  user-select: none;
-
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-`;
-
-const IconWrapper = styled.div`
-  border-radius: 7px;
-
-  background: green;
-
-  height: 50px;
-  width: 50px;
-`;
-
-const Icon = styled.section`
-  width: 50px;
-  height: 50px;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  background-size: 25px;
-  background-repeat: no-repeat;
-  background-position: center;
-`;
-
-const IconContent = styled.div`
-  width: 150px;
-
-  display: flex;
-  justify-content: center;
-`;
-
 const Follow = styled.div`
   background: red;
   width: 50px;
@@ -108,8 +72,7 @@ export default class Editing extends Component {
       loading: true,
       intervalId: 0,
       mouseX: 0,
-      mouseY: 0,
-      controlledPosition: {}
+      mouseY: 0
     };
   }
 
@@ -137,11 +100,7 @@ export default class Editing extends Component {
       ],
       intervalId: 0,
       mouseX: 0,
-      mouseY: 0,
-      controlledPosition: {
-        x: 400,
-        y: 200
-      }
+      mouseY: 0
     });
   }
 
@@ -215,20 +174,20 @@ export default class Editing extends Component {
   // };
 
   // For controlled component
-  adjustXPos = (e, position) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const { x, y } = this.state.controlledPosition;
-    this.setState({ controlledPosition: { x: x - 10, y } });
-  };
+  // adjustXPos = (e, position) => {
+  //   e.preventDefault();
+  //   e.stopPropagation();
+  //   const { x, y } = this.state.controlledPosition;
+  //   this.setState({ controlledPosition: { x: x - 10, y } });
+  // };
 
-  adjustYPos = (e, position) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const { controlledPosition } = this.state;
-    const { x, y } = controlledPosition;
-    this.setState({ controlledPosition: { x, y: y - 10 } });
-  };
+  // adjustYPos = (e, position) => {
+  //   e.preventDefault();
+  //   e.stopPropagation();
+  //   const { controlledPosition } = this.state;
+  //   const { x, y } = controlledPosition;
+  //   this.setState({ controlledPosition: { x, y: y - 10 } });
+  // };
 
   onControlledDrag = (e, position) => {
     let { x, y } = position;
@@ -240,12 +199,15 @@ export default class Editing extends Component {
     }
 
     const itemNumber = position.node.id;
+
     const items = this.state.deltaPositions;
     items[0][itemNumber] = {
       ...items[0][itemNumber],
       x: x,
       y: y
     };
+
+    // console.log(document.getElementById(itemNumber).getBoundingClientRect());
 
     this.setState({
       deltaPositions: items,
@@ -261,7 +223,7 @@ export default class Editing extends Component {
 
   onStart = (e, position) => {
     const itemNumber = position.node.id;
-    let intervalId = setInterval(this.checkForScroll, 50);
+    let intervalId = setInterval(this.checkForScroll, 100);
     this.setState({
       activeDrags: this.state.activeDrags + 1,
       intervalId: intervalId
@@ -308,7 +270,8 @@ export default class Editing extends Component {
       activeDrags,
       mouseX,
       mouseY,
-      controlledPosition
+      controlledPosition,
+      currentItem
     } = this.state;
 
     return (
@@ -336,12 +299,18 @@ export default class Editing extends Component {
           "loading"
         ) : (
           <>
-            {/* <Follow
-              style={{
-                left: `${mouseX}px`,
-                top: `${mouseY}px`
-              }}
-            /> */}
+            {!isNaN(currentItem) &&
+              activeDrags === 1 && (
+                <div
+                  style={{
+                    position: "fixed",
+                    left: `${mouseX}px`,
+                    top: `${mouseY}px`
+                  }}
+                >
+                  <Step item={deltaPositions[0][parseInt(currentItem)]} />
+                </div>
+              )}
             <EditingContent>
               {deltaPositions[0].map(step => (
                 <Draggable
@@ -350,35 +319,9 @@ export default class Editing extends Component {
                   onDrag={this.onControlledDrag}
                   key={step.key}
                 >
-                  <Box id={step.key} className="box " style={{ width: "50px" }}>
-                    <IconWrapper>
-                      <Icon
-                        id={`${deltaPositions[0][step.key].key}`}
-                        className={`icon grabbable ${
-                          deltaPositions[0][step.key].icon
-                        }`}
-                        style={{
-                          backgroundImage: `url(${
-                            deltaPositions[0][step.key].icon
-                          })`,
-                          backgroundColor:
-                            deltaPositions[0][step.key].background
-                        }}
-                      />
-                    </IconWrapper>
-                    <IconContent>
-                      <div>
-                        x:{" "}
-                        {deltaPositions[0][
-                          deltaPositions[0][step.key].key
-                        ].x.toFixed(0)}
-                        , y:{" "}
-                        {deltaPositions[0][
-                          deltaPositions[0][step.key].key
-                        ].y.toFixed(0)}
-                      </div>
-                    </IconContent>
-                  </Box>
+                  <div id={step.key} style={{ position: "absolute" }}>
+                    <Step item={deltaPositions[0][step.key]} />
+                  </div>
                 </Draggable>
               ))}
             </EditingContent>
