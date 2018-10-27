@@ -91,6 +91,14 @@ const IconContent = styled.div`
   justify-content: center;
 `;
 
+const Follow = styled.div`
+  background: red;
+  width: 50px;
+  height: 50px;
+
+  position: fixed;
+`;
+
 export default class Editing extends Component {
   constructor(props) {
     super(props);
@@ -98,10 +106,10 @@ export default class Editing extends Component {
       activeDrags: 0,
       deltaPositions: [],
       loading: true,
-      currentItem: "",
       intervalId: 0,
       mouseX: 0,
-      mouseY: 0
+      mouseY: 0,
+      controlledPosition: {}
     };
   }
 
@@ -129,62 +137,29 @@ export default class Editing extends Component {
       ],
       intervalId: 0,
       mouseX: 0,
-      mouseY: 0
+      mouseY: 0,
+      controlledPosition: {
+        x: 400,
+        y: 200
+      }
     });
   }
 
-  onStart = e => {
-    // console.log("start");
-    if (!isNaN(e.target.id)) {
-      this.setState({
-        currentItem: e.target.id
-      });
-    }
-    this.setState({
-      activeDrags: this.state.activeDrags + 1
-    });
-    let intervalId = setInterval(this.checkForScroll, 50);
-    this.setState({ intervalId: intervalId });
-  };
-
-  onStop = () => {
-    // console.log("stop");
-    this.setState({
-      activeDrags: this.state.activeDrags - 1,
-      currentItem: ""
-    });
-    clearInterval(this.state.intervalId);
-  };
-
-  handleDrag = (e, ui) => {
-    const items = this.state.deltaPositions;
-
-    let x = ui.x + ui.deltaX;
-    if (x < 0) {
-      x = 0;
-    }
-
-    let y = Math.abs(ui.y + ui.deltaY);
-    if (y < 0) {
-      y = 0;
-    }
-
-    items[0][e.target.id] = {
-      ...items[0][e.target.id],
-      key: parseInt(e.target.id),
-      x: x,
-      y: y
-      // icon: this.state.deltaPositions[0][parseInt(e.target.id)].icon
-    };
-    this.setState({
-      deltaPositions: items,
-      mouseX: e.clientX,
-      mouseY: e.clientY
-    });
-  };
+  // onStart = e => {
+  //   // console.log("start");
+  //   if (!isNaN(e.target.id)) {
+  //     this.setState({
+  //       currentItem: e.target.id
+  //     });
+  //   }
+  //   this.setState({
+  //     activeDrags: this.state.activeDrags + 1
+  //   });
+  //   let intervalId = setInterval(this.checkForScroll, 50);
+  //   this.setState({ intervalId: intervalId });
+  // };
 
   checkForScroll = () => {
-    // console.log(this.state.mouseX);
     let sizeOfScroll = 50;
     let sizeOfInfluence = 50;
     let height = document.getElementById("LeftSideBar").clientHeight;
@@ -202,53 +177,127 @@ export default class Editing extends Component {
     let moveX = 0;
     let moveY = 0;
     if (xMouse < sizeOfInfluence) {
-      // console.log("left");
       moveX = moveX - sizeOfScroll;
     }
     if (ymouse < sizeOfInfluence) {
-      // console.log("top");
       moveY = moveY - sizeOfScroll;
     }
     if (xMouse > width - sizeOfInfluence) {
-      // console.log("right");
       moveX = moveX + sizeOfScroll;
     }
     if (ymouse > height - sizeOfInfluence) {
-      // console.log("bottom");
       moveY = moveY + sizeOfScroll;
     }
 
     window.scrollBy(moveX, moveY);
+
+    // const itemNumber = this.state.currentItem;
+
+    // const items = this.state.deltaPositions;
+    // items[0][itemNumber] = {
+    //   ...items[0][itemNumber],
+    //   x: items[0][itemNumber].x + 1,
+    //   y: items[0][itemNumber].y + 1
+    // };
+
+    // this.setState({
+    //   deltaPositions: items
+    // });
   };
 
-  onMouseLeave = () => {
-    if (this.state.activeDrags) {
-      // force mouseup
-      let element = document.getElementById("EditingDiv");
-      element.dispatchEvent(new Event("mouseup"));
+  // I actually prefer to not use this...
+  // onMouseLeave = () => {
+  //   if (this.state.activeDrags) {
+  //     // force mouseup
+  //     let element = document.getElementById("EditingDiv");
+  //     element.dispatchEvent(new Event("mouseup"));
+  //   }
+  // };
 
-      const x = parseInt(
-        document
-          .getElementById("box" + this.state.currentItem)
-          .style.transform.match(/\((.*?)px,/)[1]
-      );
-      const y = parseInt(
-        document
-          .getElementById("box" + this.state.currentItem)
-          .style.transform.match(/, (.*?)px/)[1]
-      );
+  // For controlled component
+  adjustXPos = (e, position) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const { x, y } = this.state.controlledPosition;
+    this.setState({ controlledPosition: { x: x - 10, y } });
+  };
 
-      const items = this.state.deltaPositions;
-      items[0][this.state.currentItem] = {
-        ...items[0][this.state.currentItem],
-        key: parseInt(this.state.currentItem),
-        x,
-        y
-      };
+  adjustYPos = (e, position) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const { controlledPosition } = this.state;
+    const { x, y } = controlledPosition;
+    this.setState({ controlledPosition: { x, y: y - 10 } });
+  };
+
+  onControlledDrag = (e, position) => {
+    let { x, y } = position;
+    if (x < 0) {
+      x = 0;
+    }
+    if (y < 0) {
+      y = 0;
+    }
+
+    const itemNumber = position.node.id;
+    const items = this.state.deltaPositions;
+    items[0][itemNumber] = {
+      ...items[0][itemNumber],
+      x: x,
+      y: y
+    };
+
+    this.setState({
+      deltaPositions: items,
+      mouseX: e.clientX,
+      mouseY: e.clientY
+    });
+  };
+
+  onControlledDragStop = (e, position) => {
+    this.onControlledDrag(e, position);
+    this.onStop(e, position);
+  };
+
+  onStart = (e, position) => {
+    const itemNumber = position.node.id;
+    let intervalId = setInterval(this.checkForScroll, 50);
+    this.setState({
+      activeDrags: this.state.activeDrags + 1,
+      intervalId: intervalId
+    });
+    if (!isNaN(itemNumber)) {
       this.setState({
-        deltaPositions: items
+        currentItem: itemNumber
       });
     }
+  };
+
+  onStop = (e, position) => {
+    this.setState({ activeDrags: this.state.activeDrags - 1, currentItem: "" });
+    clearInterval(this.state.intervalId);
+
+    let { x, y } = position;
+    if (x < 0) {
+      x = 0;
+    }
+    if (y < 0) {
+      y = 0;
+    }
+
+    const itemNumber = position.node.id;
+    const items = this.state.deltaPositions;
+    items[0][itemNumber] = {
+      ...items[0][itemNumber],
+      x: x,
+      y: y
+    };
+
+    this.setState({
+      deltaPositions: items,
+      mouseX: e.clientX,
+      mouseY: e.clientY
+    });
   };
 
   render() {
@@ -256,10 +305,10 @@ export default class Editing extends Component {
     const {
       deltaPositions,
       loading,
-      currentItem,
       activeDrags,
       mouseX,
-      mouseY
+      mouseY,
+      controlledPosition
     } = this.state;
 
     return (
@@ -287,43 +336,27 @@ export default class Editing extends Component {
           "loading"
         ) : (
           <>
+            {/* <Follow
+              style={{
+                left: `${mouseX}px`,
+                top: `${mouseY}px`
+              }}
+            /> */}
             <EditingContent>
               {deltaPositions[0].map(step => (
-                <DraggableCore
-                  defaultPosition={{
-                    x: deltaPositions[0][step.key].x,
-                    y: deltaPositions[0][step.key].y
-                  }}
-                  onStart={this.onStart}
-                  onDrag={this.handleDrag}
-                  onStop={this.onStop}
-                  position={null}
-                  bounds="parent"
+                <Draggable
+                  position={deltaPositions[0][step.key]}
                   {...dragHandlers}
-                  handle="section"
+                  onDrag={this.onControlledDrag}
                   key={step.key}
                 >
-                  <Box
-                    id={`box${step.key}`}
-                    className={
-                      "box " +
-                      (currentItem === `${deltaPositions[0][step.key].key}`
-                        ? "show"
-                        : "hidden")
-                    }
-                    style={{ width: "50px" }}
-                  >
+                  <Box id={step.key} className="box " style={{ width: "50px" }}>
                     <IconWrapper>
                       <Icon
                         id={`${deltaPositions[0][step.key].key}`}
-                        className={
-                          `icon grabbable ${deltaPositions[0][step.key].icon}` +
-                          (currentItem !==
-                            `${deltaPositions[0][step.key].key}` &&
-                          activeDrags === 1
-                            ? " disable "
-                            : " ")
-                        }
+                        className={`icon grabbable ${
+                          deltaPositions[0][step.key].icon
+                        }`}
                         style={{
                           backgroundImage: `url(${
                             deltaPositions[0][step.key].icon
@@ -346,7 +379,7 @@ export default class Editing extends Component {
                       </div>
                     </IconContent>
                   </Box>
-                </DraggableCore>
+                </Draggable>
               ))}
             </EditingContent>
           </>
