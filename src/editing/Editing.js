@@ -100,7 +100,9 @@ export default class Editing extends Component {
       ],
       intervalId: 0,
       mouseX: 0,
-      mouseY: 0
+      mouseY: 0,
+      offsetX: 0,
+      offsetY: 0
     });
   }
 
@@ -190,8 +192,6 @@ export default class Editing extends Component {
   // };
 
   onControlledDrag = (e, position) => {
-    console.log(e);
-
     let { x, y } = position;
     if (x < 0) {
       x = 0;
@@ -214,10 +214,22 @@ export default class Editing extends Component {
     this.setState({
       deltaPositions: items,
       mouseX: e.clientX,
-      mouseY: e.clientY,
-      offsetX: e.offsetX,
-      offsetY: e.offsetY
+      mouseY: e.clientY
     });
+
+    if (
+      e.offsetX <= 50 &&
+      e.offsetY <= 50 &&
+      e.offsetX >= 0 &&
+      e.offsetY >= 0 &&
+      e.offsetX !== this.state.offsetX &&
+      e.offsetY !== this.state.offsetY
+    ) {
+      this.setState({
+        offsetX: e.offsetX,
+        offsetY: e.offsetY
+      });
+    }
   };
 
   onControlledDragStop = (e, position) => {
@@ -311,7 +323,8 @@ export default class Editing extends Component {
                   style={{
                     position: "fixed",
                     left: `calc(${mouseX}px - ${offsetX}px)`,
-                    top: `calc(${mouseY}px - ${offsetY}px)`
+                    top: `calc(${mouseY}px - ${offsetY}px)`,
+                    border: "1px solid black"
                   }}
                 >
                   <Step item={deltaPositions[0][parseInt(currentItem)]} />
