@@ -298,7 +298,9 @@ export default class Editing extends Component {
                     id={step.key}
                     style={{ position: "absolute" }}
                     className={
-                      scrolling === true && parseInt(currentItem) === step.key
+                      scrolling === true &&
+                      parseInt(currentItem) === step.key &&
+                      start === false
                         ? "noOpacity"
                         : "opacity"
                     }
