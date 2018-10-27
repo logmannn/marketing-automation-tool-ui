@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import DraggableCore from "react-draggable";
+import Draggable from "react-draggable";
 
 import Drip from "../common/drip.svg";
 
