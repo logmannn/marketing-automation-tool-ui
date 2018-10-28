@@ -101,49 +101,50 @@ export default class Editing extends Component {
   }
 
   checkForScroll = () => {
-    let sizeOfScroll = 100;
-    let sizeOfInfluence = 80;
-    let height = document.getElementById("LeftSideBar").clientHeight;
-    let width;
-    let xMouse;
-    if (this.props.isHidden === true) {
-      xMouse = this.state.mouseX;
-      width = document.getElementById("TopSideBar").clientWidth;
-    } else {
-      xMouse = this.state.mouseX - 230;
-      width = document.getElementById("TopSideBar").clientWidth - 230;
-    }
-    let ymouse = this.state.mouseY;
+    if (this.state.activeDrags) {
+      let sizeOfScroll = 100;
+      let sizeOfInfluence = 80;
+      let height = document.getElementById("LeftSideBar").clientHeight;
+      let width;
+      let xMouse;
+      if (this.props.isHidden === true) {
+        xMouse = this.state.mouseX;
+        width = document.getElementById("TopSideBar").clientWidth;
+      } else {
+        xMouse = this.state.mouseX - 230;
+        width = document.getElementById("TopSideBar").clientWidth - 230;
+      }
+      let ymouse = this.state.mouseY;
 
-    let moveX = 0;
-    let moveY = 0;
-    let scrolling: false;
+      let moveX = 0;
+      let moveY = 0;
+      let scrolling = false;
 
-    if (xMouse < sizeOfInfluence) {
-      moveX = moveX - sizeOfScroll;
-      scrolling = true;
-    }
-    if (ymouse < sizeOfInfluence) {
-      moveY = moveY - sizeOfScroll;
-      scrolling = true;
-    }
-    if (xMouse > width - sizeOfInfluence) {
-      moveX = moveX + sizeOfScroll;
-      scrolling = true;
-    }
-    if (ymouse > height - sizeOfInfluence) {
-      moveY = moveY + sizeOfScroll;
-      scrolling = true;
-    }
+      if (xMouse < sizeOfInfluence) {
+        moveX = moveX - sizeOfScroll;
+        scrolling = true;
+      }
+      if (ymouse < sizeOfInfluence) {
+        moveY = moveY - sizeOfScroll;
+        scrolling = true;
+      }
+      if (xMouse > width - sizeOfInfluence) {
+        moveX = moveX + sizeOfScroll;
+        scrolling = true;
+      }
+      if (ymouse > height - sizeOfInfluence) {
+        moveY = moveY + sizeOfScroll;
+        scrolling = true;
+      }
 
-    this.setState({
-      scrolling
-    });
+      this.setState({
+        scrolling
+      });
 
-    window.scrollBy(moveX, moveY);
+      window.scrollBy(moveX, moveY);
+    }
   };
 
-  // I actually prefer to not use this...
   // onMouseLeave = () => {
   //   if (this.state.activeDrags) {
   //     // force mouseup
@@ -185,7 +186,7 @@ export default class Editing extends Component {
 
   onStart = (e, position) => {
     const itemNumber = position.node.id;
-    let intervalId = setInterval(this.checkForScroll, 100);
+    let intervalId = setInterval(this.checkForScroll, 150);
 
     this.setState({
       activeDrags: this.state.activeDrags + 1,
@@ -206,7 +207,11 @@ export default class Editing extends Component {
   };
 
   onStop = (e, position) => {
-    this.setState({ activeDrags: this.state.activeDrags - 1, currentItem: "" });
+    this.setState({
+      activeDrags: this.state.activeDrags - 1,
+      currentItem: "",
+      intervalId: 0
+    });
     clearInterval(this.state.intervalId);
 
     let { x, y } = position;

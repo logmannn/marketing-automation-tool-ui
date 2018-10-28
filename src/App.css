@@ -86,7 +86,7 @@
 .editingFull {
   position: absolute !important;
   left: 0px !important;
-  width: calc(100vw - 4px) !important;
+  /* width: calc(100vw - 4px) !important; */
 
   transition: all 0.5s ease;
 }
