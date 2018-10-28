@@ -102,8 +102,8 @@ export default class Editing extends Component {
 
   checkForScroll = () => {
     if (this.state.activeDrags) {
-      let sizeOfScroll = 100;
-      let sizeOfInfluence = 80;
+      let sizeOfScroll = 10;
+      let sizeOfInfluence = 20;
       let height = document.getElementById("LeftSideBar").clientHeight;
       let width;
       let xMouse;
