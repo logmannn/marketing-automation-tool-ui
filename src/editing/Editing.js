@@ -4,6 +4,7 @@ import Draggable from "react-draggable";
 import Step from "./Step";
 
 import Drip from "../common/drip.svg";
+import Line from "../common/Line";
 
 const EditingDiv = styled.div`
   position: absolute;
@@ -274,10 +275,18 @@ export default class Editing extends Component {
           }
         />
         <TopSideBar id="TopSideBar" />
+
         {loading ? (
           "loading"
         ) : (
           <>
+            <Line
+              color="black"
+              x1={deltaPositions[0][0].x}
+              y1={deltaPositions[0][0].y}
+              x2={deltaPositions[0][1].x}
+              y2={deltaPositions[0][1].y}
+            />
             {!isNaN(currentItem) &&
               activeDrags === 1 &&
               start === false && (
