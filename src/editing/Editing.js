@@ -78,17 +78,33 @@ export default class Editing extends Component {
         [
           {
             key: 0,
-            x: 300,
-            y: 200,
+            x: 233,
+            y: 263,
             icon: Drip,
-            background: "green"
+            background: "green",
+            activePoints: [
+              {
+                top: "end",
+                left: "",
+                bottom: "",
+                right: ""
+              }
+            ]
           },
           {
             key: 1,
-            x: 1,
-            y: 1,
+            x: 233,
+            y: 86,
             icon: Drip,
-            background: "red"
+            background: "red",
+            activePoints: [
+              {
+                top: "",
+                left: "",
+                bottom: "start",
+                right: ""
+              }
+            ]
           }
         ]
       ],
@@ -97,7 +113,26 @@ export default class Editing extends Component {
       mouseY: 0,
       offsetX: 0,
       offsetY: 0,
-      start: false
+      start: false,
+      lines: [
+        [
+          {
+            key: 0,
+            start: [
+              {
+                item: 0,
+                side: "top"
+              }
+            ],
+            end: [
+              {
+                item: 1,
+                side: "bottom"
+              }
+            ]
+          }
+        ]
+      ]
     });
   }
 
@@ -251,7 +286,8 @@ export default class Editing extends Component {
       offsetX,
       offsetY,
       start,
-      scrolling
+      scrolling,
+      lines
     } = this.state;
 
     return (
@@ -280,13 +316,18 @@ export default class Editing extends Component {
           "loading"
         ) : (
           <>
-            <Line
-              color="black"
-              x1={deltaPositions[0][0].x}
-              y1={deltaPositions[0][0].y}
-              x2={deltaPositions[0][1].x}
-              y2={deltaPositions[0][1].y}
-            />
+            {lines[0].map(line => (
+              <Line
+                key={line.key}
+                color="black"
+                x1={deltaPositions[0][line.start[0].item].x}
+                y1={deltaPositions[0][line.start[0].item].y}
+                x2={deltaPositions[0][line.end[0].item].x}
+                y2={deltaPositions[0][line.end[0].item].y}
+                startSide={line.start[0].side}
+                endSide={line.end[0].side}
+              />
+            ))}
             {!isNaN(currentItem) &&
               activeDrags === 1 &&
               start === false && (
@@ -320,7 +361,7 @@ export default class Editing extends Component {
                         : "opacity"
                     }
                   >
-                    <Step item={deltaPositions[0][step.key]} />
+                    <Step item={deltaPositions[0][step.key]} lines={lines[0]} />
                   </div>
                 </Draggable>
               ))}

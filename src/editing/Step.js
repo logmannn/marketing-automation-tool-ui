@@ -57,12 +57,68 @@ const IconContent = styled.div`
 export default class Step extends Component {
   render() {
     const { item } = this.props;
+
+    let left = "#FFF";
+    let top = "#FFF";
+    let right = "#FFF";
+    let bottom = "#FFF";
+
+    let lOpacity = "";
+    let tOpacity = "";
+    let rOpacity = "";
+    let bOpacity = "";
+
+    if (item.activePoints[0].left !== "") {
+      lOpacity = 1;
+      // if (item.activePoints[0].left === "start") {
+      //   left = "green";
+      // }
+      if (item.activePoints[0].left === "end") {
+        left = "#919191";
+      }
+    }
+
+    if (item.activePoints[0].top !== "") {
+      tOpacity = 1;
+      // if (item.activePoints[0].top === "start") {
+      //   top = "green";
+      // }
+      if (item.activePoints[0].top === "end") {
+        top = "#919191";
+      }
+    }
+
+    if (item.activePoints[0].right !== "") {
+      rOpacity = 1;
+      // if (item.activePoints[0].right === "start") {
+      //   right = "green";
+      // }
+      if (item.activePoints[0].right === "end") {
+        right = "#919191";
+      }
+    }
+
+    if (item.activePoints[0].bottom !== "") {
+      bOpacity = 1;
+      // if (item.activePoints[0].bottom === "start") {
+      //   bottom = "green";
+      // }
+      if (item.activePoints[0].bottom === "end") {
+        bottom = "#919191";
+      }
+    }
+
     return (
       <Box className="box">
-        <Circle side="left" fill="white" strokeWidth="2" />
-        <Circle side="top" fill="white" strokeWidth="2" />
-        <Circle side="right" fill="white" strokeWidth="2" />
-        <Circle side="bottom" fill="white" strokeWidth="2" />
+        <Circle side="left" fill={left} strokeWidth="2" opacity={lOpacity} />
+        <Circle side="top" fill={top} strokeWidth="2" opacity={tOpacity} />
+        <Circle side="right" fill={right} strokeWidth="2" opacity={rOpacity} />
+        <Circle
+          side="bottom"
+          fill={bottom}
+          strokeWidth="2"
+          opacity={bOpacity}
+        />
         <IconWrapper>
           <Icon
             id={`${item.key}`}

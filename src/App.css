@@ -139,10 +139,12 @@
 }
 
 .csscircle {
-  border-radius: 50px/50px;
+  border-radius: 13px;
   border: solid 2px #909090;
+
   width: 13px;
   height: 13px;
+
   background: #fff;
 
   z-index: 10;
