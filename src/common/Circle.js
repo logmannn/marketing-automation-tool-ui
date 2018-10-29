@@ -7,6 +7,8 @@ const CircleWrapper = styled.div`
 
   position: absolute;
   display: flex;
+
+  pointer-events: all;
 `;
 
 export default class Circle extends Component {

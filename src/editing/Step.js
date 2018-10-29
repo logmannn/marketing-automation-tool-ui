@@ -12,6 +12,8 @@ const Box = styled.div`
   flex-direction: column;
 
   width: 150px;
+
+  pointer-events: none;
 `;
 
 const IconWrapper = styled.div`
@@ -26,6 +28,8 @@ const IconWrapper = styled.div`
   align-items: center;
 
   z-index: 2;
+
+  pointer-events: all;
 `;
 
 const Icon = styled.section`
@@ -52,6 +56,8 @@ const IconContent = styled.div`
 
   border: 1px solid black;
   background: white;
+
+  pointer-events: all;
 `;
 
 export default class Step extends Component {
