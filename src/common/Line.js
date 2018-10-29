@@ -35,6 +35,24 @@ export default class Line extends Component {
       Y2 = y2 + 9;
     }
 
+    if (startSide === "right") {
+      X1 = x1 + 103;
+      Y1 = y1 + 38;
+    }
+    if (endSide === "right") {
+      X2 = x2 + 103;
+      Y2 = y2 + 38;
+    }
+
+    if (startSide === "left") {
+      X1 = x1 + 0;
+      Y1 = y1 + 38;
+    }
+    if (endSide === "left") {
+      X2 = x2 + 50;
+      Y2 = y2 + 38;
+    }
+
     return (
       <SVG height="100%" width="100%">
         <line x1={X1} y1={Y1} x2={X2} y2={Y2} stroke={color} />

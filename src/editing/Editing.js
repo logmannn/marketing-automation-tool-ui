@@ -87,9 +87,10 @@ export default class Editing extends Component {
                 top: "end",
                 left: "",
                 bottom: "",
-                right: ""
+                right: "start"
               }
-            ]
+            ],
+            connectedTo: [1]
           },
           {
             key: 1,
@@ -104,7 +105,24 @@ export default class Editing extends Component {
                 bottom: "start",
                 right: ""
               }
-            ]
+            ],
+            connectedTo: [0]
+          },
+          {
+            key: 2,
+            x: 533,
+            y: 263,
+            icon: Drip,
+            background: "blue",
+            activePoints: [
+              {
+                top: "",
+                left: "end",
+                bottom: "",
+                right: ""
+              }
+            ],
+            connectedTo: [0]
           }
         ]
       ],
@@ -128,6 +146,21 @@ export default class Editing extends Component {
               {
                 item: 1,
                 side: "bottom"
+              }
+            ]
+          },
+          {
+            key: 1,
+            start: [
+              {
+                item: 0,
+                side: "right"
+              }
+            ],
+            end: [
+              {
+                item: 2,
+                side: "left"
               }
             ]
           }
