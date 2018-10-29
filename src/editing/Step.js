@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import Circle from "../common/Circle";
 import styled from "styled-components";
 
 const Box = styled.div`
@@ -10,16 +11,21 @@ const Box = styled.div`
   align-items: center;
   flex-direction: column;
 
-  width: 50px;
+  width: 150px;
 `;
 
 const IconWrapper = styled.div`
-  border-radius: 7px;
-
-  background: green;
-
   height: 50px;
   width: 50px;
+
+  padding: 10px;
+
+  display: flex;
+
+  justify-content: center;
+  align-items: center;
+
+  z-index: 2;
 `;
 
 const Icon = styled.section`
@@ -30,9 +36,12 @@ const Icon = styled.section`
   justify-content: center;
   align-items: center;
 
-  background-size: 25px;
+  background-size: 20px;
   background-repeat: no-repeat;
   background-position: center;
+
+  border-radius: 7px;
+  border: 1px solid white;
 `;
 
 const IconContent = styled.div`
@@ -50,6 +59,10 @@ export default class Step extends Component {
     const { item } = this.props;
     return (
       <Box className="box">
+        <Circle side="left" />
+        <Circle side="top" />
+        <Circle side="right" />
+        <Circle side="bottom" />
         <IconWrapper>
           <Icon
             id={`${item.key}`}

@@ -307,6 +307,7 @@ export default class Editing extends Component {
                   {...dragHandlers}
                   onDrag={this.onControlledDrag}
                   key={step.key}
+                  handle=".grabbable"
                 >
                   <div
                     id={step.key}

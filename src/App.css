@@ -109,3 +109,21 @@
 
   transition: all 0.5s ease;
 }
+
+.topCircleSelect {
+  justify-content: center;
+}
+
+.bottomCircleSelect {
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.leftCircleSelect {
+  align-items: center;
+}
+
+.rightCircleSelect {
+  align-items: center;
+  justify-content: flex-end;
+}
