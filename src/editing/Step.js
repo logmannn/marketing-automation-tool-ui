@@ -41,7 +41,7 @@ const Icon = styled.section`
   background-position: center;
 
   border-radius: 7px;
-  border: 1px solid white;
+  border: 1px solid #fff;
 `;
 
 const IconContent = styled.div`
@@ -59,10 +59,10 @@ export default class Step extends Component {
     const { item } = this.props;
     return (
       <Box className="box">
-        <Circle side="left" />
-        <Circle side="top" />
-        <Circle side="right" />
-        <Circle side="bottom" />
+        <Circle side="left" fill="white" strokeWidth="2" />
+        <Circle side="top" fill="white" strokeWidth="2" />
+        <Circle side="right" fill="white" strokeWidth="2" />
+        <Circle side="bottom" fill="white" strokeWidth="2" />
         <IconWrapper>
           <Icon
             id={`${item.key}`}

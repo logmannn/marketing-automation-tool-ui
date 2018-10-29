@@ -127,3 +127,23 @@
   align-items: center;
   justify-content: flex-end;
 }
+
+.box .circleWrapper .csscircle {
+  opacity: 0;
+
+  transition: opacity 0.5s ease;
+}
+
+.box:hover .circleWrapper .csscircle {
+  opacity: 1;
+}
+
+.csscircle {
+  border-radius: 50px/50px;
+  border: solid 2px #909090;
+  width: 13px;
+  height: 13px;
+  background: #fff;
+
+  z-index: 10;
+}

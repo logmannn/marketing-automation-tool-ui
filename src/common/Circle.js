@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 const SVG = styled.svg`
   position: absolute;
-  z-index: 1000;
+  z-index: 5;
 `;
 
 const CircleWrapper = styled.div`
@@ -16,20 +16,17 @@ const CircleWrapper = styled.div`
 
 export default class Circle extends Component {
   render() {
-    const { side } = this.props;
+    const { side, fill, strokeWidth } = this.props;
 
     return (
-      <CircleWrapper className={`${side}CircleSelect`}>
-        <SVG height="20" width="20">
-          <circle
-            cx="10"
-            cy="10"
-            r="8"
-            stroke="black"
-            strokeWidth="2"
-            fill="red"
-          />
-        </SVG>
+      <CircleWrapper className={`circleWrapper ${side}CircleSelect`}>
+        <div
+          className="csscircle"
+          style={{
+            background: `${fill}`,
+            border: `solid ${strokeWidth}px #909090`
+          }}
+        />
       </CircleWrapper>
     );
   }
