@@ -323,6 +323,14 @@ export default class Editing extends Component {
       lines
     } = this.state;
 
+    this.circleCheck = (side, id) => {
+      // console.log(e.target.id);
+      // console.log(this.state);
+      // console.log({ side } + " " + { id });
+      console.log(id);
+      console.log(side);
+    };
+
     return (
       <EditingDiv
         id="EditingDiv"
@@ -371,7 +379,10 @@ export default class Editing extends Component {
                     top: `calc(${mouseY}px - ${offsetY}px)`
                   }}
                 >
-                  <Step item={deltaPositions[0][parseInt(currentItem)]} />
+                  <Step
+                    item={deltaPositions[0][parseInt(currentItem)]}
+                    // circleCheck={this.circleCheck}
+                  />
                 </div>
               )}
             <EditingContent>
@@ -394,7 +405,11 @@ export default class Editing extends Component {
                         : "opacity"
                     }
                   >
-                    <Step item={deltaPositions[0][step.key]} lines={lines[0]} />
+                    <Step
+                      item={deltaPositions[0][step.key]}
+                      lines={lines[0]}
+                      circleCheck={this.circleCheck}
+                    />
                   </div>
                 </Draggable>
               ))}

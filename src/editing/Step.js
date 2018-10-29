@@ -62,6 +62,11 @@ const IconContent = styled.div`
 
 export default class Step extends Component {
   render() {
+    this.circleClick = (side, id) => {
+      this.props.circleCheck(side, id);
+      // console.log(id);
+    };
+
     const { item } = this.props;
 
     let left = "#FFF";
@@ -116,14 +121,37 @@ export default class Step extends Component {
 
     return (
       <Box className="box">
-        <Circle side="left" fill={left} strokeWidth="2" opacity={lOpacity} />
-        <Circle side="top" fill={top} strokeWidth="2" opacity={tOpacity} />
-        <Circle side="right" fill={right} strokeWidth="2" opacity={rOpacity} />
+        <Circle
+          side="left"
+          fill={left}
+          strokeWidth="2"
+          opacity={lOpacity}
+          circleClickParent={this.circleClick}
+          id={item.key}
+        />
+        <Circle
+          side="top"
+          fill={top}
+          strokeWidth="2"
+          opacity={tOpacity}
+          circleClickParent={this.circleClick}
+          id={item.key}
+        />
+        <Circle
+          side="right"
+          fill={right}
+          strokeWidth="2"
+          opacity={rOpacity}
+          circleClickParent={this.circleClick}
+          id={item.key}
+        />
         <Circle
           side="bottom"
           fill={bottom}
           strokeWidth="2"
           opacity={bOpacity}
+          circleClickParent={this.circleClick}
+          id={item.key}
         />
         <IconWrapper>
           <Icon

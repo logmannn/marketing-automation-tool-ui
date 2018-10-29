@@ -13,12 +13,22 @@ const CircleWrapper = styled.div`
 
 export default class Circle extends Component {
   render() {
-    const { side, fill, strokeWidth, opacity } = this.props;
+    const { side, fill, strokeWidth, opacity, id } = this.props;
+
+    // console.log(id);
+
+    this.circleClick = () => {
+      this.props.circleClickParent(side, id);
+    };
 
     return (
-      <CircleWrapper className={`circleWrapper ${side}CircleSelect`}>
+      <CircleWrapper
+        className={`circleWrapper ${side}CircleSelect`}
+        onClick={this.circleClick}
+      >
         <div
           className="csscircle"
+          id={`${id}_${side}`}
           style={{
             background: `${fill}`,
             border: `solid ${strokeWidth}px #909090`,
