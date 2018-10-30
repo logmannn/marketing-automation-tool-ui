@@ -232,6 +232,7 @@ export default class Editing extends Component {
   };
 
   onMouseMove = e => {
+    let element = document.getElementById("EditingDiv");
     this.setState({
       mouseX: e.clientX,
       mouseY: e.clientY
