@@ -4,6 +4,15 @@
 
 <img src="readme.png" alt="readme">
 
+<h2>Install</h2>
+<ul>
+  <li>git clone https://github.com/logmannn/marketing-automation-tool-ui</li>
+  <li>cd marketing-automation-tool-ui</li>
+  <li>npm install</li>
+  <li>npm start</li>
+  <li>Go to <a href="http://localhost:3000/">http://localhost:3000/</a></li>
+</ul>
+
 <h2>Features</h2>
 <ul>
   <li>Collapsable sidebar</li>
