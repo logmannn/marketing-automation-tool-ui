@@ -336,7 +336,8 @@ export default class Editing extends Component {
       start,
       scrolling,
       lines,
-      creatingLine
+      creatingLine,
+      currentLineItem
     } = this.state;
 
     const { isHidden } = this.props;
@@ -356,11 +357,12 @@ export default class Editing extends Component {
           };
 
           this.setState({
+            currentLineItem: lines[0].length,
             lines: [
               [
                 ...lines[0],
                 {
-                  key: lines[0].length + 1,
+                  key: lines[0].length,
                   start: [
                     {
                       item: id,
@@ -379,7 +381,6 @@ export default class Editing extends Component {
             ]
           });
         } else {
-          // modify existing line which should be the last one
           const items = this.state.deltaPositions[0];
           items[id] = {
             ...items[id],
@@ -391,16 +392,22 @@ export default class Editing extends Component {
             ]
           };
           const lines = this.state.lines[0];
-          lines[this.state.lines.length + 1] = {
-            ...lines[this.state.lines.length + 1],
+          console.log(currentLineItem);
+
+          lines[currentLineItem] = {
+            ...lines[currentLineItem],
             end: [
               {
-                ...lines[this.state.lines.length + 1].end[0],
+                ...lines[currentLineItem].end[0],
                 item: id,
                 side
               }
             ]
           };
+          this.setState({
+            lines: [lines],
+            deltaPositions: [items]
+          });
         }
         this.setState({
           creatingLine: !creatingLine

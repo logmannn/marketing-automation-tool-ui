@@ -54,14 +54,14 @@ export default class Line extends Component {
     }
 
     if (endSide === "mouse" && hidden === true) {
-      X2 = x2 + 17;
+      X2 = x2;
       Y2 = y2 - 1;
     }
     if (endSide === "mouse" && hidden === false) {
-      X2 = x2 - 213;
+      X2 = x2 - 230;
     }
     if (endSide === "mouse" && hidden === null) {
-      X2 = x2 - 213;
+      X2 = x2 - 230;
     }
 
     return (
