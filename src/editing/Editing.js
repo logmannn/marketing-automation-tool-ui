@@ -78,8 +78,8 @@ export default class Editing extends Component {
         [
           {
             key: 0,
-            x: 233,
-            y: 263,
+            x: 257,
+            y: 253,
             icon: Drip,
             background: "green",
             activePoints: [
@@ -110,8 +110,8 @@ export default class Editing extends Component {
           },
           {
             key: 2,
-            x: 533,
-            y: 263,
+            x: 520,
+            y: 342,
             icon: Drip,
             background: "blue",
             activePoints: [
@@ -123,6 +123,22 @@ export default class Editing extends Component {
               }
             ],
             connectedTo: [0]
+          },
+          {
+            key: 3,
+            x: 605,
+            y: 632,
+            icon: Drip,
+            background: "cyan",
+            activePoints: [
+              {
+                top: "",
+                left: "",
+                bottom: "",
+                right: ""
+              }
+            ],
+            connectedTo: []
           }
         ]
       ],
