@@ -3,8 +3,10 @@
 <p>A work in progress front-end UI for an email marketing automation tool.</p>
 
 <img src="readme.png" alt="readme">
+<p>View <b>live</b> example Here: </p>
+<a href="https://gifted-joliot-23ea50.netlify.com/">https://gifted-joliot-23ea50.netlify.com/</a>
 
-<h2>Install</h2>
+<h2>Local Installation</h2>
 <ul>
   <li>git clone https://github.com/logmannn/marketing-automation-tool-ui</li>
   <li>cd marketing-automation-tool-ui</li>
@@ -23,7 +25,6 @@
 
 <h2>Upcoming Features</h2>
 <ul>
-  <li>Bug fix for lines not connecting with mouse if not within the default scroll... Took me a long time to catch this one :D</li>
   <li>Bug fixes while connecting steps (for instance, you currently have the ability to select the same icon)</li>
   <li>More icons like a True/False icon</li>
   <li>Better Looking SVG connector (Think wavy with arrows pointing towards the next step)</li>
