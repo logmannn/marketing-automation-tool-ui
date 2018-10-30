@@ -132,6 +132,7 @@ export default class Editing extends Component {
       offsetX: 0,
       offsetY: 0,
       start: false,
+      creatingLine: false,
       lines: [
         [
           {
@@ -214,6 +215,18 @@ export default class Editing extends Component {
     }
   };
 
+  onMouseMove = e => {
+    this.setState({
+      mouseX: e.clientX,
+      mouseY: e.clientY
+    });
+    if (this.state.hidden !== this.props.isHidden) {
+      this.setState({
+        hidden: this.props.isHidden
+      });
+    }
+  };
+
   // onMouseLeave = () => {
   //   if (this.state.activeDrags) {
   //     // force mouseup
@@ -242,8 +255,6 @@ export default class Editing extends Component {
 
     this.setState({
       deltaPositions: items,
-      mouseX: e.clientX,
-      mouseY: e.clientY,
       start: false
     });
   };
@@ -274,6 +285,10 @@ export default class Editing extends Component {
       });
     }
   };
+
+  componentWillUnmount() {
+    clearInterval(this.state.intervalId);
+  }
 
   onStop = (e, position) => {
     this.setState({
@@ -320,15 +335,77 @@ export default class Editing extends Component {
       offsetY,
       start,
       scrolling,
-      lines
+      lines,
+      creatingLine
     } = this.state;
 
-    this.circleCheck = (side, id) => {
-      // console.log(e.target.id);
-      // console.log(this.state);
-      // console.log({ side } + " " + { id });
-      console.log(id);
-      console.log(side);
+    const { isHidden } = this.props;
+
+    this.lineCreate = (side, id) => {
+      if (deltaPositions[0][id].activePoints[0][side] !== "end") {
+        if (creatingLine === false) {
+          const items = this.state.deltaPositions[0];
+          items[id] = {
+            ...items[id],
+            activePoints: [
+              {
+                ...items[id].activePoints[0],
+                [side]: "start"
+              }
+            ]
+          };
+
+          this.setState({
+            lines: [
+              [
+                ...lines[0],
+                {
+                  key: lines[0].length + 1,
+                  start: [
+                    {
+                      item: id,
+                      side
+                    }
+                  ],
+                  end: [
+                    {
+                      item: null,
+                      side: "",
+                      hidden: this.state.hidden
+                    }
+                  ]
+                }
+              ]
+            ]
+          });
+        } else {
+          // modify existing line which should be the last one
+          const items = this.state.deltaPositions[0];
+          items[id] = {
+            ...items[id],
+            activePoints: [
+              {
+                ...items[id].activePoints[0],
+                [side]: "end"
+              }
+            ]
+          };
+          const lines = this.state.lines[0];
+          lines[this.state.lines.length + 1] = {
+            ...lines[this.state.lines.length + 1],
+            end: [
+              {
+                ...lines[this.state.lines.length + 1].end[0],
+                item: id,
+                side
+              }
+            ]
+          };
+        }
+        this.setState({
+          creatingLine: !creatingLine
+        });
+      }
     };
 
     return (
@@ -336,19 +413,19 @@ export default class Editing extends Component {
         id="EditingDiv"
         className={
           "disable-css-transitions " +
-          (this.props.isHidden === true && "editingFull") +
+          (isHidden === true && "editingFull") +
           " " +
-          (this.props.isHidden === false && "editingSmall")
+          (isHidden === false && "editingSmall")
         }
-        onMouseLeave={this.onMouseLeave}
+        onMouseMove={this.onMouseMove}
       >
         <LeftSideBar
           id="LeftSideBar"
           className={
             "disable-css-transitions " +
-            (this.props.isHidden === true && "LeftSidebarBefore") +
+            (isHidden === true && "LeftSidebarBefore") +
             " " +
-            (this.props.isHidden === false && "LeftSidebarAfter")
+            (isHidden === false && "LeftSidebarAfter")
           }
         />
         <TopSideBar id="TopSideBar" />
@@ -357,18 +434,34 @@ export default class Editing extends Component {
           "loading"
         ) : (
           <>
-            {lines[0].map(line => (
-              <Line
-                key={line.key}
-                color="black"
-                x1={deltaPositions[0][line.start[0].item].x}
-                y1={deltaPositions[0][line.start[0].item].y}
-                x2={deltaPositions[0][line.end[0].item].x}
-                y2={deltaPositions[0][line.end[0].item].y}
-                startSide={line.start[0].side}
-                endSide={line.end[0].side}
-              />
-            ))}
+            {lines[0].map(
+              line =>
+                line.end[0].item !== null ? (
+                  <Line
+                    key={line.key}
+                    color="black"
+                    x1={deltaPositions[0][line.start[0].item].x}
+                    y1={deltaPositions[0][line.start[0].item].y}
+                    x2={deltaPositions[0][line.end[0].item].x}
+                    y2={deltaPositions[0][line.end[0].item].y}
+                    startSide={line.start[0].side}
+                    endSide={line.end[0].side}
+                    hidden={this.state.hidden}
+                  />
+                ) : (
+                  <Line
+                    key={line.key}
+                    color="black"
+                    x1={deltaPositions[0][line.start[0].item].x}
+                    y1={deltaPositions[0][line.start[0].item].y}
+                    x2={mouseX}
+                    y2={mouseY}
+                    startSide={line.start[0].side}
+                    endSide="mouse"
+                    hidden={this.state.hidden}
+                  />
+                )
+            )}
             {!isNaN(currentItem) &&
               activeDrags === 1 &&
               start === false && (
@@ -381,7 +474,7 @@ export default class Editing extends Component {
                 >
                   <Step
                     item={deltaPositions[0][parseInt(currentItem)]}
-                    // circleCheck={this.circleCheck}
+                    // lineCreate={this.lineCreate}
                   />
                 </div>
               )}
@@ -408,7 +501,7 @@ export default class Editing extends Component {
                     <Step
                       item={deltaPositions[0][step.key]}
                       lines={lines[0]}
-                      circleCheck={this.circleCheck}
+                      lineCreate={this.lineCreate}
                     />
                   </div>
                 </Draggable>

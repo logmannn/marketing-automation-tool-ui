@@ -10,7 +10,7 @@ const SVG = styled.svg`
 
 export default class Line extends Component {
   render() {
-    const { color, x1, y1, x2, y2, startSide, endSide } = this.props;
+    const { color, x1, y1, x2, y2, startSide, endSide, hidden } = this.props;
 
     let X1 = x1;
     let Y1 = y1;
@@ -45,12 +45,23 @@ export default class Line extends Component {
     }
 
     if (startSide === "left") {
-      X1 = x1 + 0;
+      X1 = x1 + 50;
       Y1 = y1 + 38;
     }
     if (endSide === "left") {
       X2 = x2 + 50;
       Y2 = y2 + 38;
+    }
+
+    if (endSide === "mouse" && hidden === true) {
+      X2 = x2 + 17;
+      Y2 = y2 - 1;
+    }
+    if (endSide === "mouse" && hidden === false) {
+      X2 = x2 - 213;
+    }
+    if (endSide === "mouse" && hidden === null) {
+      X2 = x2 - 213;
     }
 
     return (

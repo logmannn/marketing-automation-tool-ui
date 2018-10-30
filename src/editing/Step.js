@@ -45,7 +45,7 @@ const Icon = styled.section`
   background-position: center;
 
   border-radius: 7px;
-  border: 1px solid #fff;
+  border: 2px solid #fff;
 `;
 
 const IconContent = styled.div`
@@ -54,7 +54,7 @@ const IconContent = styled.div`
   display: flex;
   justify-content: center;
 
-  border: 1px solid black;
+  border: 2px solid black;
   background: white;
 
   pointer-events: all;
@@ -63,7 +63,7 @@ const IconContent = styled.div`
 export default class Step extends Component {
   render() {
     this.circleClick = (side, id) => {
-      this.props.circleCheck(side, id);
+      this.props.lineCreate(side, id);
       // console.log(id);
     };
 
