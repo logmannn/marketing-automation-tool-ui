@@ -235,22 +235,28 @@ export default class Editing extends Component {
     let element = document.getElementById("EditingDiv");
     if (this.props.isHidden === null) {
       this.setState({
-        mouseX: e.pageX - element.offsetLeft,
-        mouseY: e.pageY - element.offsetTop
+        elementX: e.pageX - element.offsetLeft,
+        elementY: e.pageY - element.offsetTop
       });
     }
     if (this.props.isHidden === true) {
       this.setState({
-        mouseX: e.pageX - element.offsetLeft,
-        mouseY: e.pageY - element.offsetTop
+        elementX: e.pageX - element.offsetLeft,
+        elementY: e.pageY - element.offsetTop
       });
     }
     if (this.props.isHidden === false) {
       this.setState({
-        mouseX: e.pageX - element.offsetLeft + 230,
-        mouseY: e.pageY - element.offsetTop
+        elementX: e.pageX - element.offsetLeft + 230,
+        elementY: e.pageY - element.offsetTop
       });
     }
+
+    this.setState({
+      mouseX: e.clientX,
+      mouseY: e.clientY
+    });
+
     if (this.state.hidden !== this.props.isHidden) {
       this.setState({
         hidden: this.props.isHidden
@@ -361,6 +367,8 @@ export default class Editing extends Component {
       activeDrags,
       mouseX,
       mouseY,
+      elementX,
+      elementY,
       currentItem,
       offsetX,
       offsetY,
@@ -492,8 +500,8 @@ export default class Editing extends Component {
                     color="black"
                     x1={deltaPositions[0][line.start[0].item].x}
                     y1={deltaPositions[0][line.start[0].item].y}
-                    x2={mouseX}
-                    y2={mouseY}
+                    x2={elementX}
+                    y2={elementY}
                     startSide={line.start[0].side}
                     endSide="mouse"
                     hidden={this.state.hidden}
