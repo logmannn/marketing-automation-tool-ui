@@ -165,7 +165,8 @@ export default class Step extends Component {
         </IconWrapper>
         <IconContent>
           <div>
-            {item.x} {item.y}
+            Content here
+            {/* {item.x} {item.y} */}
           </div>
         </IconContent>
       </Box>

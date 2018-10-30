@@ -61,7 +61,7 @@ export default class Line extends Component {
       X2 = x2 - 230;
     }
     if (endSide === "mouse" && hidden === null) {
-      X2 = x2 - 230;
+      X2 = x2;
     }
 
     return (

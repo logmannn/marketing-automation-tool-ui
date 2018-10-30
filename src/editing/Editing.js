@@ -233,10 +233,24 @@ export default class Editing extends Component {
 
   onMouseMove = e => {
     let element = document.getElementById("EditingDiv");
-    this.setState({
-      mouseX: e.clientX,
-      mouseY: e.clientY
-    });
+    if (this.props.isHidden === null) {
+      this.setState({
+        mouseX: e.pageX - element.offsetLeft,
+        mouseY: e.pageY - element.offsetTop
+      });
+    }
+    if (this.props.isHidden === true) {
+      this.setState({
+        mouseX: e.pageX - element.offsetLeft,
+        mouseY: e.pageY - element.offsetTop
+      });
+    }
+    if (this.props.isHidden === false) {
+      this.setState({
+        mouseX: e.pageX - element.offsetLeft + 230,
+        mouseY: e.pageY - element.offsetTop
+      });
+    }
     if (this.state.hidden !== this.props.isHidden) {
       this.setState({
         hidden: this.props.isHidden
