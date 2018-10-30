@@ -64,7 +64,14 @@ export default class Step extends Component {
   render() {
     this.circleClick = (side, id) => {
       this.props.lineCreate(side, id);
-      // console.log(id);
+    };
+
+    this.onMouseDown = () => {
+      this.props.setCurrentStep(item.key, true);
+    };
+
+    this.onMouseUp = () => {
+      this.props.setCurrentStep(item.key, false);
     };
 
     const { item } = this.props;
@@ -155,8 +162,10 @@ export default class Step extends Component {
         />
         <IconWrapper>
           <Icon
-            id={`${item.key}`}
+            id={item.key}
             className={`icon grabbable ${item.icon}`}
+            onMouseDown={this.onMouseDown}
+            onMouseUp={this.onMouseUp}
             style={{
               backgroundImage: `url(${item.icon})`,
               backgroundColor: item.background

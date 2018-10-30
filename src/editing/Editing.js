@@ -71,6 +71,7 @@ export default class Editing extends Component {
   }
 
   componentDidMount() {
+    this.interval = setInterval(this.checkForScroll, 150);
     this.setState({
       loading: false,
       activeDrags: 0,
@@ -233,6 +234,7 @@ export default class Editing extends Component {
 
   onMouseMove = e => {
     let element = document.getElementById("EditingDiv");
+
     if (this.props.isHidden === null) {
       this.setState({
         elementX: e.pageX - element.offsetLeft,
@@ -263,6 +265,10 @@ export default class Editing extends Component {
       });
     }
   };
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
+  }
 
   // onMouseLeave = () => {
   //   if (this.state.activeDrags) {
@@ -303,37 +309,24 @@ export default class Editing extends Component {
 
   onStart = (e, position) => {
     const itemNumber = position.node.id;
-    let intervalId = setInterval(this.checkForScroll, 150);
 
     this.setState({
       activeDrags: this.state.activeDrags + 1,
-      intervalId: intervalId,
       start: true,
       offsetX:
-        e.clientX -
+        this.state.mouseX -
         document.getElementById(itemNumber).getBoundingClientRect().x,
       offsetY:
-        e.clientY -
+        this.state.mouseY -
         document.getElementById(itemNumber).getBoundingClientRect().y
     });
-    if (!isNaN(itemNumber)) {
-      this.setState({
-        currentItem: itemNumber
-      });
-    }
   };
-
-  componentWillUnmount() {
-    clearInterval(this.state.intervalId);
-  }
 
   onStop = (e, position) => {
     this.setState({
       activeDrags: this.state.activeDrags - 1,
-      currentItem: "",
       intervalId: 0
     });
-    clearInterval(this.state.intervalId);
 
     let { x, y } = position;
     if (x < 0) {
@@ -353,8 +346,6 @@ export default class Editing extends Component {
 
     this.setState({
       deltaPositions: items,
-      mouseX: e.clientX,
-      mouseY: e.clientY,
       start: false
     });
   };
@@ -380,6 +371,18 @@ export default class Editing extends Component {
     } = this.state;
 
     const { isHidden } = this.props;
+
+    this.setCurrentStep = (id, bool) => {
+      if (bool) {
+        this.setState({
+          currentItem: id
+        });
+      } else {
+        this.setState({
+          currentItem: ""
+        });
+      }
+    };
 
     this.lineCreate = (side, id) => {
       if (deltaPositions[0][id].activePoints[0][side] !== "end") {
@@ -431,7 +434,6 @@ export default class Editing extends Component {
             ]
           };
           const lines = this.state.lines[0];
-          console.log(currentLineItem);
 
           lines[currentLineItem] = {
             ...lines[currentLineItem],
@@ -464,6 +466,7 @@ export default class Editing extends Component {
           (isHidden === false && "editingSmall")
         }
         onMouseMove={this.onMouseMove}
+        onMouseDown={this.onMouseDown}
       >
         <LeftSideBar
           id="LeftSideBar"
@@ -518,10 +521,7 @@ export default class Editing extends Component {
                     top: `calc(${mouseY}px - ${offsetY}px)`
                   }}
                 >
-                  <Step
-                    item={deltaPositions[0][parseInt(currentItem)]}
-                    // lineCreate={this.lineCreate}
-                  />
+                  <Step item={deltaPositions[0][parseInt(currentItem)]} />
                 </div>
               )}
             <EditingContent>
@@ -548,6 +548,7 @@ export default class Editing extends Component {
                       item={deltaPositions[0][step.key]}
                       lines={lines[0]}
                       lineCreate={this.lineCreate}
+                      setCurrentStep={this.setCurrentStep}
                     />
                   </div>
                 </Draggable>
