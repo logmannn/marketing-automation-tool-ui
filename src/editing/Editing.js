@@ -122,14 +122,11 @@ export default class Editing extends Component {
               {
                 top: "",
                 left: "end",
-                bottom: "start",
+                bottom: "",
                 right: ""
               }
             ],
-            connectedTo: [
-              { itemId: 1, status: "end", side: "left" },
-              { itemId: 3, status: "start", side: "bottom" }
-            ]
+            connectedTo: [{ itemId: 1, status: "end", side: "left" }]
           },
           {
             key: 3,
@@ -534,6 +531,7 @@ export default class Editing extends Component {
             this.setState({
               lines: [lines],
               deltaPositions: [items],
+              currentParentItems: [],
               currentLineItem: null,
               currentFirstPoint: null,
               currentFirstSide: "",
