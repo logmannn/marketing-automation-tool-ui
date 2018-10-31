@@ -140,12 +140,12 @@ export default class Editing extends Component {
             activePoints: [
               {
                 top: "",
-                left: "end",
+                left: "",
                 bottom: "",
                 right: ""
               }
             ],
-            connectedTo: [{ itemId: 2, status: "end", side: "left" }]
+            connectedTo: []
           },
           {
             key: 4,
@@ -200,21 +200,6 @@ export default class Editing extends Component {
             end: [
               {
                 item: 2,
-                side: "left"
-              }
-            ]
-          },
-          {
-            key: 2,
-            start: [
-              {
-                item: 2,
-                side: "bottom"
-              }
-            ],
-            end: [
-              {
-                item: 3,
                 side: "left"
               }
             ]

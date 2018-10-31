@@ -21,11 +21,11 @@
   <li>Draggable icons</li>
   <li>When at the edge of the screen while dragging an icon the page scrolls</li>
   <li>Connect email marketing steps by clicking the connector circles</li>
+  <li>You can't place a line on a location that would create a loop</li>
 </ul>
 
 <h2>Upcoming Features</h2>
 <ul>
-  <li>Bug fixes while connecting steps (for instance, you currently have the ability to select the same icon)</li>
   <li>More icons like a True/False icon</li>
   <li>Better Looking SVG connector (Think wavy with arrows pointing towards the next step)</li>
   <li>Animated connector on finalization that gets drawn using react mt svg lines</li>
