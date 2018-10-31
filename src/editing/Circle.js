@@ -17,8 +17,6 @@ export default class Circle extends Component {
   render() {
     const { side, fill, strokeWidth, opacity, id } = this.props;
 
-    // console.log(id);
-
     this.circleClick = () => {
       this.props.circleClickParent(side, id);
     };

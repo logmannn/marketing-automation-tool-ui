@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import Circle from "../common/Circle";
+import Circle from "./Circle";
 import styled from "styled-components";
 
 const Box = styled.div`

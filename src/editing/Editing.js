@@ -91,7 +91,7 @@ export default class Editing extends Component {
                 right: ""
               }
             ],
-            connectedTo: [1]
+            connectedTo: [{ itemId: 1, status: "start", side: "bottom" }]
           },
           {
             key: 1,
@@ -107,7 +107,10 @@ export default class Editing extends Component {
                 right: ""
               }
             ],
-            connectedTo: [0, 2]
+            connectedTo: [
+              { itemId: 0, status: "end", side: "left" },
+              { itemId: 2, status: "start", side: "bottom" }
+            ]
           },
           {
             key: 2,
@@ -123,7 +126,10 @@ export default class Editing extends Component {
                 right: ""
               }
             ],
-            connectedTo: [1, 3]
+            connectedTo: [
+              { itemId: 1, status: "end", side: "left" },
+              { itemId: 3, status: "start", side: "bottom" }
+            ]
           },
           {
             key: 3,
@@ -134,17 +140,17 @@ export default class Editing extends Component {
             activePoints: [
               {
                 top: "",
-                left: "start",
+                left: "end",
                 bottom: "",
                 right: ""
               }
             ],
-            connectedTo: [2]
+            connectedTo: [{ itemId: 2, status: "end", side: "left" }]
           },
           {
             key: 4,
-            x: 400,
-            y: 400,
+            x: 305,
+            y: 85,
             icon: Drip,
             background: "purple",
             activePoints: [
@@ -400,7 +406,8 @@ export default class Editing extends Component {
       creatingLine,
       currentLineItem,
       currentFirstPoint,
-      currentFirstSide
+      currentFirstSide,
+      currentParentItems
     } = this.state;
 
     const { isHidden } = this.props;
@@ -432,6 +439,37 @@ export default class Editing extends Component {
     this.lineCreate = (side, id) => {
       if (deltaPositions[0][id].activePoints[0][side] !== "end") {
         if (creatingLine === false) {
+          let parentItems = [];
+          let tempItems = [];
+
+          for (let i = 0; i < deltaPositions[0][id].connectedTo.length; i++) {
+            if (deltaPositions[0][id].connectedTo[i].status === "end") {
+              tempItems.push(deltaPositions[0][id].connectedTo[i].itemId);
+            }
+          }
+
+          while (tempItems.length > 0) {
+            parentItems.push(tempItems[0]);
+
+            for (
+              let i = 0;
+              i < deltaPositions[0][tempItems[0]].connectedTo.length;
+              i++
+            ) {
+              if (
+                deltaPositions[0][tempItems[0]].connectedTo[i].status === "end"
+              ) {
+                tempItems.push(
+                  deltaPositions[0][tempItems[0]].connectedTo[i].itemId
+                );
+              }
+            }
+
+            tempItems.shift();
+          }
+
+          this.setState({ currentParentItems: parentItems });
+
           const items = this.state.deltaPositions[0];
           items[id] = {
             ...items[id],
@@ -447,6 +485,7 @@ export default class Editing extends Component {
             currentLineItem: lines[0].length,
             currentFirstPoint: id,
             currentFirstSide: side,
+            creatingLine: !creatingLine,
             lines: [
               [
                 ...lines[0],
@@ -470,47 +509,53 @@ export default class Editing extends Component {
             ]
           });
         } else {
-          const items = this.state.deltaPositions[0];
-          items[id] = {
-            ...items[id],
-            activePoints: [
-              {
-                ...items[id].activePoints[0],
-                [side]: "end"
-              }
-            ],
-            connectedTo: [
-              ...items[id].connectedTo,
-              this.state.currentFirstPoint
-            ]
-          };
-          items[this.state.currentFirstPoint] = {
-            ...items[this.state.currentFirstPoint],
-            connectedTo: [
-              ...items[this.state.currentFirstPoint].connectedTo,
-              id
-            ]
-          };
-          const lines = this.state.lines[0];
+          if (
+            currentParentItems.indexOf(id) === -1 &&
+            id !== currentFirstPoint
+          ) {
+            const items = this.state.deltaPositions[0];
+            items[id] = {
+              ...items[id],
+              activePoints: [
+                {
+                  ...items[id].activePoints[0],
+                  [side]: "end"
+                }
+              ],
+              connectedTo: [
+                ...items[id].connectedTo,
+                { itemId: this.state.currentFirstPoint, status: "end", side }
+              ]
+            };
+            items[this.state.currentFirstPoint] = {
+              ...items[this.state.currentFirstPoint],
+              connectedTo: [
+                ...items[this.state.currentFirstPoint].connectedTo,
+                { itemId: id, status: "start", side: currentFirstSide }
+              ]
+            };
+            const lines = this.state.lines[0];
 
-          lines[currentLineItem] = {
-            ...lines[currentLineItem],
-            end: [
-              {
-                ...lines[currentLineItem].end[0],
-                item: id,
-                side
-              }
-            ]
-          };
-          this.setState({
-            lines: [lines],
-            deltaPositions: [items]
-          });
+            lines[currentLineItem] = {
+              ...lines[currentLineItem],
+              end: [
+                {
+                  ...lines[currentLineItem].end[0],
+                  item: id,
+                  side
+                }
+              ]
+            };
+            this.setState({
+              lines: [lines],
+              deltaPositions: [items],
+              currentLineItem: null,
+              currentFirstPoint: null,
+              currentFirstSide: "",
+              creatingLine: !creatingLine
+            });
+          }
         }
-        this.setState({
-          creatingLine: !creatingLine
-        });
       }
     };
 
