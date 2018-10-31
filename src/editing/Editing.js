@@ -495,48 +495,64 @@ export default class Editing extends Component {
             currentParentItems.indexOf(id) === -1 &&
             id !== currentFirstPoint
           ) {
-            const items = this.state.deltaPositions[0];
-            items[id] = {
-              ...items[id],
-              activePoints: [
-                {
-                  ...items[id].activePoints[0],
-                  [side]: "end"
-                }
-              ],
-              connectedTo: [
-                ...items[id].connectedTo,
-                { itemId: this.state.currentFirstPoint, status: "end", side }
-              ]
-            };
-            items[this.state.currentFirstPoint] = {
-              ...items[this.state.currentFirstPoint],
-              connectedTo: [
-                ...items[this.state.currentFirstPoint].connectedTo,
-                { itemId: id, status: "start", side: currentFirstSide }
-              ]
-            };
-            const lines = this.state.lines[0];
+            let isAlreadyConnected = false;
+            // Loop through connected to items and check if already exists
+            for (let i = 0; i < deltaPositions[0][id].connectedTo.length; i++) {
+              if (deltaPositions[0][id].connectedTo[i].itemId === id) {
+                isAlreadyConnected = true;
+              }
+              if (
+                deltaPositions[0][currentFirstPoint].connectedTo[i].itemId ===
+                id
+              ) {
+                isAlreadyConnected = true;
+              }
+            }
 
-            lines[currentLineItem] = {
-              ...lines[currentLineItem],
-              end: [
-                {
-                  ...lines[currentLineItem].end[0],
-                  item: id,
-                  side
-                }
-              ]
-            };
-            this.setState({
-              lines: [lines],
-              deltaPositions: [items],
-              currentParentItems: [],
-              currentLineItem: null,
-              currentFirstPoint: null,
-              currentFirstSide: "",
-              creatingLine: !creatingLine
-            });
+            if (!isAlreadyConnected) {
+              const items = this.state.deltaPositions[0];
+              items[id] = {
+                ...items[id],
+                activePoints: [
+                  {
+                    ...items[id].activePoints[0],
+                    [side]: "end"
+                  }
+                ],
+                connectedTo: [
+                  ...items[id].connectedTo,
+                  { itemId: this.state.currentFirstPoint, status: "end", side }
+                ]
+              };
+              items[this.state.currentFirstPoint] = {
+                ...items[this.state.currentFirstPoint],
+                connectedTo: [
+                  ...items[this.state.currentFirstPoint].connectedTo,
+                  { itemId: id, status: "start", side: currentFirstSide }
+                ]
+              };
+              const lines = this.state.lines[0];
+
+              lines[currentLineItem] = {
+                ...lines[currentLineItem],
+                end: [
+                  {
+                    ...lines[currentLineItem].end[0],
+                    item: id,
+                    side
+                  }
+                ]
+              };
+              this.setState({
+                lines: [lines],
+                deltaPositions: [items],
+                currentParentItems: [],
+                currentLineItem: null,
+                currentFirstPoint: null,
+                currentFirstSide: "",
+                creatingLine: !creatingLine
+              });
+            }
           }
         }
       }
@@ -635,6 +651,9 @@ export default class Editing extends Component {
                       lines={lines[0]}
                       lineCreate={this.lineCreate}
                       setCurrentStep={this.setCurrentStep}
+                      // disabled={currentParentItems.indexOf(
+                      //   parseInt(currentItem)
+                      // )}
                     />
                   </div>
                 </Draggable>

@@ -68,6 +68,7 @@ export default class Step extends Component {
 
     this.onMouseDown = () => {
       this.props.setCurrentStep(item.key, true);
+      // console.log(this.props.disabled);
     };
 
     this.onMouseUp = () => {
