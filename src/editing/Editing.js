@@ -367,7 +367,8 @@ export default class Editing extends Component {
       scrolling,
       lines,
       creatingLine,
-      currentLineItem
+      currentLineItem,
+      currentFirstPoint
     } = this.state;
 
     const { isHidden } = this.props;
@@ -400,6 +401,7 @@ export default class Editing extends Component {
 
           this.setState({
             currentLineItem: lines[0].length,
+            currentFirstPoint: id,
             lines: [
               [
                 ...lines[0],
@@ -423,6 +425,7 @@ export default class Editing extends Component {
             ]
           });
         } else {
+          console.log(id);
           const items = this.state.deltaPositions[0];
           items[id] = {
             ...items[id],
@@ -431,6 +434,17 @@ export default class Editing extends Component {
                 ...items[id].activePoints[0],
                 [side]: "end"
               }
+            ],
+            connectedTo: [
+              ...items[id].connectedTo,
+              this.state.currentFirstPoint
+            ]
+          };
+          items[this.state.currentFirstPoint] = {
+            ...items[this.state.currentFirstPoint],
+            connectedTo: [
+              ...items[this.state.currentFirstPoint].connectedTo,
+              id
             ]
           };
           const lines = this.state.lines[0];
