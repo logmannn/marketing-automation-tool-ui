@@ -496,11 +496,16 @@ export default class Editing extends Component {
             id !== currentFirstPoint
           ) {
             let isAlreadyConnected = false;
-            // Loop through connected to items and check if already exists
             for (let i = 0; i < deltaPositions[0][id].connectedTo.length; i++) {
               if (deltaPositions[0][id].connectedTo[i].itemId === id) {
                 isAlreadyConnected = true;
               }
+            }
+            for (
+              let i = 0;
+              i < deltaPositions[0][currentFirstPoint].connectedTo.length;
+              i++
+            ) {
               if (
                 deltaPositions[0][currentFirstPoint].connectedTo[i].itemId ===
                 id
