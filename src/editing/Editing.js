@@ -79,26 +79,10 @@ export default class Editing extends Component {
         [
           {
             key: 0,
-            x: 257,
-            y: 253,
+            x: 0,
+            y: 0,
             icon: Drip,
             background: "green",
-            activePoints: [
-              {
-                top: "end",
-                left: "",
-                bottom: "",
-                right: "start"
-              }
-            ],
-            connectedTo: [1]
-          },
-          {
-            key: 1,
-            x: 233,
-            y: 86,
-            icon: Drip,
-            background: "red",
             activePoints: [
               {
                 top: "",
@@ -107,30 +91,62 @@ export default class Editing extends Component {
                 right: ""
               }
             ],
-            connectedTo: [0]
+            connectedTo: [1]
+          },
+          {
+            key: 1,
+            x: 100,
+            y: 100,
+            icon: Drip,
+            background: "red",
+            activePoints: [
+              {
+                top: "",
+                left: "end",
+                bottom: "start",
+                right: ""
+              }
+            ],
+            connectedTo: [0, 2]
           },
           {
             key: 2,
-            x: 520,
-            y: 342,
+            x: 200,
+            y: 200,
             icon: Drip,
             background: "blue",
             activePoints: [
               {
                 top: "",
                 left: "end",
+                bottom: "start",
+                right: ""
+              }
+            ],
+            connectedTo: [1, 3]
+          },
+          {
+            key: 3,
+            x: 300,
+            y: 300,
+            icon: Drip,
+            background: "cyan",
+            activePoints: [
+              {
+                top: "",
+                left: "start",
                 bottom: "",
                 right: ""
               }
             ],
-            connectedTo: [0]
+            connectedTo: [2]
           },
           {
-            key: 3,
-            x: 605,
-            y: 632,
+            key: 4,
+            x: 400,
+            y: 400,
             icon: Drip,
-            background: "cyan",
+            background: "purple",
             activePoints: [
               {
                 top: "",
@@ -157,13 +173,13 @@ export default class Editing extends Component {
             start: [
               {
                 item: 0,
-                side: "top"
+                side: "bottom"
               }
             ],
             end: [
               {
                 item: 1,
-                side: "bottom"
+                side: "left"
               }
             ]
           },
@@ -171,13 +187,28 @@ export default class Editing extends Component {
             key: 1,
             start: [
               {
-                item: 0,
-                side: "right"
+                item: 1,
+                side: "bottom"
               }
             ],
             end: [
               {
                 item: 2,
+                side: "left"
+              }
+            ]
+          },
+          {
+            key: 2,
+            start: [
+              {
+                item: 2,
+                side: "bottom"
+              }
+            ],
+            end: [
+              {
+                item: 3,
                 side: "left"
               }
             ]
@@ -368,7 +399,8 @@ export default class Editing extends Component {
       lines,
       creatingLine,
       currentLineItem,
-      currentFirstPoint
+      currentFirstPoint,
+      currentFirstSide
     } = this.state;
 
     const { isHidden } = this.props;
@@ -381,6 +413,18 @@ export default class Editing extends Component {
       } else {
         this.setState({
           currentItem: ""
+        });
+      }
+    };
+
+    this.onMouseDown = e => {
+      if (creatingLine === true && e.target.id === "EditingContent") {
+        lines[0].pop();
+        deltaPositions[0][currentFirstPoint].activePoints[0][currentFirstSide] =
+          "";
+        this.setState({
+          currentLineItem: "",
+          creatingLine: false
         });
       }
     };
@@ -402,6 +446,7 @@ export default class Editing extends Component {
           this.setState({
             currentLineItem: lines[0].length,
             currentFirstPoint: id,
+            currentFirstSide: side,
             lines: [
               [
                 ...lines[0],
@@ -425,7 +470,6 @@ export default class Editing extends Component {
             ]
           });
         } else {
-          console.log(id);
           const items = this.state.deltaPositions[0];
           items[id] = {
             ...items[id],
@@ -538,7 +582,7 @@ export default class Editing extends Component {
                   <Step item={deltaPositions[0][parseInt(currentItem)]} />
                 </div>
               )}
-            <EditingContent>
+            <EditingContent id="EditingContent">
               {deltaPositions[0].map(step => (
                 <Draggable
                   position={deltaPositions[0][step.key]}
