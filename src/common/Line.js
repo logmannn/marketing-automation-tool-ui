@@ -22,7 +22,7 @@ export default class Line extends Component {
     if (startSide === "bottom") {
       X1 = x1 + 77;
       Y1 = y1 + 65;
-      if (X1 < X2) {
+      if (Y1 > Y2 && X1 < X2) {
         inverted = true;
       }
     }
