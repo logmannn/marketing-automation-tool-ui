@@ -4,7 +4,7 @@ import Draggable from "react-draggable";
 import Step from "./Step";
 
 import Drip from "../common/drip.svg";
-import Line from "../common/Line";
+import Line2 from "../common/Line2";
 
 const EditingDiv = styled.div`
   position: absolute;
@@ -593,7 +593,7 @@ export default class Editing extends Component {
             {lines[0].map(
               line =>
                 line.end[0].item !== null ? (
-                  <Line
+                  <Line2
                     key={line.key}
                     color="black"
                     x1={deltaPositions[0][line.start[0].item].x}
@@ -605,7 +605,7 @@ export default class Editing extends Component {
                     hidden={this.state.hidden}
                   />
                 ) : (
-                  <Line
+                  <Line2
                     key={line.key}
                     color="black"
                     x1={deltaPositions[0][line.start[0].item].x}
