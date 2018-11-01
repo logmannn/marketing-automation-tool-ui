@@ -114,8 +114,8 @@ export default class Editing extends Component {
           },
           {
             key: 2,
-            x: 200,
-            y: 200,
+            x: 620,
+            y: 228,
             icon: Drip,
             background: "blue",
             activePoints: [
