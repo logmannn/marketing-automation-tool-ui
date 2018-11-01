@@ -22,6 +22,7 @@
   <li>When at the edge of the screen while dragging an icon the page scrolls</li>
   <li>Connect email marketing steps by clicking the connector circles</li>
   <li>You can't place a line on a location that would create a loop</li>
+  <li>SVG connector is wavy and has arrows pointing from start to finish</li>
 </ul>
 
 <h2>Upcoming Features</h2>
@@ -29,7 +30,6 @@
   <li>Add Multli-Threading</li>
   <li>Hover states for when a click will be blocked</li>
   <li>More icons like a True/False icon</li>
-  <li>Better Looking SVG connector (Think wavy with arrows pointing towards the next step)</li>
   <li>Animated connector on finalization that gets drawn using react mt svg lines</li>
   <li>Ability to delete Icons and Lines</li>
   <li>Lagless connectors on drag past screen using same method as is currently being used on icons</li>
