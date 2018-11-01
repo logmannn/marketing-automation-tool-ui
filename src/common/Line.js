@@ -85,11 +85,11 @@ export default class Line extends Component {
 
     let theta = Math.atan2(Y2 - Y1, X2 - X1) - Math.PI / 2;
     let rotation =
-      Math.round((Math.atan2(Y2 - Y1, X2 - X1) * 180) / Math.PI) + 12;
+      Math.round((Math.atan2(Y2 - Y1, X2 - X1) * 180) / Math.PI) + 25;
 
     if (inverted) {
       rotation =
-        Math.round((Math.atan2(Y2 - Y1, X2 - X1) * 180) / Math.PI) - 18;
+        Math.round((Math.atan2(Y2 - Y1, X2 - X1) * 180) / Math.PI) - 25;
     }
 
     let MX1 = Math.round((MX + X1) / 2);
