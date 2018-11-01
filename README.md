@@ -26,6 +26,8 @@
 
 <h2>Upcoming Features</h2>
 <ul>
+  <li>Add Multli-Threading</li>
+  <li>Hover states for when a click will be blocked</li>
   <li>More icons like a True/False icon</li>
   <li>Better Looking SVG connector (Think wavy with arrows pointing towards the next step)</li>
   <li>Animated connector on finalization that gets drawn using react mt svg lines</li>
