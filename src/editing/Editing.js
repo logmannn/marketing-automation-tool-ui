@@ -598,17 +598,33 @@ export default class Editing extends Component {
             {lines[0].map(
               line =>
                 line.end[0].item !== null ? (
-                  <Line
-                    key={line.key}
-                    color="black"
-                    x1={deltaPositions[0][line.start[0].item].x}
-                    y1={deltaPositions[0][line.start[0].item].y}
-                    x2={deltaPositions[0][line.end[0].item].x}
-                    y2={deltaPositions[0][line.end[0].item].y}
-                    startSide={line.start[0].side}
-                    hidden={this.state.hidden}
-                    endSide={line.end[0].side}
-                  />
+                  <div key={line.key}>
+                    <Line
+                      key={line.key}
+                      color="black"
+                      x1={deltaPositions[0][line.start[0].item].x}
+                      y1={deltaPositions[0][line.start[0].item].y}
+                      x2={deltaPositions[0][line.end[0].item].x}
+                      y2={deltaPositions[0][line.end[0].item].y}
+                      startSide={line.start[0].side}
+                      hidden={this.state.hidden}
+                      endSide={line.end[0].side}
+                    />
+                    {/* <div
+                      style={{
+                        position: "absolute",
+                        transform: `translate(${(deltaPositions[0][
+                          line.start[0].item
+                        ].x +
+                          deltaPositions[0][line.end[0].item].x) /
+                          2}px, ${(deltaPositions[0][line.start[0].item].y +
+                          deltaPositions[0][line.end[0].item].y) /
+                          2}px)`
+                      }}
+                    >
+                      test
+                    </div> */}
+                  </div>
                 ) : (
                   <Line
                     key={line.key}

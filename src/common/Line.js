@@ -9,6 +9,13 @@ const SVG = styled.svg`
 `;
 
 export default class Line extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      hover: false
+    };
+  }
+
   render() {
     const { color, x1, y1, x2, y2, startSide, endSide, hidden } = this.props;
 
@@ -118,31 +125,77 @@ export default class Line extends Component {
       "M" + X2 + " " + Y2 + " Q " + CX2 + " " + CY2 + " " + MX + " " + MY;
 
     return (
-      <SVG height="100%" width="100%">
-        {/* <line x1={X1} y1={Y1} x2={X2} y2={Y2} stroke={color} /> */}
-        <path
-          id="curve"
-          d={curve}
-          stroke={color}
-          strokeWidth="3"
-          strokeLinecap="round"
-          fill="transparent"
+      <>
+        <div
+          style={{
+            position: "absolute",
+            transform: `translate(${MX - offset - 2}px, ${MY - offset - 2}px)`,
+            zIndex: 5,
+            width: "35px",
+            height: "35px",
+            cursor: "pointer"
+          }}
+          onMouseOver={() => this.setState({ hover: true })}
+          onMouseLeave={() => this.setState({ hover: false })}
         />
-        <path
-          id="curve2"
-          d={curve2}
-          stroke={color}
-          strokeWidth="3"
-          strokeLinecap="round"
-          fill="transparent"
-        />
-        <polygon
-          points={`${MX - 14},${MY + 11} ${MX},${MY} ${MX - 14},${MY - 11}`}
-          transform={`rotate(${rotation} ${MX} ${MY})`}
-          fill={color}
-          onMouseOver={this.onMouseOver}
-        />
-      </SVG>
+        <SVG height="100%" width="100%">
+          {/* <line x1={X1} y1={Y1} x2={X2} y2={Y2} stroke={color} /> */}
+          <path
+            id="curve"
+            d={curve}
+            stroke={color}
+            strokeWidth="3"
+            strokeLinecap="round"
+            fill="transparent"
+          />
+          <path
+            id="curve2"
+            d={curve2}
+            stroke={color}
+            strokeWidth="3"
+            strokeLinecap="round"
+            fill="transparent"
+          />
+          <polygon
+            points={`${MX - 14},${MY + 11} ${MX},${MY} ${MX - 14},${MY - 11}`}
+            transform={`rotate(${rotation} ${MX} ${MY})`}
+            fill={color}
+            onMouseOver={this.onMouseOver}
+            fillOpacity={this.state.hover ? 0 : 1}
+          />
+          <polygon
+            points={`${MX - 10},${MY + 7}
+            ${MX - 7},${MY + 10}
+            ${MX + 10},${MY - 7}
+            ${MX + 7},${MY - 10}`}
+            transform={`rotate(${rotation} ${MX} ${MY})`}
+            fill="red"
+            onMouseOver={this.onMouseOver}
+            fillOpacity={this.state.hover ? 1 : 0}
+          />
+          <polygon
+            points={`
+            ${MX + 10},${MY + 7}
+            ${MX + 7},${MY + 10}
+            
+            ${MX - 10},${MY - 7}
+            ${MX - 7},${MY - 10}
+            `}
+            transform={`rotate(${rotation} ${MX} ${MY})`}
+            fill="red"
+            onMouseOver={this.onMouseOver}
+            fillOpacity={this.state.hover ? 1 : 0}
+          />
+          {/* <circle
+          cx={`${MX}`}
+          cy={`${MY}`}
+          r="4"
+          stroke="black"
+          strokeWidth="0"
+          fill="red"
+        /> */}
+        </SVG>
+      </>
     );
   }
 }
