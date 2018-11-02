@@ -419,8 +419,34 @@ export default class Editing extends Component {
       }
     };
 
-    this.lineDelete = e => {
-      console.log(e);
+    this.onLineDelete = id => {
+      const lineItemStart = lines[0][id].start[0];
+      const lineItemEnd = lines[0][id].end[0];
+      const attachedItemStart = deltaPositions[0][lineItemStart.item];
+      const attachedItemEnd = deltaPositions[0][lineItemEnd.item];
+
+      attachedItemStart.activePoints[0][lineItemStart.side] = "";
+      attachedItemEnd.activePoints[0][lineItemEnd.side] = "";
+
+      for (let i = 0; i < attachedItemStart.connectedTo.length; i++) {
+        if (
+          attachedItemStart.connectedTo[i].itemId === lineItemStart.item ||
+          attachedItemStart.connectedTo[i].itemId === lineItemEnd.item
+        ) {
+          attachedItemStart.connectedTo.splice(i, 1);
+        }
+      }
+
+      for (let i = 0; i < attachedItemEnd.connectedTo.length; i++) {
+        if (
+          attachedItemEnd.connectedTo[i].itemId === lineItemStart.item ||
+          attachedItemEnd.connectedTo[i].itemId === lineItemEnd.item
+        ) {
+          attachedItemEnd.connectedTo.splice(i, 1);
+        }
+      }
+
+      lines[0].splice(lines[0].indexOf(id), 1);
     };
 
     this.lineCreate = (side, id) => {
@@ -598,36 +624,23 @@ export default class Editing extends Component {
             {lines[0].map(
               line =>
                 line.end[0].item !== null ? (
-                  <div key={line.key}>
-                    <Line
-                      key={line.key}
-                      color="black"
-                      x1={deltaPositions[0][line.start[0].item].x}
-                      y1={deltaPositions[0][line.start[0].item].y}
-                      x2={deltaPositions[0][line.end[0].item].x}
-                      y2={deltaPositions[0][line.end[0].item].y}
-                      startSide={line.start[0].side}
-                      hidden={this.state.hidden}
-                      endSide={line.end[0].side}
-                    />
-                    {/* <div
-                      style={{
-                        position: "absolute",
-                        transform: `translate(${(deltaPositions[0][
-                          line.start[0].item
-                        ].x +
-                          deltaPositions[0][line.end[0].item].x) /
-                          2}px, ${(deltaPositions[0][line.start[0].item].y +
-                          deltaPositions[0][line.end[0].item].y) /
-                          2}px)`
-                      }}
-                    >
-                      test
-                    </div> */}
-                  </div>
+                  <Line
+                    key={line.key}
+                    id={line.key}
+                    color="black"
+                    x1={deltaPositions[0][line.start[0].item].x}
+                    y1={deltaPositions[0][line.start[0].item].y}
+                    x2={deltaPositions[0][line.end[0].item].x}
+                    y2={deltaPositions[0][line.end[0].item].y}
+                    startSide={line.start[0].side}
+                    hidden={this.state.hidden}
+                    endSide={line.end[0].side}
+                    onLineDelete={this.onLineDelete}
+                  />
                 ) : (
                   <Line
                     key={line.key}
+                    id={line.key}
                     color="black"
                     x1={deltaPositions[0][line.start[0].item].x}
                     y1={deltaPositions[0][line.start[0].item].y}
@@ -635,6 +648,7 @@ export default class Editing extends Component {
                     y2={elementY}
                     startSide={line.start[0].side}
                     hidden={this.state.hidden}
+                    onLineDelete={this.onLineDelete}
                     endSide="mouse"
                   />
                 )
