@@ -344,7 +344,8 @@ export default class Editing extends Component {
   onStop = (e, position) => {
     this.setState({
       activeDrags: this.state.activeDrags - 1,
-      intervalId: 0
+      intervalId: 0,
+      currentItem: ""
     });
 
     let { x, y } = position;
@@ -416,6 +417,10 @@ export default class Editing extends Component {
           creatingLine: false
         });
       }
+    };
+
+    this.lineDelete = e => {
+      console.log(e);
     };
 
     this.lineCreate = (side, id) => {
@@ -601,8 +606,8 @@ export default class Editing extends Component {
                     x2={deltaPositions[0][line.end[0].item].x}
                     y2={deltaPositions[0][line.end[0].item].y}
                     startSide={line.start[0].side}
-                    endSide={line.end[0].side}
                     hidden={this.state.hidden}
+                    endSide={line.end[0].side}
                   />
                 ) : (
                   <Line
@@ -613,8 +618,8 @@ export default class Editing extends Component {
                     x2={elementX}
                     y2={elementY}
                     startSide={line.start[0].side}
-                    endSide="mouse"
                     hidden={this.state.hidden}
+                    endSide="mouse"
                   />
                 )
             )}
@@ -655,10 +660,8 @@ export default class Editing extends Component {
                       item={deltaPositions[0][step.key]}
                       lines={lines[0]}
                       lineCreate={this.lineCreate}
+                      lineDelete={this.lineDelete}
                       setCurrentStep={this.setCurrentStep}
-                      // disabled={currentParentItems.indexOf(
-                      //   parseInt(currentItem)
-                      // )}
                     />
                   </div>
                 </Draggable>

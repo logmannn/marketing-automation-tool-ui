@@ -17,8 +17,8 @@ const Box = styled.div`
 `;
 
 const IconWrapper = styled.div`
-  height: 50px;
-  width: 50px;
+  height: 48px;
+  width: 48px;
 
   padding: 10px;
 
@@ -46,6 +46,8 @@ const Icon = styled.section`
 
   border-radius: 7px;
   border: 2px solid #fff;
+
+  z-index: 2;
 `;
 
 const IconContent = styled.div`
@@ -58,6 +60,10 @@ const IconContent = styled.div`
   background: white;
 
   pointer-events: all;
+
+  position: relative;
+
+  z-index: 10;
 `;
 
 export default class Step extends Component {
@@ -169,7 +175,8 @@ export default class Step extends Component {
             onMouseUp={this.onMouseUp}
             style={{
               backgroundImage: `url(${item.icon})`,
-              backgroundColor: item.background
+              backgroundColor: item.background,
+              border: `2px solid ${item.background}`
             }}
           />
         </IconWrapper>

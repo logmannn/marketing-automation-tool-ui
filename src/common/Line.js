@@ -140,6 +140,7 @@ export default class Line extends Component {
           points={`${MX - 14},${MY + 11} ${MX},${MY} ${MX - 14},${MY - 11}`}
           transform={`rotate(${rotation} ${MX} ${MY})`}
           fill={color}
+          onMouseOver={this.onMouseOver}
         />
       </SVG>
     );
