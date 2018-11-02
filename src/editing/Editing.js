@@ -420,14 +420,13 @@ export default class Editing extends Component {
     };
 
     this.onLineDelete = id => {
-      // console.log(id);
       for (let i = 0; i < lines[0].length; i++) {
         if (lines[0][i].key === id) {
           const lineItemStart = lines[0][i].start[0];
           const lineItemEnd = lines[0][i].end[0];
           const attachedItemStart = deltaPositions[0][lineItemStart.item];
           const attachedItemEnd = deltaPositions[0][lineItemEnd.item];
-          //   // if nothing is connected to that side then set it to nothing
+
           let alreadyConnectedToStart = 0;
           for (let i = 0; i < attachedItemStart.connectedTo.length; i++) {
             if (attachedItemStart.connectedTo[i].side === lineItemStart.side) {
@@ -519,7 +518,7 @@ export default class Editing extends Component {
             currentLineItem = lines[0][lines[0].length - 1].key + 1;
           }
           this.setState({
-            currentLineItem,
+            currentLineItem: currentLineItem,
             currentFirstPoint: id,
             currentFirstSide: side,
             creatingLine: !creatingLine,
@@ -593,25 +592,31 @@ export default class Editing extends Component {
               };
               const lines = this.state.lines[0];
 
-              lines[currentLineItem] = {
-                ...lines[currentLineItem],
-                end: [
-                  {
-                    ...lines[currentLineItem].end[0],
-                    item: id,
-                    side
-                  }
-                ]
-              };
-              this.setState({
-                lines: [lines],
-                deltaPositions: [items],
-                currentParentItems: [],
-                currentLineItem: null,
-                currentFirstPoint: null,
-                currentFirstSide: "",
-                creatingLine: !creatingLine
-              });
+              for (let i = 0; i < lines.length; i++) {
+                if (lines[i].key === currentLineItem) {
+                  console.log("success");
+
+                  lines[i] = {
+                    ...lines[i],
+                    end: [
+                      {
+                        ...lines[i].end[0],
+                        item: id,
+                        side
+                      }
+                    ]
+                  };
+                  this.setState({
+                    lines: [lines],
+                    deltaPositions: [items],
+                    currentParentItems: [],
+                    currentLineItem: null,
+                    currentFirstPoint: null,
+                    currentFirstSide: "",
+                    creatingLine: !creatingLine
+                  });
+                }
+              }
             }
           }
         }
