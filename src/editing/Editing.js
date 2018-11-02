@@ -420,51 +420,56 @@ export default class Editing extends Component {
     };
 
     this.onLineDelete = id => {
-      for (let i = 0; i < lines[0].length; i++) {
-        if (lines[0][i].key === id) {
-          const lineItemStart = lines[0][i].start[0];
-          const lineItemEnd = lines[0][i].end[0];
-          const attachedItemStart = deltaPositions[0][lineItemStart.item];
-          const attachedItemEnd = deltaPositions[0][lineItemEnd.item];
+      if (!creatingLine) {
+        for (let i = 0; i < lines[0].length; i++) {
+          if (lines[0][i].key === id) {
+            const lineItemStart = lines[0][i].start[0];
+            const lineItemEnd = lines[0][i].end[0];
+            const attachedItemStart = deltaPositions[0][lineItemStart.item];
+            const attachedItemEnd = deltaPositions[0][lineItemEnd.item];
 
-          let alreadyConnectedToStart = 0;
-          for (let i = 0; i < attachedItemStart.connectedTo.length; i++) {
-            if (attachedItemStart.connectedTo[i].side === lineItemStart.side) {
-              alreadyConnectedToStart++;
+            let alreadyConnectedToStart = 0;
+            for (let i = 0; i < attachedItemStart.connectedTo.length; i++) {
+              if (
+                attachedItemStart.connectedTo[i].side === lineItemStart.side
+              ) {
+                alreadyConnectedToStart++;
+              }
             }
-          }
-          if (alreadyConnectedToStart <= 1) {
-            attachedItemStart.activePoints[0][lineItemStart.side] = "";
-          }
-          let alreadyConnectedToEnd = 0;
-          for (let i = 0; i < attachedItemEnd.connectedTo.length; i++) {
-            if (attachedItemEnd.connectedTo[i].side === lineItemEnd.side) {
-              alreadyConnectedToEnd++;
+            if (alreadyConnectedToStart <= 1) {
+              attachedItemStart.activePoints[0][lineItemStart.side] = "";
             }
-          }
-          if (alreadyConnectedToEnd <= 1) {
-            attachedItemEnd.activePoints[0][lineItemEnd.side] = "";
-          }
-          for (let i = 0; i < attachedItemEnd.connectedTo.length; i++) {
-            attachedItemEnd.activePoints[0][lineItemEnd.side] = "";
-          }
-          for (let i = 0; i < attachedItemStart.connectedTo.length; i++) {
-            if (
-              attachedItemStart.connectedTo[i].itemId === lineItemStart.item ||
-              attachedItemStart.connectedTo[i].itemId === lineItemEnd.item
-            ) {
-              attachedItemStart.connectedTo.splice(i, 1);
+            let alreadyConnectedToEnd = 0;
+            for (let i = 0; i < attachedItemEnd.connectedTo.length; i++) {
+              if (attachedItemEnd.connectedTo[i].side === lineItemEnd.side) {
+                alreadyConnectedToEnd++;
+              }
             }
-          }
-          for (let i = 0; i < attachedItemEnd.connectedTo.length; i++) {
-            if (
-              attachedItemEnd.connectedTo[i].itemId === lineItemStart.item ||
-              attachedItemEnd.connectedTo[i].itemId === lineItemEnd.item
-            ) {
-              attachedItemEnd.connectedTo.splice(i, 1);
+            if (alreadyConnectedToEnd <= 1) {
+              attachedItemEnd.activePoints[0][lineItemEnd.side] = "";
             }
+            for (let i = 0; i < attachedItemEnd.connectedTo.length; i++) {
+              attachedItemEnd.activePoints[0][lineItemEnd.side] = "";
+            }
+            for (let i = 0; i < attachedItemStart.connectedTo.length; i++) {
+              if (
+                attachedItemStart.connectedTo[i].itemId ===
+                  lineItemStart.item ||
+                attachedItemStart.connectedTo[i].itemId === lineItemEnd.item
+              ) {
+                attachedItemStart.connectedTo.splice(i, 1);
+              }
+            }
+            for (let i = 0; i < attachedItemEnd.connectedTo.length; i++) {
+              if (
+                attachedItemEnd.connectedTo[i].itemId === lineItemStart.item ||
+                attachedItemEnd.connectedTo[i].itemId === lineItemEnd.item
+              ) {
+                attachedItemEnd.connectedTo.splice(i, 1);
+              }
+            }
+            lines[0].splice(i, 1);
           }
-          lines[0].splice(i, 1);
         }
       }
     };
@@ -545,6 +550,8 @@ export default class Editing extends Component {
             ]
           });
         } else {
+          // console.log(id);
+          // console.log(currentFirstPoint);
           if (
             currentParentItems.indexOf(id) === -1 &&
             id !== currentFirstPoint
@@ -594,8 +601,6 @@ export default class Editing extends Component {
 
               for (let i = 0; i < lines.length; i++) {
                 if (lines[i].key === currentLineItem) {
-                  console.log("success");
-
                   lines[i] = {
                     ...lines[i],
                     end: [
