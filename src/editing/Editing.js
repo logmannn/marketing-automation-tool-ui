@@ -420,33 +420,29 @@ export default class Editing extends Component {
     };
 
     this.onLineDelete = id => {
-      const lineItemStart = lines[0][id].start[0];
-      const lineItemEnd = lines[0][id].end[0];
-      const attachedItemStart = deltaPositions[0][lineItemStart.item];
-      const attachedItemEnd = deltaPositions[0][lineItemEnd.item];
-
-      attachedItemStart.activePoints[0][lineItemStart.side] = "";
-      attachedItemEnd.activePoints[0][lineItemEnd.side] = "";
-
-      for (let i = 0; i < attachedItemStart.connectedTo.length; i++) {
-        if (
-          attachedItemStart.connectedTo[i].itemId === lineItemStart.item ||
-          attachedItemStart.connectedTo[i].itemId === lineItemEnd.item
-        ) {
-          attachedItemStart.connectedTo.splice(i, 1);
-        }
-      }
-
-      for (let i = 0; i < attachedItemEnd.connectedTo.length; i++) {
-        if (
-          attachedItemEnd.connectedTo[i].itemId === lineItemStart.item ||
-          attachedItemEnd.connectedTo[i].itemId === lineItemEnd.item
-        ) {
-          attachedItemEnd.connectedTo.splice(i, 1);
-        }
-      }
-
-      lines[0].splice(lines[0].indexOf(id), 1);
+      // const lineItemStart = lines[0][id].start[0];
+      // const lineItemEnd = lines[0][id].end[0];
+      // const attachedItemStart = deltaPositions[0][lineItemStart.item];
+      // const attachedItemEnd = deltaPositions[0][lineItemEnd.item];
+      // attachedItemStart.activePoints[0][lineItemStart.side] = "";
+      // attachedItemEnd.activePoints[0][lineItemEnd.side] = "";
+      // for (let i = 0; i < attachedItemStart.connectedTo.length; i++) {
+      //   if (
+      //     attachedItemStart.connectedTo[i].itemId === lineItemStart.item ||
+      //     attachedItemStart.connectedTo[i].itemId === lineItemEnd.item
+      //   ) {
+      //     attachedItemStart.connectedTo.splice(i, 1);
+      //   }
+      // }
+      // for (let i = 0; i < attachedItemEnd.connectedTo.length; i++) {
+      //   if (
+      //     attachedItemEnd.connectedTo[i].itemId === lineItemStart.item ||
+      //     attachedItemEnd.connectedTo[i].itemId === lineItemEnd.item
+      //   ) {
+      //     attachedItemEnd.connectedTo.splice(i, 1);
+      //   }
+      // }
+      // lines[0].splice(lines[0].indexOf(id), 1);
     };
 
     this.lineCreate = (side, id) => {
