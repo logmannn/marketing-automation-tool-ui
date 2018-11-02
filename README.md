@@ -23,6 +23,7 @@
   <li>Connect email marketing steps by clicking the connector circles</li>
   <li>You can't place a line on a location that would create a loop</li>
   <li>SVG connector is wavy and has arrows pointing from start to finish</li>
+    <li>Ability to delete Lines</li>
 </ul>
 
 <h2>Upcoming Features</h2>
@@ -31,7 +32,7 @@
   <li>Hover states for when a click will be blocked</li>
   <li>More icons like a True/False icon</li>
   <li>Animated connector on finalization that gets drawn using react mt svg lines</li>
-  <li>Ability to delete Icons and Lines</li>
+  <li>Ability to delete Icons</li>
   <li>Lagless connectors on drag past screen using same method as is currently being used on icons</li>
   <li>Multi-Select using Shift/Alt and a selector</li>
   <li>Creatable steps from a seperate sidebar</li>
