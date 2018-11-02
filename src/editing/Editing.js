@@ -421,33 +421,53 @@ export default class Editing extends Component {
 
     this.onLineDelete = id => {
       // console.log(id);
-      // for (let i = 0; i < lines[0].length; i++) {
-      //   if (lines[0][i].key === id) {
-      //     const lineItemStart = lines[0][i].start[0];
-      //     const lineItemEnd = lines[0][i].end[0];
-      //     const attachedItemStart = deltaPositions[0][lineItemStart.item];
-      //     const attachedItemEnd = deltaPositions[0][lineItemEnd.item];
-      //     attachedItemStart.activePoints[0][lineItemStart.side] = "";
-      //     attachedItemEnd.activePoints[0][lineItemEnd.side] = "";
-      //     for (let i = 0; i < attachedItemStart.connectedTo.length; i++) {
-      //       if (
-      //         attachedItemStart.connectedTo[i].itemId === lineItemStart.item ||
-      //         attachedItemStart.connectedTo[i].itemId === lineItemEnd.item
-      //       ) {
-      //         attachedItemStart.connectedTo.splice(i, 1);
-      //       }
-      //     }
-      //     for (let i = 0; i < attachedItemEnd.connectedTo.length; i++) {
-      //       if (
-      //         attachedItemEnd.connectedTo[i].itemId === lineItemStart.item ||
-      //         attachedItemEnd.connectedTo[i].itemId === lineItemEnd.item
-      //       ) {
-      //         attachedItemEnd.connectedTo.splice(i, 1);
-      //       }
-      //     }
-      //     lines[0].splice(i, 1);
-      //   }
-      // }
+      for (let i = 0; i < lines[0].length; i++) {
+        if (lines[0][i].key === id) {
+          const lineItemStart = lines[0][i].start[0];
+          const lineItemEnd = lines[0][i].end[0];
+          const attachedItemStart = deltaPositions[0][lineItemStart.item];
+          const attachedItemEnd = deltaPositions[0][lineItemEnd.item];
+          //   // if nothing is connected to that side then set it to nothing
+          let alreadyConnectedToStart = 0;
+          for (let i = 0; i < attachedItemStart.connectedTo.length; i++) {
+            if (attachedItemStart.connectedTo[i].side === lineItemStart.side) {
+              alreadyConnectedToStart++;
+            }
+          }
+          if (alreadyConnectedToStart <= 1) {
+            attachedItemStart.activePoints[0][lineItemStart.side] = "";
+          }
+          let alreadyConnectedToEnd = 0;
+          for (let i = 0; i < attachedItemEnd.connectedTo.length; i++) {
+            if (attachedItemEnd.connectedTo[i].side === lineItemEnd.side) {
+              alreadyConnectedToEnd++;
+            }
+          }
+          if (alreadyConnectedToEnd <= 1) {
+            attachedItemEnd.activePoints[0][lineItemEnd.side] = "";
+          }
+          for (let i = 0; i < attachedItemEnd.connectedTo.length; i++) {
+            attachedItemEnd.activePoints[0][lineItemEnd.side] = "";
+          }
+          for (let i = 0; i < attachedItemStart.connectedTo.length; i++) {
+            if (
+              attachedItemStart.connectedTo[i].itemId === lineItemStart.item ||
+              attachedItemStart.connectedTo[i].itemId === lineItemEnd.item
+            ) {
+              attachedItemStart.connectedTo.splice(i, 1);
+            }
+          }
+          for (let i = 0; i < attachedItemEnd.connectedTo.length; i++) {
+            if (
+              attachedItemEnd.connectedTo[i].itemId === lineItemStart.item ||
+              attachedItemEnd.connectedTo[i].itemId === lineItemEnd.item
+            ) {
+              attachedItemEnd.connectedTo.splice(i, 1);
+            }
+          }
+          lines[0].splice(i, 1);
+        }
+      }
     };
 
     this.lineCreate = (side, id) => {
@@ -494,9 +514,12 @@ export default class Editing extends Component {
               }
             ]
           };
-
+          let currentLineItem = 0;
+          if (lines[0].length > 0) {
+            currentLineItem = lines[0][lines[0].length - 1].key + 1;
+          }
           this.setState({
-            currentLineItem: lines[0].length,
+            currentLineItem,
             currentFirstPoint: id,
             currentFirstSide: side,
             creatingLine: !creatingLine,
@@ -504,7 +527,7 @@ export default class Editing extends Component {
               [
                 ...lines[0],
                 {
-                  key: lines[0].length,
+                  key: currentLineItem,
                   start: [
                     {
                       item: id,
@@ -623,10 +646,10 @@ export default class Editing extends Component {
         ) : (
           <>
             {lines[0].map(
-              line =>
+              (line, index) =>
                 line.end[0].item !== null ? (
                   <Line
-                    key={line.key}
+                    key={index}
                     id={line.key}
                     color="black"
                     x1={deltaPositions[0][line.start[0].item].x}
@@ -640,7 +663,7 @@ export default class Editing extends Component {
                   />
                 ) : (
                   <Line
-                    key={line.key}
+                    key={index}
                     id={line.key}
                     color="black"
                     x1={deltaPositions[0][line.start[0].item].x}
