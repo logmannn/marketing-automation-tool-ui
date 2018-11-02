@@ -670,6 +670,7 @@ export default class Editing extends Component {
                     hidden={this.state.hidden}
                     endSide={line.end[0].side}
                     onLineDelete={this.onLineDelete}
+                    creation={this.state.creatingLine}
                   />
                 ) : (
                   <Line
@@ -684,6 +685,7 @@ export default class Editing extends Component {
                     hidden={this.state.hidden}
                     onLineDelete={this.onLineDelete}
                     endSide="mouse"
+                    creation={this.state.creatingLine}
                   />
                 )
             )}

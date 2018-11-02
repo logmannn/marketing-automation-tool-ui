@@ -17,6 +17,8 @@ export default class Line extends Component {
   }
 
   render() {
+    // const { creation } = this.state;
+
     const {
       color,
       x1,
@@ -176,7 +178,9 @@ export default class Line extends Component {
             transform={`rotate(${rotation} ${MX} ${MY})`}
             fill={color}
             onMouseOver={this.onMouseOver}
-            fillOpacity={this.state.hover ? 0 : 1}
+            fillOpacity={
+              this.state.hover && this.props.creation === false ? 0 : 1
+            }
           />
           <polygon
             points={`${MX - 10},${MY + 7}
@@ -186,7 +190,9 @@ export default class Line extends Component {
             transform={`rotate(${rotation} ${MX} ${MY})`}
             fill="red"
             onMouseOver={this.onMouseOver}
-            fillOpacity={this.state.hover ? 1 : 0}
+            fillOpacity={
+              this.state.hover && this.props.creation === false ? 1 : 0
+            }
           />
           <polygon
             points={`
@@ -199,7 +205,9 @@ export default class Line extends Component {
             transform={`rotate(${rotation} ${MX} ${MY})`}
             fill="red"
             onMouseOver={this.onMouseOver}
-            fillOpacity={this.state.hover ? 1 : 0}
+            fillOpacity={
+              this.state.hover && this.props.creation === false ? 1 : 0
+            }
           />
           {/* <circle
           cx={`${MX}`}
