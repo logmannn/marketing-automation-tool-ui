@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import Circle from "./Circle";
 import styled from "styled-components";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 const Box = styled.div`
   position: absolute;
 
@@ -66,7 +68,37 @@ const IconContent = styled.div`
   z-index: 10;
 `;
 
+const CloseWrapper = styled.div`
+  height: 100%;
+  width: 100%;
+
+  display: flex;
+  justify-content: flex-end;
+`;
+
+const Close = styled(FontAwesomeIcon)`
+  position: relative;
+
+  z-index: 4;
+
+  display: flex;
+
+  justify-content: flex-end;
+
+  margin-right: 2px;
+
+  cursor: pointer;
+`;
+
 export default class Step extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      hover: false,
+      deleted: false
+    };
+  }
+
   render() {
     this.circleClick = (side, id) => {
       this.props.lineCreate(side, id);
@@ -74,13 +106,18 @@ export default class Step extends Component {
 
     this.onMouseDown = () => {
       this.props.setCurrentStep(item.key, true);
-      // console.log(this.props.disabled);
     };
 
     this.onMouseUp = () => {
       this.props.setCurrentStep(item.key, false);
     };
 
+    this.deleteStep = () => {
+      this.props.deleteStep(item.key);
+      this.setState({ deleted: true });
+    };
+
+    const { hover } = this.state;
     const { item } = this.props;
 
     let left = "#FFF";
@@ -95,9 +132,6 @@ export default class Step extends Component {
 
     if (item.activePoints[0].left !== "") {
       lOpacity = 1;
-      // if (item.activePoints[0].left === "start") {
-      //   left = "green";
-      // }
       if (item.activePoints[0].left === "end") {
         left = "#919191";
       }
@@ -105,9 +139,6 @@ export default class Step extends Component {
 
     if (item.activePoints[0].top !== "") {
       tOpacity = 1;
-      // if (item.activePoints[0].top === "start") {
-      //   top = "green";
-      // }
       if (item.activePoints[0].top === "end") {
         top = "#919191";
       }
@@ -115,9 +146,6 @@ export default class Step extends Component {
 
     if (item.activePoints[0].right !== "") {
       rOpacity = 1;
-      // if (item.activePoints[0].right === "start") {
-      //   right = "green";
-      // }
       if (item.activePoints[0].right === "end") {
         right = "#919191";
       }
@@ -125,68 +153,76 @@ export default class Step extends Component {
 
     if (item.activePoints[0].bottom !== "") {
       bOpacity = 1;
-      // if (item.activePoints[0].bottom === "start") {
-      //   bottom = "green";
-      // }
       if (item.activePoints[0].bottom === "end") {
         bottom = "#919191";
       }
     }
 
     return (
-      <Box className="box">
-        <Circle
-          side="left"
-          fill={left}
-          strokeWidth="2"
-          opacity={lOpacity}
-          circleClickParent={this.circleClick}
-          id={item.key}
-        />
-        <Circle
-          side="top"
-          fill={top}
-          strokeWidth="2"
-          opacity={tOpacity}
-          circleClickParent={this.circleClick}
-          id={item.key}
-        />
-        <Circle
-          side="right"
-          fill={right}
-          strokeWidth="2"
-          opacity={rOpacity}
-          circleClickParent={this.circleClick}
-          id={item.key}
-        />
-        <Circle
-          side="bottom"
-          fill={bottom}
-          strokeWidth="2"
-          opacity={bOpacity}
-          circleClickParent={this.circleClick}
-          id={item.key}
-        />
-        <IconWrapper>
-          <Icon
-            id={item.key}
-            className={`icon grabbable ${item.icon}`}
-            onMouseDown={this.onMouseDown}
-            onMouseUp={this.onMouseUp}
-            style={{
-              backgroundImage: `url(${item.icon})`,
-              backgroundColor: item.background,
-              border: `2px solid ${item.background}`
-            }}
-          />
-        </IconWrapper>
-        <IconContent>
-          <div>
-            Content here
-            {/* {item.x} {item.y} */}
-          </div>
-        </IconContent>
-      </Box>
+      <>
+        {this.state.deleted === false ? (
+          <Box className="box">
+            <Circle
+              side="left"
+              fill={left}
+              strokeWidth="2"
+              opacity={lOpacity}
+              circleClickParent={this.circleClick}
+              id={item.key}
+            />
+            <Circle
+              side="top"
+              fill={top}
+              strokeWidth="2"
+              opacity={tOpacity}
+              circleClickParent={this.circleClick}
+              id={item.key}
+            />
+            <Circle
+              side="right"
+              fill={right}
+              strokeWidth="2"
+              opacity={rOpacity}
+              circleClickParent={this.circleClick}
+              id={item.key}
+            />
+            <Circle
+              side="bottom"
+              fill={bottom}
+              strokeWidth="2"
+              opacity={bOpacity}
+              circleClickParent={this.circleClick}
+              id={item.key}
+            />
+            <IconWrapper
+              onMouseOver={() => this.setState({ hover: true })}
+              onMouseLeave={() => this.setState({ hover: false })}
+            >
+              <Icon
+                id={item.key}
+                className={`icon grabbable ${item.icon}`}
+                onMouseDown={this.onMouseDown}
+                onMouseUp={this.onMouseUp}
+                style={{
+                  backgroundImage: `url(${item.icon})`,
+                  backgroundColor: item.background,
+                  border: `2px solid ${item.background}`
+                }}
+              >
+                <CloseWrapper>
+                  {hover && <Close icon="times" onClick={this.deleteStep} />}
+                </CloseWrapper>
+              </Icon>
+            </IconWrapper>
+            <IconContent>
+              <div>
+                Content here
+                {/* {item.x} {item.y} */}
+              </div>
+            </IconContent>
+          </Box>
+        ) : null}
+      </>
     );
   }
 }

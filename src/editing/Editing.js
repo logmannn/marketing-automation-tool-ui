@@ -91,7 +91,9 @@ export default class Editing extends Component {
                 right: ""
               }
             ],
-            connectedTo: [{ itemId: 1, status: "start", side: "bottom" }]
+            connectedTo: [{ itemId: 1, status: "start", side: "bottom" }],
+            attachedLines: [0],
+            deleted: false
           },
           {
             key: 1,
@@ -110,7 +112,9 @@ export default class Editing extends Component {
             connectedTo: [
               { itemId: 0, status: "end", side: "left" },
               { itemId: 2, status: "start", side: "bottom" }
-            ]
+            ],
+            attachedLines: [0, 1],
+            deleted: false
           },
           {
             key: 2,
@@ -126,7 +130,9 @@ export default class Editing extends Component {
                 right: ""
               }
             ],
-            connectedTo: [{ itemId: 1, status: "end", side: "left" }]
+            connectedTo: [{ itemId: 1, status: "end", side: "left" }],
+            attachedLines: [1],
+            deleted: false
           },
           {
             key: 3,
@@ -142,7 +148,9 @@ export default class Editing extends Component {
                 right: ""
               }
             ],
-            connectedTo: []
+            connectedTo: [],
+            attachedLines: [],
+            deleted: false
           },
           {
             key: 4,
@@ -158,7 +166,9 @@ export default class Editing extends Component {
                 right: ""
               }
             ],
-            connectedTo: []
+            connectedTo: [],
+            attachedLines: [],
+            deleted: false
           }
         ]
       ],
@@ -375,14 +385,9 @@ export default class Editing extends Component {
     const {
       deltaPositions,
       loading,
-      activeDrags,
-      mouseX,
-      mouseY,
       elementX,
       elementY,
       currentItem,
-      offsetX,
-      offsetY,
       start,
       scrolling,
       lines,
@@ -428,6 +433,19 @@ export default class Editing extends Component {
             const attachedItemStart = deltaPositions[0][lineItemStart.item];
             const attachedItemEnd = deltaPositions[0][lineItemEnd.item];
 
+            let items = this.state.deltaPositions[0];
+
+            let index = attachedItemStart.attachedLines.indexOf(id);
+            items[lineItemStart.item].attachedLines.splice(index, 1);
+
+            index = attachedItemEnd.attachedLines.indexOf(id);
+            items[lineItemEnd.item].attachedLines.splice(index, 1);
+
+            items[id] = {
+              ...items[id],
+              attachedLines: [...items[id].attachedLines]
+            };
+
             let alreadyConnectedToStart = 0;
             for (let i = 0; i < attachedItemStart.connectedTo.length; i++) {
               if (
@@ -448,9 +466,11 @@ export default class Editing extends Component {
             if (alreadyConnectedToEnd <= 1) {
               attachedItemEnd.activePoints[0][lineItemEnd.side] = "";
             }
+
             for (let i = 0; i < attachedItemEnd.connectedTo.length; i++) {
               attachedItemEnd.activePoints[0][lineItemEnd.side] = "";
             }
+
             for (let i = 0; i < attachedItemStart.connectedTo.length; i++) {
               if (
                 attachedItemStart.connectedTo[i].itemId ===
@@ -506,7 +526,10 @@ export default class Editing extends Component {
             tempItems.shift();
           }
 
-          this.setState({ currentParentItems: parentItems });
+          let currentLineItem = 0;
+          if (lines[0].length > 0) {
+            currentLineItem = lines[0][lines[0].length - 1].key + 1;
+          }
 
           const items = this.state.deltaPositions[0];
           items[id] = {
@@ -518,11 +541,9 @@ export default class Editing extends Component {
               }
             ]
           };
-          let currentLineItem = 0;
-          if (lines[0].length > 0) {
-            currentLineItem = lines[0][lines[0].length - 1].key + 1;
-          }
+
           this.setState({
+            currentParentItems: parentItems,
             currentLineItem: currentLineItem,
             currentFirstPoint: id,
             currentFirstSide: side,
@@ -550,8 +571,6 @@ export default class Editing extends Component {
             ]
           });
         } else {
-          // console.log(id);
-          // console.log(currentFirstPoint);
           if (
             currentParentItems.indexOf(id) === -1 &&
             id !== currentFirstPoint
@@ -588,13 +607,18 @@ export default class Editing extends Component {
                 connectedTo: [
                   ...items[id].connectedTo,
                   { itemId: this.state.currentFirstPoint, status: "end", side }
-                ]
+                ],
+                attachedLines: [...items[id].attachedLines, currentLineItem]
               };
               items[this.state.currentFirstPoint] = {
                 ...items[this.state.currentFirstPoint],
                 connectedTo: [
                   ...items[this.state.currentFirstPoint].connectedTo,
                   { itemId: id, status: "start", side: currentFirstSide }
+                ],
+                attachedLines: [
+                  ...items[this.state.currentFirstPoint].attachedLines,
+                  currentLineItem
                 ]
               };
               const lines = this.state.lines[0];
@@ -626,6 +650,28 @@ export default class Editing extends Component {
           }
         }
       }
+    };
+
+    this.deleteStep = id => {
+      let itemsDelete = deltaPositions;
+      let items = itemsDelete[0][id];
+      const itemCount = items.attachedLines.length;
+
+      for (let i = 0; i < itemCount; i++) {
+        this.onLineDelete(items.attachedLines[0]);
+      }
+
+      for (let i = 0; i < deltaPositions[0].length; i++) {
+        if (deltaPositions[0][i].key === id) {
+          let items = deltaPositions[0][i];
+
+          items.deleted = true;
+        }
+      }
+
+      this.setState({
+        deltaPositions: itemsDelete
+      });
     };
 
     return (
@@ -689,9 +735,9 @@ export default class Editing extends Component {
                   />
                 )
             )}
-            {!isNaN(currentItem) &&
+            {/* {!isNaN(currentItem) &&
               activeDrags === 1 &&
-              start === false && (
+              start === false &&  (
                 <div
                   style={{
                     position: "fixed",
@@ -701,37 +747,44 @@ export default class Editing extends Component {
                 >
                   <Step item={deltaPositions[0][parseInt(currentItem)]} />
                 </div>
-              )}
+              )} */}
             <EditingContent id="EditingContent">
-              {deltaPositions[0].map(step => (
-                <Draggable
-                  position={deltaPositions[0][step.key]}
-                  {...dragHandlers}
-                  onDrag={this.onControlledDrag}
-                  key={step.key}
-                  handle=".grabbable"
-                >
-                  <div
-                    id={step.key}
-                    style={{ position: "absolute" }}
-                    className={
-                      scrolling === true &&
-                      parseInt(currentItem) === step.key &&
-                      start === false
-                        ? "noOpacity"
-                        : "opacity"
-                    }
-                  >
-                    <Step
-                      item={deltaPositions[0][step.key]}
-                      lines={lines[0]}
-                      lineCreate={this.lineCreate}
-                      lineDelete={this.lineDelete}
-                      setCurrentStep={this.setCurrentStep}
-                    />
-                  </div>
-                </Draggable>
-              ))}
+              {deltaPositions[0].map(step => {
+                if (!isNaN(step.key))
+                  return (
+                    <Draggable
+                      position={deltaPositions[0][step.key]}
+                      {...dragHandlers}
+                      onDrag={this.onControlledDrag}
+                      key={step.key}
+                      handle=".grabbable"
+                    >
+                      <div
+                        id={step.key}
+                        style={{ position: "absolute" }}
+                        className={
+                          scrolling === true &&
+                          parseInt(currentItem) === step.key &&
+                          start === false
+                            ? "noOpacity"
+                            : "opacity"
+                        }
+                      >
+                        <Step
+                          item={deltaPositions[0][step.key]}
+                          lines={lines[0]}
+                          lineCreate={this.lineCreate}
+                          lineDelete={this.lineDelete}
+                          setCurrentStep={this.setCurrentStep}
+                          deleteStep={this.deleteStep}
+                        />
+                      </div>
+                    </Draggable>
+                  );
+                else {
+                  return null;
+                }
+              })}
             </EditingContent>
           </>
         )}
