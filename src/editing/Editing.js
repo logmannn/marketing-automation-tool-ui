@@ -215,7 +215,7 @@ export default class Editing extends Component {
             ]
           },
           {
-            key: 1,
+            key: 2,
             start: [
               {
                 item: 0,
