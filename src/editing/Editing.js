@@ -472,9 +472,11 @@ export default class Editing extends Component {
               attachedItemEnd.activePoints[0][lineItemEnd.side] = "";
             }
 
-            for (let i = 0; i < attachedItemEnd.connectedTo.length; i++) {
-              attachedItemEnd.activePoints[0][lineItemEnd.side] = "";
-            }
+            // for (let i = 0; i < attachedItemEnd.connectedTo.length; i++) {
+            // console.log(attachedItemEnd.activePoints[0][lineItemEnd.side]);
+            // debugger;
+            // attachedItemEnd.activePoints[0][lineItemEnd.side] = "";
+            // }
 
             for (let i = 0; i < attachedItemStart.connectedTo.length; i++) {
               if (
@@ -500,161 +502,157 @@ export default class Editing extends Component {
     };
 
     this.lineCreate = (side, id) => {
-      if (deltaPositions[0][id].activePoints[0][side] !== "end") {
-        if (creatingLine === false) {
-          let parentItems = [];
-          let tempItems = [];
+      // if (deltaPositions[0][id].activePoints[0][side] !== "end") {
+      if (creatingLine === false) {
+        let parentItems = [];
+        let tempItems = [];
 
-          for (let i = 0; i < deltaPositions[0][id].connectedTo.length; i++) {
-            if (deltaPositions[0][id].connectedTo[i].status === "end") {
-              tempItems.push(deltaPositions[0][id].connectedTo[i].itemId);
-            }
+        for (let i = 0; i < deltaPositions[0][id].connectedTo.length; i++) {
+          if (deltaPositions[0][id].connectedTo[i].status === "end") {
+            tempItems.push(deltaPositions[0][id].connectedTo[i].itemId);
           }
+        }
 
-          while (tempItems.length > 0) {
-            parentItems.push(tempItems[0]);
+        while (tempItems.length > 0) {
+          parentItems.push(tempItems[0]);
 
-            for (
-              let i = 0;
-              i < deltaPositions[0][tempItems[0]].connectedTo.length;
-              i++
+          for (
+            let i = 0;
+            i < deltaPositions[0][tempItems[0]].connectedTo.length;
+            i++
+          ) {
+            if (
+              deltaPositions[0][tempItems[0]].connectedTo[i].status === "end"
             ) {
-              if (
-                deltaPositions[0][tempItems[0]].connectedTo[i].status === "end"
-              ) {
-                tempItems.push(
-                  deltaPositions[0][tempItems[0]].connectedTo[i].itemId
-                );
-              }
+              tempItems.push(
+                deltaPositions[0][tempItems[0]].connectedTo[i].itemId
+              );
             }
-
-            tempItems.shift();
           }
 
-          let currentLineItem = 0;
-          if (lines[0].length > 0) {
-            currentLineItem = lines[0][lines[0].length - 1].key + 1;
-          }
+          tempItems.shift();
+        }
 
-          const items = this.state.deltaPositions[0];
-          items[id] = {
-            ...items[id],
-            activePoints: [
+        let currentLineItem = 0;
+        if (lines[0].length > 0) {
+          currentLineItem = lines[0][lines[0].length - 1].key + 1;
+        }
+
+        const items = this.state.deltaPositions[0];
+        items[id] = {
+          ...items[id],
+          activePoints: [
+            {
+              ...items[id].activePoints[0],
+              [side]: "start"
+            }
+          ]
+        };
+
+        this.setState({
+          currentParentItems: parentItems,
+          currentLineItem: currentLineItem,
+          currentFirstPoint: id,
+          currentFirstSide: side,
+          creatingLine: !creatingLine,
+          lines: [
+            [
+              ...lines[0],
               {
-                ...items[id].activePoints[0],
-                [side]: "start"
+                key: currentLineItem,
+                start: [
+                  {
+                    item: id,
+                    side
+                  }
+                ],
+                end: [
+                  {
+                    item: null,
+                    side: "",
+                    hidden: this.state.hidden
+                  }
+                ]
               }
             ]
-          };
+          ]
+        });
+      } else {
+        if (currentParentItems.indexOf(id) === -1 && id !== currentFirstPoint) {
+          let isAlreadyConnected = false;
+          for (let i = 0; i < deltaPositions[0][id].connectedTo.length; i++) {
+            if (deltaPositions[0][id].connectedTo[i].itemId === id) {
+              isAlreadyConnected = true;
+            }
+          }
+          for (
+            let i = 0;
+            i < deltaPositions[0][currentFirstPoint].connectedTo.length;
+            i++
+          ) {
+            if (
+              deltaPositions[0][currentFirstPoint].connectedTo[i].itemId === id
+            ) {
+              isAlreadyConnected = true;
+            }
+          }
 
-          this.setState({
-            currentParentItems: parentItems,
-            currentLineItem: currentLineItem,
-            currentFirstPoint: id,
-            currentFirstSide: side,
-            creatingLine: !creatingLine,
-            lines: [
-              [
-                ...lines[0],
+          if (!isAlreadyConnected) {
+            const items = this.state.deltaPositions[0];
+            items[id] = {
+              ...items[id],
+              activePoints: [
                 {
-                  key: currentLineItem,
-                  start: [
+                  ...items[id].activePoints[0],
+                  [side]: "end"
+                }
+              ],
+              connectedTo: [
+                ...items[id].connectedTo,
+                { itemId: this.state.currentFirstPoint, status: "end", side }
+              ],
+              attachedLines: [...items[id].attachedLines, currentLineItem]
+            };
+            items[this.state.currentFirstPoint] = {
+              ...items[this.state.currentFirstPoint],
+              connectedTo: [
+                ...items[this.state.currentFirstPoint].connectedTo,
+                { itemId: id, status: "start", side: currentFirstSide }
+              ],
+              attachedLines: [
+                ...items[this.state.currentFirstPoint].attachedLines,
+                currentLineItem
+              ]
+            };
+            const lines = this.state.lines[0];
+
+            for (let i = 0; i < lines.length; i++) {
+              if (lines[i].key === currentLineItem) {
+                lines[i] = {
+                  ...lines[i],
+                  end: [
                     {
+                      ...lines[i].end[0],
                       item: id,
                       side
                     }
-                  ],
-                  end: [
-                    {
-                      item: null,
-                      side: "",
-                      hidden: this.state.hidden
-                    }
                   ]
-                }
-              ]
-            ]
-          });
-        } else {
-          if (
-            currentParentItems.indexOf(id) === -1 &&
-            id !== currentFirstPoint
-          ) {
-            let isAlreadyConnected = false;
-            for (let i = 0; i < deltaPositions[0][id].connectedTo.length; i++) {
-              if (deltaPositions[0][id].connectedTo[i].itemId === id) {
-                isAlreadyConnected = true;
-              }
-            }
-            for (
-              let i = 0;
-              i < deltaPositions[0][currentFirstPoint].connectedTo.length;
-              i++
-            ) {
-              if (
-                deltaPositions[0][currentFirstPoint].connectedTo[i].itemId ===
-                id
-              ) {
-                isAlreadyConnected = true;
-              }
-            }
-
-            if (!isAlreadyConnected) {
-              const items = this.state.deltaPositions[0];
-              items[id] = {
-                ...items[id],
-                activePoints: [
-                  {
-                    ...items[id].activePoints[0],
-                    [side]: "end"
-                  }
-                ],
-                connectedTo: [
-                  ...items[id].connectedTo,
-                  { itemId: this.state.currentFirstPoint, status: "end", side }
-                ],
-                attachedLines: [...items[id].attachedLines, currentLineItem]
-              };
-              items[this.state.currentFirstPoint] = {
-                ...items[this.state.currentFirstPoint],
-                connectedTo: [
-                  ...items[this.state.currentFirstPoint].connectedTo,
-                  { itemId: id, status: "start", side: currentFirstSide }
-                ],
-                attachedLines: [
-                  ...items[this.state.currentFirstPoint].attachedLines,
-                  currentLineItem
-                ]
-              };
-              const lines = this.state.lines[0];
-
-              for (let i = 0; i < lines.length; i++) {
-                if (lines[i].key === currentLineItem) {
-                  lines[i] = {
-                    ...lines[i],
-                    end: [
-                      {
-                        ...lines[i].end[0],
-                        item: id,
-                        side
-                      }
-                    ]
-                  };
-                  this.setState({
-                    lines: [lines],
-                    deltaPositions: [items],
-                    currentParentItems: [],
-                    currentLineItem: null,
-                    currentFirstPoint: null,
-                    currentFirstSide: "",
-                    creatingLine: !creatingLine
-                  });
-                }
+                };
+                this.setState({
+                  lines: [lines],
+                  deltaPositions: [items],
+                  currentParentItems: [],
+                  currentLineItem: null,
+                  currentFirstPoint: null,
+                  currentFirstSide: "",
+                  creatingLine: !creatingLine
+                });
               }
             }
           }
         }
       }
+      // }
     };
 
     this.deleteStep = id => {
