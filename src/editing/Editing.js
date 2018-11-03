@@ -395,7 +395,12 @@ export default class Editing extends Component {
       currentLineItem,
       currentFirstPoint,
       currentFirstSide,
-      currentParentItems
+      currentParentItems,
+      activeDrags,
+      mouseX,
+      mouseY,
+      offsetX,
+      offsetY
     } = this.state;
 
     const { isHidden } = this.props;
@@ -735,9 +740,9 @@ export default class Editing extends Component {
                   />
                 )
             )}
-            {/* {!isNaN(currentItem) &&
+            {!isNaN(currentItem) &&
               activeDrags === 1 &&
-              start === false &&  (
+              start === false && (
                 <div
                   style={{
                     position: "fixed",
@@ -747,7 +752,7 @@ export default class Editing extends Component {
                 >
                   <Step item={deltaPositions[0][parseInt(currentItem)]} />
                 </div>
-              )} */}
+              )}
             <EditingContent id="EditingContent">
               {deltaPositions[0].map(step => {
                 if (!isNaN(step.key))
