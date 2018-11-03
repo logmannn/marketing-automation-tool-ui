@@ -88,6 +88,8 @@ const Close = styled(FontAwesomeIcon)`
   margin-right: 2px;
 
   cursor: pointer;
+
+  color: #ffffff;
 `;
 
 export default class Step extends Component {
