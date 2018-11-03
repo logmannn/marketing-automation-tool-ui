@@ -120,7 +120,7 @@ export default class Step extends Component {
     };
 
     const { hover } = this.state;
-    const { item } = this.props;
+    const { item, creation } = this.props;
 
     let left = "#FFF";
     let top = "#FFF";
@@ -212,7 +212,10 @@ export default class Step extends Component {
                 }}
               >
                 <CloseWrapper>
-                  {hover && <Close icon="times" onClick={this.deleteStep} />}
+                  {hover &&
+                    !creation && (
+                      <Close icon="times" onClick={this.deleteStep} />
+                    )}
                 </CloseWrapper>
               </Icon>
             </IconWrapper>

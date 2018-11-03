@@ -824,6 +824,7 @@ export default class Editing extends Component {
                           lineDelete={this.lineDelete}
                           setCurrentStep={this.setCurrentStep}
                           deleteStep={this.deleteStep}
+                          creation={this.state.creatingLine}
                         />
                       </div>
                     </Draggable>
