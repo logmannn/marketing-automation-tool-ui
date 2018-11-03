@@ -79,26 +79,29 @@ export default class Editing extends Component {
         [
           {
             key: 0,
-            x: 0,
-            y: 0,
+            x: 97,
+            y: 274,
             icon: Drip,
             background: "green",
             activePoints: [
               {
-                top: "",
+                top: "start",
                 left: "",
                 bottom: "start",
                 right: ""
               }
             ],
-            connectedTo: [{ itemId: 1, status: "start", side: "bottom" }],
-            attachedLines: [0],
+            connectedTo: [
+              { itemId: 1, status: "start", side: "bottom" },
+              { itemId: 4, status: "start", side: "top" }
+            ],
+            attachedLines: [0, 2],
             deleted: false
           },
           {
             key: 1,
-            x: 100,
-            y: 100,
+            x: 267,
+            y: 509,
             icon: Drip,
             background: "red",
             activePoints: [
@@ -154,20 +157,20 @@ export default class Editing extends Component {
           },
           {
             key: 4,
-            x: 305,
-            y: 85,
+            x: 362,
+            y: 159,
             icon: Drip,
             background: "purple",
             activePoints: [
               {
                 top: "",
-                left: "",
+                left: "end",
                 bottom: "",
                 right: ""
               }
             ],
-            connectedTo: [],
-            attachedLines: [],
+            connectedTo: [{ itemId: 0, status: "end", side: "left" }],
+            attachedLines: [2],
             deleted: false
           }
         ]
@@ -207,6 +210,21 @@ export default class Editing extends Component {
             end: [
               {
                 item: 2,
+                side: "left"
+              }
+            ]
+          },
+          {
+            key: 1,
+            start: [
+              {
+                item: 0,
+                side: "top"
+              }
+            ],
+            end: [
+              {
+                item: 4,
                 side: "left"
               }
             ]
@@ -446,10 +464,10 @@ export default class Editing extends Component {
             index = attachedItemEnd.attachedLines.indexOf(id);
             items[lineItemEnd.item].attachedLines.splice(index, 1);
 
-            items[id] = {
-              ...items[id],
-              attachedLines: [...items[id].attachedLines]
-            };
+            // items[id] = {
+            //   ...items[id],
+            //   attachedLines: [...items[id].attachedLines]
+            // };
 
             let alreadyConnectedToStart = 0;
             for (let i = 0; i < attachedItemStart.connectedTo.length; i++) {
@@ -474,7 +492,6 @@ export default class Editing extends Component {
 
             // for (let i = 0; i < attachedItemEnd.connectedTo.length; i++) {
             // console.log(attachedItemEnd.activePoints[0][lineItemEnd.side]);
-            // debugger;
             // attachedItemEnd.activePoints[0][lineItemEnd.side] = "";
             // }
 
@@ -667,7 +684,6 @@ export default class Editing extends Component {
       for (let i = 0; i < deltaPositions[0].length; i++) {
         if (deltaPositions[0][i].key === id) {
           let items = deltaPositions[0][i];
-
           items.deleted = true;
         }
       }
