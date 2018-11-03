@@ -438,8 +438,26 @@ export default class Editing extends Component {
     this.onMouseDown = e => {
       if (creatingLine === true && e.target.id === "EditingContent") {
         lines[0].pop();
-        deltaPositions[0][currentFirstPoint].activePoints[0][currentFirstSide] =
-          "";
+
+        let isAlreadyConnected = false;
+        for (
+          let i = 0;
+          i < deltaPositions[0][currentFirstPoint].connectedTo.length;
+          i++
+        ) {
+          if (
+            deltaPositions[0][currentFirstPoint].connectedTo[i].side ===
+            currentFirstSide
+          ) {
+            isAlreadyConnected = true;
+          }
+        }
+
+        if (!isAlreadyConnected) {
+          deltaPositions[0][currentFirstPoint].activePoints[0][
+            currentFirstSide
+          ] = "";
+        }
         this.setState({
           currentLineItem: "",
           creatingLine: false
@@ -463,11 +481,6 @@ export default class Editing extends Component {
 
             index = attachedItemEnd.attachedLines.indexOf(id);
             items[lineItemEnd.item].attachedLines.splice(index, 1);
-
-            // items[id] = {
-            //   ...items[id],
-            //   attachedLines: [...items[id].attachedLines]
-            // };
 
             let alreadyConnectedToStart = 0;
             for (let i = 0; i < attachedItemStart.connectedTo.length; i++) {
@@ -555,13 +568,28 @@ export default class Editing extends Component {
           currentLineItem = lines[0][lines[0].length - 1].key + 1;
         }
 
+        let test = this.state.deltaPositions[0][id].activePoints[0];
+        let status = "start";
+        if (side === "left" && test.left === "end") {
+          status = "end";
+        }
+        if (side === "top" && test.top === "end") {
+          status = "end";
+        }
+        if (side === "bottom" && test.bottom === "end") {
+          status = "end";
+        }
+        if (side === "right" && test.right === "end") {
+          status = "end";
+        }
+
         const items = this.state.deltaPositions[0];
         items[id] = {
           ...items[id],
           activePoints: [
             {
               ...items[id].activePoints[0],
-              [side]: "start"
+              [side]: status
             }
           ]
         };
