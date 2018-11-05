@@ -6,6 +6,8 @@ import Step from "./Step";
 import Drip from "../common/drip.svg";
 import Line from "../common/Line";
 
+import AddItems from "./AddItems";
+
 const EditingDiv = styled.div`
   position: absolute;
 
@@ -503,11 +505,6 @@ export default class Editing extends Component {
               attachedItemEnd.activePoints[0][lineItemEnd.side] = "";
             }
 
-            // for (let i = 0; i < attachedItemEnd.connectedTo.length; i++) {
-            // console.log(attachedItemEnd.activePoints[0][lineItemEnd.side]);
-            // attachedItemEnd.activePoints[0][lineItemEnd.side] = "";
-            // }
-
             for (let i = 0; i < attachedItemStart.connectedTo.length; i++) {
               if (
                 attachedItemStart.connectedTo[i].itemId ===
@@ -532,7 +529,6 @@ export default class Editing extends Component {
     };
 
     this.lineCreate = (side, id) => {
-      // if (deltaPositions[0][id].activePoints[0][side] !== "end") {
       if (creatingLine === false) {
         let parentItems = [];
         let tempItems = [];
@@ -697,7 +693,6 @@ export default class Editing extends Component {
           }
         }
       }
-      // }
     };
 
     this.deleteStep = id => {
@@ -748,6 +743,7 @@ export default class Editing extends Component {
           "loading"
         ) : (
           <>
+            {/* <AddItems /> */}
             {lines[0].map(
               (line, index) =>
                 line.end[0].item !== null ? (

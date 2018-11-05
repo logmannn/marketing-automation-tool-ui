@@ -31,7 +31,7 @@ const SidebarDiv = styled.div`
 
   text-transform: capitalize;
 
-  overflow-y: scroll;
+  /* overflow-y: scroll; */
 `;
 
 const SmallLinks = styled.div`
@@ -83,7 +83,7 @@ const Toggle = styled.div`
 const OverflowScroll = styled.div`
   height: 100%;
 
-  overflow-y: scroll;
+  /* overflow-y: scroll; */
 `;
 
 export default class SideBarLinks extends Component {
