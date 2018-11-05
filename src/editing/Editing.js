@@ -891,7 +891,7 @@ export default class Editing extends Component {
           "loading"
         ) : (
           <>
-            <AddItems />
+            {/* <AddItems /> */}
             {lines[0].map(
               (line, index) =>
                 line.end[0].item !== null ? (
