@@ -2,11 +2,19 @@ import React, { Component } from "react";
 import styled from "styled-components";
 import Draggable from "react-draggable";
 import Step from "./Step";
+import Line from "../common/Line";
+import AddItems from "./AddItems";
 
 import Drip from "../common/drip.svg";
-import Line from "../common/Line";
-
-import AddItems from "./AddItems";
+import UserPlus from "../common/userPlus.svg";
+import Pointer from "../common/pointer.svg";
+import Open from "../common/open.svg";
+import Calendar from "../common/calendar.svg";
+import Mail from "../common/mail.svg";
+import AddPoints from "../common/addPoints.svg";
+import RemovePoints from "../common/removePoints.svg";
+import Time from "../common/time.svg";
+import Score from "../common/score.svg";
 
 const EditingDiv = styled.div`
   position: absolute;
@@ -81,34 +89,110 @@ export default class Editing extends Component {
         [
           {
             key: 0,
-            x: 97,
-            y: 274,
-            icon: Drip,
-            background: "green",
+            x: 22,
+            y: 38,
+            icon: UserPlus,
+            background: "#F5541C",
             activePoints: [
               {
-                top: "start",
+                top: "",
+                left: "",
+                bottom: "",
+                right: "start"
+              }
+            ],
+            connectedTo: [{ itemId: 5, status: "start", side: "right" }],
+            attachedLines: [0],
+            deleted: false
+          },
+          {
+            key: 1,
+            x: 385,
+            y: 594,
+            icon: Pointer,
+            background: "#F5541C",
+            activePoints: [
+              {
+                top: "end",
                 left: "",
                 bottom: "start",
                 right: ""
               }
             ],
             connectedTo: [
-              { itemId: 1, status: "start", side: "bottom" },
-              { itemId: 4, status: "start", side: "top" }
+              { itemId: 3, status: "end", side: "top" },
+              { itemId: 2, status: "start", side: "bottom" }
             ],
-            attachedLines: [0, 2],
+            attachedLines: [4, 5],
             deleted: false
           },
           {
-            key: 1,
-            x: 267,
-            y: 509,
-            icon: Drip,
-            background: "red",
+            key: 2,
+            x: 392,
+            y: 774,
+            icon: AddPoints,
+            background: "#AAD20E",
+            activePoints: [
+              {
+                top: "end",
+                left: "",
+                bottom: "",
+                right: ""
+              }
+            ],
+            connectedTo: [{ itemId: 1, status: "end", side: "top" }],
+            attachedLines: [5],
+            deleted: false
+          },
+          {
+            key: 3,
+            x: 376,
+            y: 435,
+            icon: Open,
+            background: "#F5541C",
             activePoints: [
               {
                 top: "",
+                left: "end",
+                bottom: "start",
+                right: "start"
+              }
+            ],
+            connectedTo: [
+              { itemId: 7, status: "end", side: "left" },
+              { itemId: 1, status: "start", side: "bottom" },
+              { itemId: 6, status: "start", side: "right" }
+            ],
+            attachedLines: [3, 4, 6],
+            deleted: false
+          },
+          {
+            key: 4,
+            x: 231,
+            y: 12,
+            icon: Calendar,
+            background: "#F5541C",
+            activePoints: [
+              {
+                top: "",
+                left: "",
+                bottom: "start",
+                right: ""
+              }
+            ],
+            connectedTo: [{ itemId: 5, status: "start", side: "bottom" }],
+            attachedLines: [1],
+            deleted: false
+          },
+          {
+            key: 5,
+            x: 186,
+            y: 187,
+            icon: Mail,
+            background: "#AAD20E",
+            activePoints: [
+              {
+                top: "end",
                 left: "end",
                 bottom: "start",
                 right: ""
@@ -116,17 +200,18 @@ export default class Editing extends Component {
             ],
             connectedTo: [
               { itemId: 0, status: "end", side: "left" },
-              { itemId: 2, status: "start", side: "bottom" }
+              { itemId: 7, status: "start", side: "bottom" },
+              { itemId: 4, status: "end", side: "top" }
             ],
-            attachedLines: [0, 1],
+            attachedLines: [0, 1, 2],
             deleted: false
           },
           {
-            key: 2,
-            x: 620,
-            y: 228,
-            icon: Drip,
-            background: "blue",
+            key: 6,
+            x: 571,
+            y: 511,
+            icon: RemovePoints,
+            background: "#AAD20E",
             activePoints: [
               {
                 top: "",
@@ -135,16 +220,37 @@ export default class Editing extends Component {
                 right: ""
               }
             ],
-            connectedTo: [{ itemId: 1, status: "end", side: "left" }],
-            attachedLines: [1],
+            connectedTo: [{ itemId: 3, status: "end", side: "left" }],
+            attachedLines: [6, 7],
             deleted: false
           },
           {
-            key: 3,
-            x: 300,
-            y: 300,
-            icon: Drip,
-            background: "cyan",
+            key: 7,
+            x: 234,
+            y: 342,
+            icon: Time,
+            background: "#00A1E1",
+            activePoints: [
+              {
+                top: "",
+                left: "end",
+                bottom: "",
+                right: "start"
+              }
+            ],
+            connectedTo: [
+              { itemId: 5, status: "end", side: "left" },
+              { itemId: 3, status: "start", side: "right" }
+            ],
+            attachedLines: [2, 3],
+            deleted: false
+          },
+          {
+            key: 8,
+            x: 924,
+            y: 749,
+            icon: Score,
+            background: "#00A1E1",
             activePoints: [
               {
                 top: "",
@@ -155,24 +261,6 @@ export default class Editing extends Component {
             ],
             connectedTo: [],
             attachedLines: [],
-            deleted: false
-          },
-          {
-            key: 4,
-            x: 362,
-            y: 159,
-            icon: Drip,
-            background: "purple",
-            activePoints: [
-              {
-                top: "",
-                left: "end",
-                bottom: "",
-                right: ""
-              }
-            ],
-            connectedTo: [{ itemId: 0, status: "end", side: "left" }],
-            attachedLines: [2],
             deleted: false
           }
         ]
@@ -191,18 +279,78 @@ export default class Editing extends Component {
             start: [
               {
                 item: 0,
-                side: "bottom"
+                side: "right"
               }
             ],
             end: [
               {
-                item: 1,
+                item: 5,
                 side: "left"
               }
             ]
           },
           {
             key: 1,
+            start: [
+              {
+                item: 4,
+                side: "bottom"
+              }
+            ],
+            end: [
+              {
+                item: 5,
+                side: "top"
+              }
+            ]
+          },
+          {
+            key: 2,
+            start: [
+              {
+                item: 5,
+                side: "bottom"
+              }
+            ],
+            end: [
+              {
+                item: 7,
+                side: "left"
+              }
+            ]
+          },
+          {
+            key: 3,
+            start: [
+              {
+                item: 7,
+                side: "right"
+              }
+            ],
+            end: [
+              {
+                item: 3,
+                side: "left"
+              }
+            ]
+          },
+          {
+            key: 4,
+            start: [
+              {
+                item: 3,
+                side: "bottom"
+              }
+            ],
+            end: [
+              {
+                item: 1,
+                side: "top"
+              }
+            ]
+          },
+          {
+            key: 5,
             start: [
               {
                 item: 1,
@@ -212,21 +360,21 @@ export default class Editing extends Component {
             end: [
               {
                 item: 2,
-                side: "left"
+                side: "top"
               }
             ]
           },
           {
-            key: 2,
+            key: 6,
             start: [
               {
-                item: 0,
-                side: "top"
+                item: 3,
+                side: "right"
               }
             ],
             end: [
               {
-                item: 4,
+                item: 6,
                 side: "left"
               }
             ]
@@ -743,7 +891,7 @@ export default class Editing extends Component {
           "loading"
         ) : (
           <>
-            {/* <AddItems /> */}
+            <AddItems />
             {lines[0].map(
               (line, index) =>
                 line.end[0].item !== null ? (

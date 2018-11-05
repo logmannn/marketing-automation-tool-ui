@@ -53,7 +53,12 @@ const Icon = styled.section`
 `;
 
 const IconContent = styled.div`
-  width: 150px;
+  width: auto;
+
+  padding-left: 0.1rem;
+  padding-right: 0.1rem;
+
+  margin-top: 0.2rem;
 
   display: flex;
   justify-content: center;
