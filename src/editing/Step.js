@@ -2,98 +2,69 @@ import React, { Component } from "react";
 import Circle from "./Circle";
 import styled from "styled-components";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
 const Box = styled.div`
   position: absolute;
-
   user-select: none;
-
   display: flex;
   align-items: center;
   flex-direction: column;
-
   width: 150px;
-
   pointer-events: none;
 `;
 
 const IconWrapper = styled.div`
   height: 48px;
   width: 48px;
-
   padding: 10px;
-
   display: flex;
-
   justify-content: center;
   align-items: center;
-
   z-index: 2;
-
   pointer-events: all;
 `;
 
 const Icon = styled.section`
   width: 50px;
   height: 50px;
-
   display: flex;
   justify-content: center;
   align-items: center;
-
   background-size: 20px;
   background-repeat: no-repeat;
   background-position: center;
-
   border-radius: 7px;
   border: 2px solid #fff;
-
   z-index: 2;
 `;
 
 const IconContent = styled.div`
   width: auto;
-
   padding-left: 0.1rem;
   padding-right: 0.1rem;
-
   margin-top: 0.2rem;
-
   display: flex;
   justify-content: center;
-
   border: 2px solid black;
   background: white;
-
   pointer-events: all;
-
   position: relative;
-
   z-index: 10;
 `;
 
 const CloseWrapper = styled.div`
   height: 100%;
   width: 100%;
-
   display: flex;
   justify-content: flex-end;
 `;
 
-const Close = styled(FontAwesomeIcon)`
+const CloseButton = styled.div`
   position: relative;
-
   z-index: 4;
-
   display: flex;
-
   justify-content: flex-end;
-
   margin-right: 2px;
-
   cursor: pointer;
-
   color: #ffffff;
 `;
 
@@ -202,6 +173,7 @@ export default class Step extends Component {
               id={item.key}
             />
             <IconWrapper
+              className="IconWrapper"
               onMouseOver={() => this.setState({ hover: true })}
               onMouseLeave={() => this.setState({ hover: false })}
             >
@@ -219,7 +191,12 @@ export default class Step extends Component {
                 <CloseWrapper>
                   {hover &&
                     !creation && (
-                      <Close icon="times" onClick={this.deleteStep} />
+                      <div
+                        style={{ cursor: "pointer" }}
+                        onClick={this.deleteStep}
+                      >
+                        &#10006;
+                      </div>
                     )}
                 </CloseWrapper>
               </Icon>

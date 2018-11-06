@@ -3,9 +3,7 @@ import styled from "styled-components";
 import Draggable from "react-draggable";
 import Step from "./Step";
 import Line from "../common/Line";
-import AddItems from "./AddItems";
 
-import Drip from "../common/drip.svg";
 import UserPlus from "../common/userPlus.svg";
 import Pointer from "../common/pointer.svg";
 import Open from "../common/open.svg";
@@ -840,6 +838,9 @@ export default class Editing extends Component {
             }
           }
         }
+        // else {
+        //   alert("Sorry, this would create an infinite loop");
+        // }
       }
     };
 
@@ -891,7 +892,6 @@ export default class Editing extends Component {
           "loading"
         ) : (
           <>
-            {/* <AddItems /> */}
             {lines[0].map(
               (line, index) =>
                 line.end[0].item !== null ? (

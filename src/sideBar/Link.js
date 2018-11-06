@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 
-import { library } from "@fortawesome/fontawesome-svg-core";
+// import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { fas } from "@fortawesome/free-solid-svg-icons";
+// import { fas } from "@fortawesome/free-solid-svg-icons";
 
 const LinkDiv = styled.a`
   color: #bab9ba;
@@ -35,7 +35,7 @@ const LinkDiv = styled.a`
 
 export default class Link extends Component {
   render() {
-    library.add(fas);
+    // library.add(fas);
 
     return (
       <LinkDiv className={this.props.current ? "current" : ""}>
