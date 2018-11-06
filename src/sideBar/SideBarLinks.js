@@ -8,8 +8,23 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUser,
   faQuestionCircle,
-  faAngleDoubleLeft
+  faAngleDoubleLeft,
+  faAngleDoubleRight
 } from "@fortawesome/free-solid-svg-icons";
+
+import Home from "../common/home.svg";
+import Users from "../common/users.svg";
+import Envelope from "../common/envelope.svg";
+import Sitemap from "../common/sitemap.svg";
+import Chart from "../common/chart-bar.svg";
+import Cog from "../common/cog.svg";
+
+import Home2 from "../common/black/home.svg";
+import Users2 from "../common/black/users.svg";
+import Envelope2 from "../common/black/envelope.svg";
+import Sitemap2 from "../common/black/sitemap.svg";
+import Chart2 from "../common/black/chart-bar.svg";
+import Cog2 from "../common/black/cog.svg";
 
 import UserPlus from "../common/userPlus.svg";
 import Pointer from "../common/pointer.svg";
@@ -21,7 +36,7 @@ import RemovePoints from "../common/removePoints.svg";
 import Time from "../common/time.svg";
 import Score from "../common/score.svg";
 
-library.add(faUser, faQuestionCircle, faAngleDoubleLeft);
+library.add(faUser, faQuestionCircle, faAngleDoubleLeft, faAngleDoubleRight);
 
 const SidebarDiv = styled.div`
   position: relative;
@@ -120,6 +135,11 @@ const NavItem = styled.div`
   &:hover {
     color: #ffffff;
   }
+
+  @media only screen and (max-height: 690px) {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
 `;
 
 const LinksDiv = styled.div`
@@ -177,6 +197,13 @@ const ItemIcon = styled.div`
   background-size: 20px;
   background-repeat: no-repeat;
   background-position: center;
+
+  cursor: pointer;
+
+  @media only screen and (max-height: 790px) {
+    height: 30px;
+    width: 30px;
+  }
 `;
 
 export default class SideBarLinks extends Component {
@@ -192,37 +219,43 @@ export default class SideBarLinks extends Component {
       {
         id: 1,
         text: "dashboard",
-        icon: "home",
+        icon: Home,
+        icon2: Home2,
         current: false
       },
       {
         id: 2,
         text: "lists",
-        icon: "users",
+        icon: Users,
+        icon2: Users2,
         current: false
       },
       {
         id: 3,
         text: "emails",
-        icon: "envelope",
+        icon: Envelope,
+        icon2: Envelope2,
         current: false
       },
       {
         id: 4,
         text: "Automation",
-        icon: "sitemap",
+        icon: Sitemap,
+        icon2: Sitemap2,
         current: true
       },
       {
         id: 5,
         text: "reports",
-        icon: "chart-bar",
+        icon: Chart,
+        icon2: Chart2,
         current: false
       },
       {
         id: 6,
         text: "my account",
-        icon: "cog",
+        icon: Cog,
+        icon2: Cog2,
         current: false
       }
     ];
@@ -282,11 +315,16 @@ export default class SideBarLinks extends Component {
     ];
 
     const { currentNav } = this.state;
+    const { hideShow, newItem, isHidden } = this.props;
+
+    this.clickItem = item => {
+      newItem(item);
+    };
 
     return (
       <>
-        <Toggle onClick={() => this.props.hideShow()}>
-          {!this.props.isHidden ? (
+        <Toggle onClick={() => hideShow()}>
+          {!isHidden ? (
             <FontAwesomeIcon icon="angle-double-left" />
           ) : (
             <FontAwesomeIcon icon="angle-double-right" />
@@ -316,6 +354,7 @@ export default class SideBarLinks extends Component {
                     key={link.id}
                     text={link.text}
                     icon={link.icon}
+                    icon2={link.icon2}
                     current={link.current}
                   />
                 ))}
@@ -331,6 +370,12 @@ export default class SideBarLinks extends Component {
                           backgroundImage: `url(${condition.icon})`,
                           backgroundColor: "#F5541C"
                         }}
+                        onClick={() =>
+                          this.clickItem({
+                            icon: condition.icon,
+                            backgroundColor: "#F5541C"
+                          })
+                        }
                       />
                       {condition.text}
                     </Item>
@@ -345,6 +390,12 @@ export default class SideBarLinks extends Component {
                           backgroundImage: `url(${action.icon})`,
                           backgroundColor: "#AAD20E"
                         }}
+                        onClick={() =>
+                          this.clickItem({
+                            icon: action.icon,
+                            backgroundColor: "#AAD20E"
+                          })
+                        }
                       />
                       {action.text}
                     </Item>
@@ -357,8 +408,14 @@ export default class SideBarLinks extends Component {
                       <ItemIcon
                         style={{
                           backgroundImage: `url(${control.icon})`,
-                          backgroundColor: "#AAD20E"
+                          backgroundColor: "#00A1E1"
                         }}
+                        onClick={() =>
+                          this.clickItem({
+                            icon: control.icon,
+                            backgroundColor: "#00A1E1"
+                          })
+                        }
                       />
                       {control.text}
                     </Item>

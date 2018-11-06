@@ -1,10 +1,6 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 
-// import { library } from "@fortawesome/fontawesome-svg-core";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// import { fas } from "@fortawesome/free-solid-svg-icons";
-
 const LinkDiv = styled.a`
   color: #bab9ba;
 
@@ -24,6 +20,9 @@ const LinkDiv = styled.a`
 
   cursor: pointer;
 
+  display: flex;
+  align-items: center;
+
   & > :first-child {
     margin-right: 0.75rem;
   }
@@ -33,13 +32,23 @@ const LinkDiv = styled.a`
   }
 `;
 
+const Logo = styled.div`
+  width: 25px;
+  height: 25px;
+
+  background-position: center center;
+  background-repeat: no-repeat;
+`;
+
 export default class Link extends Component {
   render() {
-    // library.add(fas);
-
     return (
       <LinkDiv className={this.props.current ? "current" : ""}>
-        <FontAwesomeIcon icon={this.props.icon} />
+        {this.props.current ? (
+          <Logo style={{ backgroundImage: `url(${this.props.icon2})` }} />
+        ) : (
+          <Logo style={{ backgroundImage: `url(${this.props.icon})` }} />
+        )}
         {this.props.text}
       </LinkDiv>
     );

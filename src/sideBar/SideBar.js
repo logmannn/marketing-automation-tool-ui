@@ -3,10 +3,10 @@ import styled from "styled-components";
 
 const SidebarDiv = styled.div`
   position: fixed;
-  
+
   top: 0;
   left: 0;
-  bottom: 0
+  bottom: 0;
 
   width: 100%;
   max-width: 230px;
@@ -15,6 +15,10 @@ const SidebarDiv = styled.div`
   background: #161a1f;
 
   z-index: 2;
+
+  @media only screen and (max-height: 670px) {
+    overflow: scroll;
+  }
 `;
 
 const SideBar = ({ children }) => (

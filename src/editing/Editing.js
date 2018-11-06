@@ -382,6 +382,48 @@ export default class Editing extends Component {
     });
   }
 
+  componentDidUpdate(prevProps) {
+    // Create new Item
+    const { newItem, clearNewItem } = this.props;
+    const { deltaPositions } = this.state;
+
+    if (newItem !== prevProps.newItem && newItem !== null) {
+      console.log(newItem);
+      // this.state.deltaPositions[0].push({
+      //   key: this.state.deltaPositions[0].length,
+      //   x: 20,
+      //   y: 170,
+      //   icon: newItem.icon,
+      //   background: newItem.background
+      // });
+      const items = deltaPositions;
+      items[0].push({
+        key: this.state.deltaPositions[0].length,
+        x: 20,
+        y: 170,
+        icon: newItem.icon,
+        background: newItem.backgroundColor,
+        activePoints: [
+          {
+            top: "",
+            left: "",
+            bottom: "",
+            right: ""
+          }
+        ],
+        connectedTo: [],
+        attachedLines: [],
+        deleted: false
+      });
+
+      this.setState({
+        deltaPositions: items
+      });
+      console.log(deltaPositions[0]);
+      clearNewItem();
+    }
+  }
+
   checkForScroll = () => {
     if (this.state.activeDrags) {
       let sizeOfScroll = 10;

@@ -14,10 +14,17 @@ const Wrapper = styled.div`
 class App extends Component {
   constructor(props) {
     super(props);
-    this.state = { isHidden: null };
+    this.state = {
+      isHidden: null,
+      newItem: null
+    };
   }
 
   render() {
+    this.newItem = item => {
+      this.setState({ newItem: item });
+    };
+
     return (
       <Wrapper className="App">
         <SideBar isHidden={this.state.isHidden}>
@@ -26,9 +33,14 @@ class App extends Component {
             hideShow={isHidden =>
               this.setState({ isHidden: !this.state.isHidden })
             }
+            newItem={this.newItem}
           />
         </SideBar>
-        <Editing isHidden={this.state.isHidden} />
+        <Editing
+          isHidden={this.state.isHidden}
+          newItem={this.state.newItem}
+          clearNewItem={newItem => this.setState({ newItem: null })}
+        />
       </Wrapper>
     );
   }
