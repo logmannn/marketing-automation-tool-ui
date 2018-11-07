@@ -9,6 +9,7 @@
     "i": "^0.3.6",
     "npm": "^6.4.1",
     "react": "^16.5.2",
+    "react-device-detect": "^1.6.1",
     "react-dom": "^16.5.2",
     "react-draggable": "^3.0.5",
     "react-hover-observer": "^2.1.1",

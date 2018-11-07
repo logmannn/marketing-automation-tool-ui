@@ -388,19 +388,19 @@ export default class Editing extends Component {
     const { deltaPositions } = this.state;
 
     if (newItem !== prevProps.newItem && newItem !== null) {
-      console.log(newItem);
-      // this.state.deltaPositions[0].push({
-      //   key: this.state.deltaPositions[0].length,
-      //   x: 20,
-      //   y: 170,
-      //   icon: newItem.icon,
-      //   background: newItem.background
-      // });
+      const top = Math.abs(
+        document.getElementById("EditingContent").getBoundingClientRect().top
+      );
+      const left = Math.abs(
+        document.getElementById("EditingContent").getBoundingClientRect().left -
+          230
+      );
+
       const items = deltaPositions;
       items[0].push({
         key: this.state.deltaPositions[0].length,
-        x: 20,
-        y: 170,
+        x: left + 0,
+        y: top + 0,
         icon: newItem.icon,
         background: newItem.backgroundColor,
         activePoints: [
@@ -419,7 +419,6 @@ export default class Editing extends Component {
       this.setState({
         deltaPositions: items
       });
-      console.log(deltaPositions[0]);
       clearNewItem();
     }
   }

@@ -58,16 +58,6 @@ const CloseWrapper = styled.div`
   justify-content: flex-end;
 `;
 
-const CloseButton = styled.div`
-  position: relative;
-  z-index: 4;
-  display: flex;
-  justify-content: flex-end;
-  margin-right: 2px;
-  cursor: pointer;
-  color: #ffffff;
-`;
-
 export default class Step extends Component {
   constructor(props) {
     super(props);
@@ -108,31 +98,33 @@ export default class Step extends Component {
     let rOpacity = "";
     let bOpacity = "";
 
-    if (item.activePoints[0].left !== "") {
-      lOpacity = 1;
-      if (item.activePoints[0].left === "end") {
-        left = "#919191";
+    if (typeof item.activePoints[0].left !== "undefined") {
+      if (item.activePoints[0].left !== "") {
+        lOpacity = 1;
+        if (item.activePoints[0].left === "end") {
+          left = "#919191";
+        }
       }
-    }
 
-    if (item.activePoints[0].top !== "") {
-      tOpacity = 1;
-      if (item.activePoints[0].top === "end") {
-        top = "#919191";
+      if (item.activePoints[0].top !== "") {
+        tOpacity = 1;
+        if (item.activePoints[0].top === "end") {
+          top = "#919191";
+        }
       }
-    }
 
-    if (item.activePoints[0].right !== "") {
-      rOpacity = 1;
-      if (item.activePoints[0].right === "end") {
-        right = "#919191";
+      if (item.activePoints[0].right !== "") {
+        rOpacity = 1;
+        if (item.activePoints[0].right === "end") {
+          right = "#919191";
+        }
       }
-    }
 
-    if (item.activePoints[0].bottom !== "") {
-      bOpacity = 1;
-      if (item.activePoints[0].bottom === "end") {
-        bottom = "#919191";
+      if (item.activePoints[0].bottom !== "") {
+        bOpacity = 1;
+        if (item.activePoints[0].bottom === "end") {
+          bottom = "#919191";
+        }
       }
     }
 
