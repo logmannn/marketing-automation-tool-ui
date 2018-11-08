@@ -69,17 +69,15 @@ export default class Editing extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      activeDrags: 0,
-      deltaPositions: [],
-      loading: true,
-      intervalId: 0,
-      mouseX: 0,
-      mouseY: 0
+      loading: true
     };
   }
 
   componentDidMount() {
+    // Set interval for checking if dragging near edge
     this.interval = setInterval(this.checkForScroll, 150);
+
+    // mostly preview information in state for now until I get the backend working
     this.setState({
       loading: false,
       activeDrags: 0,
@@ -383,11 +381,12 @@ export default class Editing extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    // Create new Item
     const { newItem, clearNewItem } = this.props;
-    const { deltaPositions } = this.state;
 
     if (newItem !== prevProps.newItem && newItem !== null) {
+      // If a new item is detected in the properties then create a new item and clear the state
+      const { deltaPositions } = this.state;
+
       const top = Math.abs(
         document.getElementById("EditingContent").getBoundingClientRect().top
       );
@@ -886,24 +885,26 @@ export default class Editing extends Component {
     };
 
     this.deleteStep = id => {
-      let itemsDelete = deltaPositions;
-      let items = itemsDelete[0][id];
-      const itemCount = items.attachedLines.length;
+      if (!activeDrags) {
+        let itemsDelete = deltaPositions;
+        let items = itemsDelete[0][id];
+        const itemCount = items.attachedLines.length;
 
-      for (let i = 0; i < itemCount; i++) {
-        this.onLineDelete(items.attachedLines[0]);
-      }
-
-      for (let i = 0; i < deltaPositions[0].length; i++) {
-        if (deltaPositions[0][i].key === id) {
-          let items = deltaPositions[0][i];
-          items.deleted = true;
+        for (let i = 0; i < itemCount; i++) {
+          this.onLineDelete(items.attachedLines[0]);
         }
-      }
 
-      this.setState({
-        deltaPositions: itemsDelete
-      });
+        for (let i = 0; i < deltaPositions[0].length; i++) {
+          if (deltaPositions[0][i].key === id) {
+            let items = deltaPositions[0][i];
+            items.deleted = true;
+          }
+        }
+
+        this.setState({
+          deltaPositions: itemsDelete
+        });
+      }
     };
 
     return (
