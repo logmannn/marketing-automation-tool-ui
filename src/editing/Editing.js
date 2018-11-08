@@ -4,6 +4,7 @@ import Draggable from "react-draggable";
 import Step from "./Step";
 import Line from "../common/Line";
 
+// Icons for Steps
 import UserPlus from "../common/userPlus.svg";
 import Pointer from "../common/pointer.svg";
 import Open from "../common/open.svg";
@@ -81,6 +82,10 @@ export default class Editing extends Component {
     this.setState({
       loading: false,
       activeDrags: 0,
+      startDragPosition: {},
+      undo: [],
+      redo: [],
+      actionPerformed: false,
       deltaPositions: [
         [
           {
@@ -382,11 +387,16 @@ export default class Editing extends Component {
 
   componentDidUpdate(prevProps) {
     const { newItem, clearNewItem } = this.props;
+    const { actionPerformed } = this.state;
+    if (actionPerformed) {
+      this.setState({ actionPerformed: false });
+    }
 
     if (newItem !== prevProps.newItem && newItem !== null) {
-      // If a new item is detected in the properties then create a new item and clear the state
+      // If a new item is detected in the props then create a new item and clear the state. I wasn't sure how to do this another way. This is so that the sidebar which is in another component can communicate with this component
       const { deltaPositions } = this.state;
 
+      // Get where the user is in their scroll and add an item in the top left
       const top = Math.abs(
         document.getElementById("EditingContent").getBoundingClientRect().top
       );
@@ -416,8 +426,11 @@ export default class Editing extends Component {
       });
 
       this.setState({
-        deltaPositions: items
+        deltaPositions: items,
+        actionPerformed: true
       });
+
+      // remove the newItem state so that this is not called multiple times
       clearNewItem();
     }
   }
@@ -553,7 +566,8 @@ export default class Editing extends Component {
         document.getElementById(itemNumber).getBoundingClientRect().x,
       offsetY:
         this.state.mouseY -
-        document.getElementById(itemNumber).getBoundingClientRect().y
+        document.getElementById(itemNumber).getBoundingClientRect().y,
+      startDragPosition: { x: position.x, y: position.y }
     });
   };
 
@@ -574,6 +588,7 @@ export default class Editing extends Component {
 
     const itemNumber = position.node.id;
     const items = this.state.deltaPositions;
+
     items[0][itemNumber] = {
       ...items[0][itemNumber],
       x: x,
@@ -584,6 +599,16 @@ export default class Editing extends Component {
       deltaPositions: items,
       start: false
     });
+
+    // only set action performed to true if the item has actually moved
+    if (
+      this.state.startDragPosition.x !== position.x &&
+      this.state.startDragPosition.y !== position.y
+    ) {
+      this.setState({
+        actionPerformed: true
+      });
+    }
   };
 
   render() {
@@ -606,7 +631,9 @@ export default class Editing extends Component {
       mouseX,
       mouseY,
       offsetX,
-      offsetY
+      offsetY,
+      redo,
+      undo
     } = this.state;
 
     const { isHidden } = this.props;
@@ -711,6 +738,7 @@ export default class Editing extends Component {
             lines[0].splice(i, 1);
           }
         }
+        this.setState({ actionPerformed: true });
       }
     };
 
@@ -876,6 +904,7 @@ export default class Editing extends Component {
                 });
               }
             }
+            this.setState({ actionPerformed: true });
           }
         }
         // else {
@@ -902,7 +931,8 @@ export default class Editing extends Component {
         }
 
         this.setState({
-          deltaPositions: itemsDelete
+          deltaPositions: itemsDelete,
+          actionPerformed: true
         });
       }
     };
