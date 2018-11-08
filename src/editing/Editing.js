@@ -3,6 +3,7 @@ import styled from "styled-components";
 import Draggable from "react-draggable";
 import Step from "./Step";
 import Line from "../common/Line";
+import { HotKeys } from "react-hotkeys";
 
 // Icons for Steps
 import UserPlus from "../common/userPlus.svg";
@@ -86,6 +87,13 @@ export default class Editing extends Component {
       undo: [],
       redo: [],
       actionPerformed: false,
+      intervalId: 0,
+      mouseX: 0,
+      mouseY: 0,
+      offsetX: 0,
+      offsetY: 0,
+      start: false,
+      creatingLine: false,
       deltaPositions: [
         [
           {
@@ -266,13 +274,6 @@ export default class Editing extends Component {
           }
         ]
       ],
-      intervalId: 0,
-      mouseX: 0,
-      mouseY: 0,
-      offsetX: 0,
-      offsetY: 0,
-      start: false,
-      creatingLine: false,
       lines: [
         [
           {
@@ -387,9 +388,12 @@ export default class Editing extends Component {
 
   componentDidUpdate(prevProps) {
     const { newItem, clearNewItem } = this.props;
-    const { actionPerformed } = this.state;
+    const { actionPerformed, undo, deltaPositions } = this.state;
     if (actionPerformed) {
-      this.setState({ actionPerformed: false });
+      this.setState({
+        actionPerformed: false
+      });
+      undo.push(deltaPositions);
     }
 
     if (newItem !== prevProps.newItem && newItem !== null) {
@@ -937,122 +941,156 @@ export default class Editing extends Component {
       }
     };
 
+    this.onKeyDown = e => {
+      e.preventDefault();
+    };
+
+    const keyMap = {
+      undo: ["meta+z", "command+z", "ctrl+z"],
+      redo: ["meta+y", "command+y", "ctrl+y", "command+shift+z"]
+    };
+
+    const handlers = {
+      undo: this.undo,
+      redo: this.redo
+    };
+
+    this.toggle = 0;
+    this.undo = () => {
+      if (this.toggle === 1) {
+        this.toggle = 0;
+        console.log("undo");
+      }
+      this.toggle = this.toggle + 1;
+    };
+    this.redo = () => {
+      if (this.toggle === 1) {
+        this.toggle = 0;
+        console.log("redo");
+      }
+      this.toggle = this.toggle + 1;
+    };
+
     return (
-      <EditingDiv
-        id="EditingDiv"
-        className={
-          "disable-css-transitions " +
-          (isHidden === true && "editingFull") +
-          " " +
-          (isHidden === false && "editingSmall")
-        }
-        onMouseMove={this.onMouseMove}
-        onMouseDown={this.onMouseDown}
-      >
-        <LeftSideBar
-          id="LeftSideBar"
+      <HotKeys keyMap={keyMap} handlers={handlers}>
+        <EditingDiv
+          id="EditingDiv"
           className={
             "disable-css-transitions " +
-            (isHidden === true && "LeftSidebarBefore") +
+            (isHidden === true && "editingFull") +
             " " +
-            (isHidden === false && "LeftSidebarAfter")
+            (isHidden === false && "editingSmall")
           }
-        />
-        <TopSideBar id="TopSideBar" />
+          onMouseMove={this.onMouseMove}
+          onMouseDown={this.onMouseDown}
+          onKeyDown={this.onKeyDown}
+          tabIndex="0"
+        >
+          <LeftSideBar
+            id="LeftSideBar"
+            className={
+              "disable-css-transitions " +
+              (isHidden === true && "LeftSidebarBefore") +
+              " " +
+              (isHidden === false && "LeftSidebarAfter")
+            }
+          />
+          <TopSideBar id="TopSideBar" />
 
-        {loading ? (
-          "loading"
-        ) : (
-          <>
-            {lines[0].map(
-              (line, index) =>
-                line.end[0].item !== null ? (
-                  <Line
-                    key={index}
-                    id={line.key}
-                    color="black"
-                    x1={deltaPositions[0][line.start[0].item].x}
-                    y1={deltaPositions[0][line.start[0].item].y}
-                    x2={deltaPositions[0][line.end[0].item].x}
-                    y2={deltaPositions[0][line.end[0].item].y}
-                    startSide={line.start[0].side}
-                    hidden={this.state.hidden}
-                    endSide={line.end[0].side}
-                    onLineDelete={this.onLineDelete}
-                    creation={this.state.creatingLine}
-                  />
-                ) : (
-                  <Line
-                    key={index}
-                    id={line.key}
-                    color="black"
-                    x1={deltaPositions[0][line.start[0].item].x}
-                    y1={deltaPositions[0][line.start[0].item].y}
-                    x2={elementX}
-                    y2={elementY}
-                    startSide={line.start[0].side}
-                    hidden={this.state.hidden}
-                    onLineDelete={this.onLineDelete}
-                    endSide="mouse"
-                    creation={this.state.creatingLine}
-                  />
-                )
-            )}
-            {!isNaN(currentItem) &&
-              activeDrags === 1 &&
-              start === false && (
-                <div
-                  style={{
-                    position: "fixed",
-                    left: `calc(${mouseX}px - ${offsetX}px)`,
-                    top: `calc(${mouseY}px - ${offsetY}px)`
-                  }}
-                >
-                  <Step item={deltaPositions[0][parseInt(currentItem)]} />
-                </div>
+          {loading ? (
+            "loading"
+          ) : (
+            <>
+              {lines[0].map(
+                (line, index) =>
+                  line.end[0].item !== null ? (
+                    <Line
+                      key={index}
+                      id={line.key}
+                      color="black"
+                      x1={deltaPositions[0][line.start[0].item].x}
+                      y1={deltaPositions[0][line.start[0].item].y}
+                      x2={deltaPositions[0][line.end[0].item].x}
+                      y2={deltaPositions[0][line.end[0].item].y}
+                      startSide={line.start[0].side}
+                      hidden={this.state.hidden}
+                      endSide={line.end[0].side}
+                      onLineDelete={this.onLineDelete}
+                      creation={this.state.creatingLine}
+                    />
+                  ) : (
+                    <Line
+                      key={index}
+                      id={line.key}
+                      color="black"
+                      x1={deltaPositions[0][line.start[0].item].x}
+                      y1={deltaPositions[0][line.start[0].item].y}
+                      x2={elementX}
+                      y2={elementY}
+                      startSide={line.start[0].side}
+                      hidden={this.state.hidden}
+                      onLineDelete={this.onLineDelete}
+                      endSide="mouse"
+                      creation={this.state.creatingLine}
+                    />
+                  )
               )}
-            <EditingContent id="EditingContent">
-              {deltaPositions[0].map(step => {
-                if (!isNaN(step.key))
-                  return (
-                    <Draggable
-                      position={deltaPositions[0][step.key]}
-                      {...dragHandlers}
-                      onDrag={this.onControlledDrag}
-                      key={step.key}
-                      handle=".grabbable"
-                    >
-                      <div
-                        id={step.key}
-                        style={{ position: "absolute" }}
-                        className={
-                          scrolling === true &&
-                          parseInt(currentItem) === step.key &&
-                          start === false
-                            ? "noOpacity"
-                            : "opacity"
-                        }
+              {!isNaN(currentItem) &&
+                activeDrags === 1 &&
+                start === false && (
+                  <div
+                    style={{
+                      position: "fixed",
+                      left: `calc(${mouseX}px - ${offsetX}px)`,
+                      top: `calc(${mouseY}px - ${offsetY}px)`
+                    }}
+                  >
+                    <Step item={deltaPositions[0][parseInt(currentItem)]} />
+                  </div>
+                )}
+              <EditingContent id="EditingContent">
+                {deltaPositions[0].map(step => {
+                  if (!isNaN(step.key))
+                    return (
+                      <Draggable
+                        position={deltaPositions[0][step.key]}
+                        {...dragHandlers}
+                        onDrag={this.onControlledDrag}
+                        key={step.key}
+                        handle=".grabbable"
                       >
-                        <Step
-                          item={deltaPositions[0][step.key]}
-                          lines={lines[0]}
-                          lineCreate={this.lineCreate}
-                          lineDelete={this.lineDelete}
-                          setCurrentStep={this.setCurrentStep}
-                          deleteStep={this.deleteStep}
-                          creation={this.state.creatingLine}
-                        />
-                      </div>
-                    </Draggable>
-                  );
-                else {
-                  return null;
-                }
-              })}
-            </EditingContent>
-          </>
-        )}
-      </EditingDiv>
+                        <div
+                          id={step.key}
+                          style={{ position: "absolute" }}
+                          className={
+                            scrolling === true &&
+                            parseInt(currentItem) === step.key &&
+                            start === false
+                              ? "noOpacity"
+                              : "opacity"
+                          }
+                        >
+                          <Step
+                            item={deltaPositions[0][step.key]}
+                            lines={lines[0]}
+                            lineCreate={this.lineCreate}
+                            lineDelete={this.lineDelete}
+                            setCurrentStep={this.setCurrentStep}
+                            deleteStep={this.deleteStep}
+                            creation={this.state.creatingLine}
+                          />
+                        </div>
+                      </Draggable>
+                    );
+                  else {
+                    return null;
+                  }
+                })}
+              </EditingContent>
+            </>
+          )}
+        </EditingDiv>
+      </HotKeys>
     );
   }
 }
