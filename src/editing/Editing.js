@@ -947,7 +947,14 @@ export default class Editing extends Component {
 
     const keyMap = {
       undo: ["meta+z", "command+z", "ctrl+z"],
-      redo: ["meta+y", "command+y", "ctrl+y", "command+shift+z"]
+      redo: [
+        "meta+y",
+        "command+y",
+        "ctrl+y",
+        "meta+shift+z",
+        "command+shift+z",
+        "ctrl+shift+z"
+      ]
     };
 
     const handlers = {
@@ -960,15 +967,17 @@ export default class Editing extends Component {
       if (this.toggle === 1) {
         this.toggle = 0;
         console.log("undo");
+      } else {
+        this.toggle = this.toggle + 1;
       }
-      this.toggle = this.toggle + 1;
     };
     this.redo = () => {
       if (this.toggle === 1) {
         this.toggle = 0;
         console.log("redo");
+      } else {
+        this.toggle = this.toggle + 1;
       }
-      this.toggle = this.toggle + 1;
     };
 
     return (
