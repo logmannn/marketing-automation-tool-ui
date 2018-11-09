@@ -16,7 +16,7 @@ import RemovePoints from "../common/removePoints.svg";
 import Time from "../common/time.svg";
 import Score from "../common/score.svg";
 
-const EditingDiv = styled.div`
+const EditingDiv = styled(HotKeys)`
   position: absolute;
 
   z-index: 1;
@@ -71,29 +71,11 @@ export default class Editing extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      loading: true
-    };
-  }
-
-  componentDidMount() {
-    // Set interval for checking if dragging near edge
-    this.interval = setInterval(this.checkForScroll, 150);
-
-    // mostly preview information in state for now until I get the backend working
-    this.setState({
-      loading: false,
-      activeDrags: 0,
-      startDragPosition: {},
-      undo: [],
-      redo: [],
-      actionPerformed: false,
-      intervalId: 0,
-      mouseX: 0,
-      mouseY: 0,
-      offsetX: 0,
-      offsetY: 0,
-      start: false,
-      creatingLine: false,
+      controlledPosition: {
+        x: -400,
+        y: 200
+      },
+      loading: true,
       deltaPositions: [
         [
           {
@@ -383,17 +365,40 @@ export default class Editing extends Component {
           }
         ]
       ]
+    };
+  }
+
+  componentDidMount() {
+    // Set interval for checking if dragging near edge
+    this.interval = setInterval(this.checkForScroll, 150);
+
+    // mostly preview information in state for now until I get the backend working
+    this.setState({
+      loading: false,
+      activeDrags: 0,
+      startDragPosition: {},
+      actionPerformed: false,
+      intervalId: 0,
+      mouseX: 0,
+      mouseY: 0,
+      offsetX: 0,
+      offsetY: 0,
+      start: false,
+      creatingLine: false,
+      eventHistory: [],
+      redoHistory: []
     });
   }
 
   componentDidUpdate(prevProps) {
     const { newItem, clearNewItem } = this.props;
-    const { actionPerformed, undo, deltaPositions } = this.state;
-    if (actionPerformed) {
+    const { eventHistory } = this.state;
+
+    if (this.state.actionPerformed) {
       this.setState({
-        actionPerformed: false
+        actionPerformed: false,
+        redoHistory: []
       });
-      undo.push(deltaPositions);
     }
 
     if (newItem !== prevProps.newItem && newItem !== null) {
@@ -410,10 +415,12 @@ export default class Editing extends Component {
       );
 
       const items = deltaPositions;
+      const key = this.state.deltaPositions[0].length;
+
       items[0].push({
-        key: this.state.deltaPositions[0].length,
-        x: left + 0,
-        y: top + 0,
+        key,
+        x: left,
+        y: top,
         icon: newItem.icon,
         background: newItem.backgroundColor,
         activePoints: [
@@ -431,7 +438,7 @@ export default class Editing extends Component {
 
       this.setState({
         deltaPositions: items,
-        actionPerformed: true
+        eventHistory: [{ type: "Step created", key }, ...eventHistory]
       });
 
       // remove the newItem state so that this is not called multiple times
@@ -522,14 +529,6 @@ export default class Editing extends Component {
     clearInterval(this.interval);
   }
 
-  // onMouseLeave = () => {
-  //   if (this.state.activeDrags) {
-  //     // force mouseup
-  //     let element = document.getElementById("EditingDiv");
-  //     element.dispatchEvent(new Event("mouseup"));
-  //   }
-  // };
-
   onControlledDrag = (e, position) => {
     let { x, y } = position;
     if (x < 0) {
@@ -610,6 +609,17 @@ export default class Editing extends Component {
       this.state.startDragPosition.y !== position.y
     ) {
       this.setState({
+        eventHistory: [
+          {
+            type: "Step moved",
+            key: itemNumber,
+            xStart: this.state.startDragPosition.x,
+            yStart: this.state.startDragPosition.y,
+            xEnd: x,
+            yEnd: y
+          },
+          ...this.state.eventHistory
+        ],
         actionPerformed: true
       });
     }
@@ -635,9 +645,7 @@ export default class Editing extends Component {
       mouseX,
       mouseY,
       offsetX,
-      offsetY,
-      redo,
-      undo
+      offsetY
     } = this.state;
 
     const { isHidden } = this.props;
@@ -942,7 +950,7 @@ export default class Editing extends Component {
     };
 
     this.onKeyDown = e => {
-      e.preventDefault();
+      // e.preventDefault();
     };
 
     const keyMap = {
@@ -962,144 +970,206 @@ export default class Editing extends Component {
       redo: this.redo
     };
 
+    // Use toggle variable to prevent the double calling which is inherent in the shortcut library used
     this.toggle = 0;
-    this.undo = () => {
+
+    this.undo = e => {
+      e.preventDefault();
+      e.stopPropagation();
       if (this.toggle === 1) {
         this.toggle = 0;
-        console.log("undo");
+        if (this.state.eventHistory.length > 0) {
+          switch (this.state.eventHistory[0].type) {
+            case "Step moved":
+              // Find the item and change its x and y to the previous x and y position
+              for (let i = 0; i < deltaPositions[0].length; i++) {
+                if (
+                  deltaPositions[0][i].key ===
+                  parseInt(this.state.eventHistory[0].key)
+                ) {
+                  let items = deltaPositions;
+                  let innerItem = items[0][i];
+                  innerItem.x = this.state.eventHistory[0].xStart;
+                  innerItem.y = this.state.eventHistory[0].yStart;
+
+                  this.setState({
+                    deltaPositions: items
+                  });
+
+                  this.state.redoHistory.unshift(this.state.eventHistory[0]);
+                  this.state.eventHistory.shift();
+                }
+              }
+              break;
+            case "Step created":
+              break;
+            default:
+              console.log("unknown");
+          }
+        }
       } else {
         this.toggle = this.toggle + 1;
       }
     };
-    this.redo = () => {
+    this.redo = e => {
+      e.preventDefault();
       if (this.toggle === 1) {
         this.toggle = 0;
-        console.log("redo");
+        if (this.state.redoHistory.length > 0) {
+          switch (this.state.redoHistory[0].type) {
+            case "Step moved":
+              // Find the item and change its x and y to the previous x and y position
+              for (let i = 0; i < deltaPositions[0].length; i++) {
+                if (
+                  deltaPositions[0][i].key ===
+                  parseInt(this.state.redoHistory[0].key)
+                ) {
+                  let items = deltaPositions;
+                  let innerItem = items[0][i];
+                  innerItem.x = this.state.redoHistory[0].xEnd;
+                  innerItem.y = this.state.redoHistory[0].yEnd;
+
+                  this.setState({
+                    deltaPositions: items
+                  });
+
+                  this.state.eventHistory.unshift(this.state.redoHistory[0]);
+                  this.state.redoHistory.shift();
+                }
+              }
+              break;
+            default:
+              console.log("unkown");
+          }
+        }
       } else {
         this.toggle = this.toggle + 1;
       }
     };
 
     return (
-      <HotKeys keyMap={keyMap} handlers={handlers}>
-        <EditingDiv
-          id="EditingDiv"
+      <EditingDiv
+        keyMap={keyMap}
+        handlers={handlers}
+        id="EditingDiv"
+        className={
+          "disable-css-transitions " +
+          (isHidden === true && "editingFull") +
+          " " +
+          (isHidden === false && "editingSmall")
+        }
+        onMouseMove={this.onMouseMove}
+        onMouseDown={this.onMouseDown}
+        onKeyDown={this.onKeyDown}
+        tabIndex="0"
+      >
+        <LeftSideBar
+          id="LeftSideBar"
           className={
             "disable-css-transitions " +
-            (isHidden === true && "editingFull") +
+            (isHidden === true && "LeftSidebarBefore") +
             " " +
-            (isHidden === false && "editingSmall")
+            (isHidden === false && "LeftSidebarAfter")
           }
-          onMouseMove={this.onMouseMove}
-          onMouseDown={this.onMouseDown}
-          onKeyDown={this.onKeyDown}
-          tabIndex="0"
-        >
-          <LeftSideBar
-            id="LeftSideBar"
-            className={
-              "disable-css-transitions " +
-              (isHidden === true && "LeftSidebarBefore") +
-              " " +
-              (isHidden === false && "LeftSidebarAfter")
-            }
-          />
-          <TopSideBar id="TopSideBar" />
+        />
+        <TopSideBar id="TopSideBar" />
 
-          {loading ? (
-            "loading"
-          ) : (
-            <>
-              {lines[0].map(
-                (line, index) =>
-                  line.end[0].item !== null ? (
-                    <Line
-                      key={index}
-                      id={line.key}
-                      color="black"
-                      x1={deltaPositions[0][line.start[0].item].x}
-                      y1={deltaPositions[0][line.start[0].item].y}
-                      x2={deltaPositions[0][line.end[0].item].x}
-                      y2={deltaPositions[0][line.end[0].item].y}
-                      startSide={line.start[0].side}
-                      hidden={this.state.hidden}
-                      endSide={line.end[0].side}
-                      onLineDelete={this.onLineDelete}
-                      creation={this.state.creatingLine}
-                    />
-                  ) : (
-                    <Line
-                      key={index}
-                      id={line.key}
-                      color="black"
-                      x1={deltaPositions[0][line.start[0].item].x}
-                      y1={deltaPositions[0][line.start[0].item].y}
-                      x2={elementX}
-                      y2={elementY}
-                      startSide={line.start[0].side}
-                      hidden={this.state.hidden}
-                      onLineDelete={this.onLineDelete}
-                      endSide="mouse"
-                      creation={this.state.creatingLine}
-                    />
-                  )
+        {loading ? (
+          "loading"
+        ) : (
+          <>
+            {lines[0].map(
+              (line, index) =>
+                line.end[0].item !== null ? (
+                  <Line
+                    key={index}
+                    id={line.key}
+                    color="black"
+                    x1={deltaPositions[0][line.start[0].item].x}
+                    y1={deltaPositions[0][line.start[0].item].y}
+                    x2={deltaPositions[0][line.end[0].item].x}
+                    y2={deltaPositions[0][line.end[0].item].y}
+                    startSide={line.start[0].side}
+                    hidden={this.state.hidden}
+                    endSide={line.end[0].side}
+                    onLineDelete={this.onLineDelete}
+                    creation={this.state.creatingLine}
+                  />
+                ) : (
+                  <Line
+                    key={index}
+                    id={line.key}
+                    color="black"
+                    x1={deltaPositions[0][line.start[0].item].x}
+                    y1={deltaPositions[0][line.start[0].item].y}
+                    x2={elementX}
+                    y2={elementY}
+                    startSide={line.start[0].side}
+                    hidden={this.state.hidden}
+                    onLineDelete={this.onLineDelete}
+                    endSide="mouse"
+                    creation={this.state.creatingLine}
+                  />
+                )
+            )}
+            {!isNaN(currentItem) &&
+              activeDrags === 1 &&
+              start === false && (
+                <div
+                  style={{
+                    position: "fixed",
+                    left: `calc(${mouseX}px - ${offsetX}px)`,
+                    top: `calc(${mouseY}px - ${offsetY}px)`
+                  }}
+                >
+                  <Step item={deltaPositions[0][parseInt(currentItem)]} />
+                </div>
               )}
-              {!isNaN(currentItem) &&
-                activeDrags === 1 &&
-                start === false && (
-                  <div
-                    style={{
-                      position: "fixed",
-                      left: `calc(${mouseX}px - ${offsetX}px)`,
-                      top: `calc(${mouseY}px - ${offsetY}px)`
-                    }}
-                  >
-                    <Step item={deltaPositions[0][parseInt(currentItem)]} />
-                  </div>
-                )}
-              <EditingContent id="EditingContent">
-                {deltaPositions[0].map(step => {
-                  if (!isNaN(step.key))
-                    return (
-                      <Draggable
-                        position={deltaPositions[0][step.key]}
-                        {...dragHandlers}
-                        onDrag={this.onControlledDrag}
-                        key={step.key}
-                        handle=".grabbable"
+            <EditingContent id="EditingContent">
+              {deltaPositions[0].map(step => {
+                if (!isNaN(step.key))
+                  return (
+                    <Draggable
+                      position={{
+                        x: deltaPositions[0][step.key].x,
+                        y: deltaPositions[0][step.key].y
+                      }}
+                      {...dragHandlers}
+                      onDrag={this.onControlledDrag}
+                      key={step.key}
+                      handle=".grabbable"
+                    >
+                      <div
+                        id={step.key}
+                        style={{ position: "absolute" }}
+                        className={
+                          scrolling === true &&
+                          parseInt(currentItem) === step.key &&
+                          start === false
+                            ? "noOpacity"
+                            : "opacity"
+                        }
                       >
-                        <div
-                          id={step.key}
-                          style={{ position: "absolute" }}
-                          className={
-                            scrolling === true &&
-                            parseInt(currentItem) === step.key &&
-                            start === false
-                              ? "noOpacity"
-                              : "opacity"
-                          }
-                        >
-                          <Step
-                            item={deltaPositions[0][step.key]}
-                            lines={lines[0]}
-                            lineCreate={this.lineCreate}
-                            lineDelete={this.lineDelete}
-                            setCurrentStep={this.setCurrentStep}
-                            deleteStep={this.deleteStep}
-                            creation={this.state.creatingLine}
-                          />
-                        </div>
-                      </Draggable>
-                    );
-                  else {
-                    return null;
-                  }
-                })}
-              </EditingContent>
-            </>
-          )}
-        </EditingDiv>
-      </HotKeys>
+                        <Step
+                          item={deltaPositions[0][step.key]}
+                          lines={lines[0]}
+                          lineCreate={this.lineCreate}
+                          lineDelete={this.lineDelete}
+                          setCurrentStep={this.setCurrentStep}
+                          deleteStep={this.deleteStep}
+                          creation={this.state.creatingLine}
+                        />
+                      </div>
+                    </Draggable>
+                  );
+                else {
+                  return null;
+                }
+              })}
+            </EditingContent>
+          </>
+        )}
+      </EditingDiv>
     );
   }
 }
