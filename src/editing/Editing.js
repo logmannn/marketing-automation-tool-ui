@@ -773,9 +773,8 @@ export default class Editing extends Component {
       }
     };
 
-    this.lineCreate = (side, id, fromDeleteStep, endSide, endId) => {
+    this.lineCreate = (side, id, fromDeleteStep) => {
       if (creatingLine === false) {
-        console.log("creatingLine === false");
         let parentItems = [];
         let tempItems = [];
 
@@ -864,7 +863,6 @@ export default class Editing extends Component {
             ]
           ]
         });
-        this.lineCreate(endSide, endId, fromDeleteStep);
       } else {
         if (currentParentItems.indexOf(id) === -1 && id !== currentFirstPoint) {
           let isAlreadyConnected = false;
@@ -931,20 +929,20 @@ export default class Editing extends Component {
             this.setState({
               actionPerformed: true
             });
-            if (typeof fromDeleteStep === "undefined") {
-              this.setState({
-                eventHistory: [
-                  {
-                    type: "Line created",
-                    startId: currentFirstPoint,
-                    endId: id
-                    // startSide: lineItemStart.side,
-                    // endSide: lineItemEnd.side
-                  },
-                  ...this.state.eventHistory
-                ]
-              });
-            }
+            // if (typeof fromDeleteStep === "undefined") {
+            //   this.setState({
+            //     eventHistory: [
+            //       {
+            //         type: "Line created",
+            //         startId: currentFirstPoint,
+            //         endId: id
+            //         // startSide: lineItemStart.side,
+            //         // endSide: lineItemEnd.side
+            //       },
+            //       ...this.state.eventHistory
+            //     ]
+            //   });
+            // }
             this.setState({
               lines: [lines],
               deltaPositions: [items],
@@ -981,15 +979,15 @@ export default class Editing extends Component {
 
         this.setState({
           deltaPositions: itemsDelete,
-          actionPerformed: true,
-          eventHistory: [
-            {
-              type: "Step deleted",
-              key: id,
-              deleted: true
-            },
-            ...this.state.eventHistory
-          ]
+          actionPerformed: true
+          // eventHistory: [
+          //   {
+          //     type: "Step deleted",
+          //     key: id,
+          //     deleted: true
+          //   },
+          //   ...this.state.eventHistory
+          // ]
         });
       }
     };
@@ -1023,29 +1021,48 @@ export default class Editing extends Component {
               ]
             });
             this.state.eventHistory.shift();
+          } else if (this.state.eventHistory[0].type === "Step created") {
+            for (let i = 0; i < deltaPositions[0].length; i++) {
+              if (
+                deltaPositions[0][i].key ===
+                parseInt(this.state.eventHistory[0].key)
+              ) {
+                let items = deltaPositions;
+                let innerItem = items[0][i];
+                innerItem.deleted = true;
+                console.log(innerItem);
+                this.setState({
+                  deltaPositions: items
+                });
+              }
+            }
+            this.state.redoHistory.unshift(this.state.eventHistory[0]);
+            this.state.eventHistory.shift();
+          } else if (this.state.eventHistory[0].type === "Line deleted") {
+            console.log(this.state.eventHistory);
+            console.log(this.state.redoHistory);
+            const startSide = this.state.eventHistory[0].startSide;
+
+            this.state.redoHistory.unshift(this.state.eventHistory[0]);
+            this.state.eventHistory.shift();
+
+            // this.lineCreate(
+            //   this.state.redoHistory[0].startSide,
+            //   this.state.redoHistory[0].startId,
+            //   true
+            // );
+            // this.lineCreate(
+            //   this.state.redoHistory[0].endSide,
+            //   this.state.redoHistory[0].endId,
+            //   true
+            // );
+
+            console.log(this.state.eventHistory);
+            console.log(this.state.redoHistory);
+
+            // this.state.redoHistory.unshift(this.state.eventHistory[0]);
+            // this.state.eventHistory.shift();
           }
-          // else if (this.state.eventHistory[0].type === "Step created") {
-          //   for (let i = 0; i < deltaPositions[0].length; i++) {
-          //     if (
-          //       deltaPositions[0][i].key ===
-          //       parseInt(this.state.eventHistory[0].key)
-          //     ) {
-          //       let items = deltaPositions;
-          //       let innerItem = items[0][i];
-          //       innerItem.deleted = true;
-          //       console.log(innerItem);
-          //       this.setState({
-          //         deltaPositions: items
-          //       });
-          //     }
-          //   }
-          //   this.state.redoHistory.unshift(this.state.eventHistory[0]);
-          //   this.state.eventHistory.shift();
-          // }
-          // else if (this.state.eventHistory[0].type === "Line deleted") {
-          //   this.state.redoHistory.unshift(this.state.eventHistory[0]);
-          //   this.state.eventHistory.shift();
-          // }
         }
         this.toggle = 1;
       } else {
@@ -1077,35 +1094,33 @@ export default class Editing extends Component {
             }
             this.state.eventHistory.unshift(this.state.redoHistory[0]);
             this.state.redoHistory.shift();
-          }
-          // else if (this.state.redoHistory[0].type === "Step created") {
-          //   for (let i = 0; i < deltaPositions[0].length; i++) {
-          //     if (
-          //       deltaPositions[0][i].key ===
-          //       parseInt(this.state.redoHistory[0].key)
-          //     ) {
-          //       let items = deltaPositions;
-          //       let innerItem = items[0][i];
-          //       innerItem.deleted = false;
+          } else if (this.state.redoHistory[0].type === "Step created") {
+            for (let i = 0; i < deltaPositions[0].length; i++) {
+              if (
+                deltaPositions[0][i].key ===
+                parseInt(this.state.redoHistory[0].key)
+              ) {
+                let items = deltaPositions;
+                let innerItem = items[0][i];
+                innerItem.deleted = false;
 
-          //       this.setState({
-          //         deltaPositions: items
-          //       });
-          //     }
-          //   }
-          //   this.state.eventHistory.unshift(this.state.redoHistory[0]);
-          //   this.state.redoHistory.shift();
-          // }
-          // else if (this.state.redoHistory[0].type === "Line deleted") {
-          //   this.setState({
-          //     eventHistory: [
-          //       this.state.redoHistory[0],
-          //       ...this.state.eventHistory
-          //     ]
-          //   });
-          //   this.state.redoHistory.shift();
-          //   this.onLineDelete(this.state.eventHistory[0].key, true);
-          // }
+                this.setState({
+                  deltaPositions: items
+                });
+              }
+            }
+            this.state.eventHistory.unshift(this.state.redoHistory[0]);
+            this.state.redoHistory.shift();
+          } else if (this.state.redoHistory[0].type === "Line deleted") {
+            this.setState({
+              eventHistory: [
+                this.state.redoHistory[0],
+                ...this.state.eventHistory
+              ]
+            });
+            this.state.redoHistory.shift();
+            this.onLineDelete(this.state.eventHistory[0].key, true);
+          }
         }
       } else {
         this.toggle = this.toggle + 1;
