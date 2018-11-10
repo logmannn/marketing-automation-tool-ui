@@ -949,16 +949,141 @@ export default class Editing extends Component {
       }
     };
 
-    const keyMap = {
-      undo: ["meta+z", "command+z", "ctrl+z"],
-      redo: [
-        "meta+y",
-        "command+y",
-        "ctrl+y",
-        "meta+shift+z",
-        "command+shift+z",
-        "ctrl+shift+z"
-      ]
+    this.toggle = 0;
+    this.undo = e => {
+      e.preventDefault();
+      if (this.toggle === 0) {
+        if (this.state.eventHistory.length > 0) {
+          if (this.state.eventHistory[0].type === "Step moved") {
+            // Find the item and change its x and y to the previous x and y position
+            for (let i = 0; i < deltaPositions[0].length; i++) {
+              if (
+                deltaPositions[0][i].key ===
+                parseInt(this.state.eventHistory[0].key)
+              ) {
+                let items = deltaPositions;
+                let innerItem = items[0][i];
+                innerItem.x = this.state.eventHistory[0].xStart;
+                innerItem.y = this.state.eventHistory[0].yStart;
+
+                this.setState({
+                  deltaPositions: items
+                });
+              }
+            }
+            this.state.redoHistory.unshift(this.state.eventHistory[0]);
+            this.state.eventHistory.shift();
+          }
+        }
+        this.toggle = 1;
+      } else {
+        this.toggle = 0;
+      }
+
+      // if (this.state.eventHistory.length > 0) {
+      //   if (this.state.eventHistory[0].type === "Step moved") {
+      //     // Find the item and change its x and y to the previous x and y position
+      //     for (let i = 0; i < deltaPositions[0].length; i++) {
+      //       if (typeof this.state.eventHistory[0].key !== "undefined") {
+      //         if (
+      //           deltaPositions[0][i].key ===
+      //           parseInt(this.state.eventHistory[0].key)
+      //         ) {
+      //           let items = deltaPositions;
+      //           let innerItem = items[0][i];
+      //           innerItem.x = this.state.eventHistory[0].xStart;
+      //           innerItem.y = this.state.eventHistory[0].yStart;
+
+      //           this.setState({
+      //             deltaPositions: items
+      //           });
+
+      //           this.state.redoHistory.unshift(this.state.eventHistory[0]);
+      //           this.state.eventHistory.shift();
+      //         }
+      //       }
+      //     }
+      //   }
+      //   // else if (this.state.eventHistory[0].type === "Step created") {
+      //   //   for (let i = 0; i < deltaPositions[0].length; i++) {
+      //   //     if (
+      //   //       deltaPositions[0][i].key ===
+      //   //       parseInt(this.state.eventHistory[0].key)
+      //   //     ) {
+      //   //       let items = deltaPositions;
+      //   //       let innerItem = items[0][i];
+      //   //       innerItem.deleted = true;
+      //   //       console.log(innerItem);
+      //   //       this.setState({
+      //   //         deltaPositions: items
+      //   //       });
+
+      //   //       this.state.redoHistory.unshift(this.state.eventHistory[0]);
+      //   //       this.state.eventHistory.shift();
+      //   //     }
+      //   //   }
+      //   // }
+      // }
+    };
+
+    // this.redo = e => {
+    //   e.preventDefault();
+    //   if (this.toggle === 1) {
+    //     this.toggle = 0;
+    //     if (this.state.redoHistory.length > 0) {
+    //       switch (this.state.redoHistory[0].type) {
+    //         case "Step moved":
+    //           // Find the item and change its x and y to the previous x and y position
+    //           for (let i = 0; i < deltaPositions[0].length; i++) {
+    //             if (
+    //               deltaPositions[0][i].key ===
+    //               parseInt(this.state.redoHistory[0].key)
+    //             ) {
+    //               let items = deltaPositions;
+    //               let innerItem = items[0][i];
+    //               innerItem.x = this.state.redoHistory[0].xEnd;
+    //               innerItem.y = this.state.redoHistory[0].yEnd;
+
+    //               this.setState({
+    //                 deltaPositions: items
+    //               });
+
+    //               this.state.eventHistory.unshift(this.state.redoHistory[0]);
+    //               this.state.redoHistory.shift();
+    //             }
+    //           }
+    //           break;
+    //         case "Step created":
+    //           for (let i = 0; i < deltaPositions[0].length; i++) {
+    //             if (
+    //               deltaPositions[0][i].key ===
+    //               parseInt(this.state.redoHistory[0].key)
+    //             ) {
+    //               let items = deltaPositions;
+    //               let innerItem = items[0][i];
+    //               innerItem.deleted = false;
+
+    //               this.setState({
+    //                 deltaPositions: items
+    //               });
+
+    //               this.state.eventHistory.unshift(this.state.redoHistory[0]);
+    //               this.state.redoHistory.shift();
+    //             }
+    //           }
+    //           break;
+    //         default:
+    //           console.log("unkown");
+    //       }
+    //     }
+    //   } else {
+    //     this.toggle = this.toggle + 1;
+    //   }
+    // };
+
+    const map = {
+      undo: ["command+z", "ctrl+z", "meta+z"],
+      redo: ["command+y", "ctrl+y", "meta+y", "command+shift+z"]
     };
 
     const handlers = {
@@ -966,122 +1091,9 @@ export default class Editing extends Component {
       redo: this.redo
     };
 
-    // Use toggle variable to prevent the double calling which is inherent in the shortcut library used
-    this.toggle = 0;
-
-    this.undo = e => {
-      e.preventDefault();
-      e.stopPropagation();
-      if (this.toggle === 1) {
-        this.toggle = 0;
-        if (this.state.eventHistory.length > 0) {
-          switch (this.state.eventHistory[0].type) {
-            case "Step moved":
-              // Find the item and change its x and y to the previous x and y position
-              for (let i = 0; i < deltaPositions[0].length; i++) {
-                if (
-                  deltaPositions[0][i].key ===
-                  parseInt(this.state.eventHistory[0].key)
-                ) {
-                  let items = deltaPositions;
-                  let innerItem = items[0][i];
-                  innerItem.x = this.state.eventHistory[0].xStart;
-                  innerItem.y = this.state.eventHistory[0].yStart;
-
-                  this.setState({
-                    deltaPositions: items
-                  });
-
-                  this.state.redoHistory.unshift(this.state.eventHistory[0]);
-                  this.state.eventHistory.shift();
-                }
-              }
-              break;
-            case "Step created":
-              for (let i = 0; i < deltaPositions[0].length; i++) {
-                if (
-                  deltaPositions[0][i].key ===
-                  parseInt(this.state.eventHistory[0].key)
-                ) {
-                  let items = deltaPositions;
-                  let innerItem = items[0][i];
-                  innerItem.deleted = true;
-                  console.log(innerItem);
-                  this.setState({
-                    deltaPositions: items
-                  });
-
-                  this.state.redoHistory.unshift(this.state.eventHistory[0]);
-                  this.state.eventHistory.shift();
-                }
-              }
-              break;
-            default:
-              console.log("unknown");
-          }
-        }
-      } else {
-        this.toggle = this.toggle + 1;
-      }
-    };
-    this.redo = e => {
-      e.preventDefault();
-      if (this.toggle === 1) {
-        this.toggle = 0;
-        if (this.state.redoHistory.length > 0) {
-          switch (this.state.redoHistory[0].type) {
-            case "Step moved":
-              // Find the item and change its x and y to the previous x and y position
-              for (let i = 0; i < deltaPositions[0].length; i++) {
-                if (
-                  deltaPositions[0][i].key ===
-                  parseInt(this.state.redoHistory[0].key)
-                ) {
-                  let items = deltaPositions;
-                  let innerItem = items[0][i];
-                  innerItem.x = this.state.redoHistory[0].xEnd;
-                  innerItem.y = this.state.redoHistory[0].yEnd;
-
-                  this.setState({
-                    deltaPositions: items
-                  });
-
-                  this.state.eventHistory.unshift(this.state.redoHistory[0]);
-                  this.state.redoHistory.shift();
-                }
-              }
-              break;
-            case "Step created":
-              for (let i = 0; i < deltaPositions[0].length; i++) {
-                if (
-                  deltaPositions[0][i].key ===
-                  parseInt(this.state.redoHistory[0].key)
-                ) {
-                  let items = deltaPositions;
-                  let innerItem = items[0][i];
-                  innerItem.deleted = false;
-
-                  this.setState({
-                    deltaPositions: items
-                  });
-
-                  this.state.eventHistory.unshift(this.state.redoHistory[0]);
-                  this.state.redoHistory.shift();
-                }
-              }
-              break;
-            default:
-              console.log("unkown");
-          }
-        }
-      } else {
-        this.toggle = this.toggle + 1;
-      }
-    };
-
     return (
       <EditingDiv
-        keyMap={keyMap}
+        keyMap={map}
         handlers={handlers}
         id="EditingDiv"
         className={
@@ -1110,56 +1122,53 @@ export default class Editing extends Component {
           "loading"
         ) : (
           <>
-            {lines[0].map(
-              (line, index) =>
-                line.end[0].item !== null ? (
-                  <Line
-                    key={index}
-                    id={line.key}
-                    color="black"
-                    x1={deltaPositions[0][line.start[0].item].x}
-                    y1={deltaPositions[0][line.start[0].item].y}
-                    x2={deltaPositions[0][line.end[0].item].x}
-                    y2={deltaPositions[0][line.end[0].item].y}
-                    startSide={line.start[0].side}
-                    hidden={this.state.hidden}
-                    endSide={line.end[0].side}
-                    onLineDelete={this.onLineDelete}
-                    creation={this.state.creatingLine}
-                  />
-                ) : (
-                  <Line
-                    key={index}
-                    id={line.key}
-                    color="black"
-                    x1={deltaPositions[0][line.start[0].item].x}
-                    y1={deltaPositions[0][line.start[0].item].y}
-                    x2={elementX}
-                    y2={elementY}
-                    startSide={line.start[0].side}
-                    hidden={this.state.hidden}
-                    onLineDelete={this.onLineDelete}
-                    endSide="mouse"
-                    creation={this.state.creatingLine}
-                  />
-                )
+            {lines[0].map((line, index) =>
+              line.end[0].item !== null ? (
+                <Line
+                  key={index}
+                  id={line.key}
+                  color="black"
+                  x1={deltaPositions[0][line.start[0].item].x}
+                  y1={deltaPositions[0][line.start[0].item].y}
+                  x2={deltaPositions[0][line.end[0].item].x}
+                  y2={deltaPositions[0][line.end[0].item].y}
+                  startSide={line.start[0].side}
+                  hidden={this.state.hidden}
+                  endSide={line.end[0].side}
+                  onLineDelete={this.onLineDelete}
+                  creation={this.state.creatingLine}
+                />
+              ) : (
+                <Line
+                  key={index}
+                  id={line.key}
+                  color="black"
+                  x1={deltaPositions[0][line.start[0].item].x}
+                  y1={deltaPositions[0][line.start[0].item].y}
+                  x2={elementX}
+                  y2={elementY}
+                  startSide={line.start[0].side}
+                  hidden={this.state.hidden}
+                  onLineDelete={this.onLineDelete}
+                  endSide="mouse"
+                  creation={this.state.creatingLine}
+                />
+              )
             )}
-            {!isNaN(currentItem) &&
-              activeDrags === 1 &&
-              start === false && (
-                <div
-                  style={{
-                    position: "fixed",
-                    left: `calc(${mouseX}px - ${offsetX}px)`,
-                    top: `calc(${mouseY}px - ${offsetY}px)`
-                  }}
-                >
-                  <Step
-                    item={deltaPositions[0][parseInt(currentItem)]}
-                    deleted={deltaPositions[0][parseInt(currentItem)].deleted}
-                  />
-                </div>
-              )}
+            {!isNaN(currentItem) && activeDrags === 1 && start === false && (
+              <div
+                style={{
+                  position: "fixed",
+                  left: `calc(${mouseX}px - ${offsetX}px)`,
+                  top: `calc(${mouseY}px - ${offsetY}px)`
+                }}
+              >
+                <Step
+                  item={deltaPositions[0][parseInt(currentItem)]}
+                  deleted={deltaPositions[0][parseInt(currentItem)].deleted}
+                />
+              </div>
+            )}
             <EditingContent id="EditingContent">
               {deltaPositions[0].map(step => {
                 if (!isNaN(step.key))
