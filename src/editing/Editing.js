@@ -437,8 +437,8 @@ export default class Editing extends Component {
       });
 
       this.setState({
-        deltaPositions: items,
-        eventHistory: [{ type: "Step created", key }, ...eventHistory]
+        deltaPositions: items
+        // eventHistory: [{ type: "Step created", key }, ...eventHistory]
       });
 
       // remove the newItem state so that this is not called multiple times
@@ -755,26 +755,27 @@ export default class Editing extends Component {
         this.setState({
           actionPerformed: true
         });
-        if (typeof fromDeleteStep === "undefined") {
-          this.setState({
-            eventHistory: [
-              {
-                type: "Line deleted",
-                startId: lineItemStart.item,
-                endId: lineItemEnd.item,
-                startSide: lineItemStart.side,
-                endSide: lineItemEnd.side,
-                key: id
-              },
-              ...this.state.eventHistory
-            ]
-          });
-        }
+        // if (typeof fromDeleteStep === "undefined") {
+        //   this.setState({
+        //     eventHistory: [
+        //       {
+        //         type: "Line deleted",
+        //         startId: lineItemStart.item,
+        //         endId: lineItemEnd.item,
+        //         startSide: lineItemStart.side,
+        //         endSide: lineItemEnd.side,
+        //         key: id
+        //       },
+        //       ...this.state.eventHistory
+        //     ]
+        //   });
+        // }
       }
     };
 
-    this.lineCreate = (side, id, fromDeleteStep) => {
+    this.lineCreate = (side, id, fromDeleteStep, endSide, endId) => {
       if (creatingLine === false) {
+        console.log("creatingLine === false");
         let parentItems = [];
         let tempItems = [];
 
@@ -863,6 +864,7 @@ export default class Editing extends Component {
             ]
           ]
         });
+        this.lineCreate(endSide, endId, fromDeleteStep);
       } else {
         if (currentParentItems.indexOf(id) === -1 && id !== currentFirstPoint) {
           let isAlreadyConnected = false;
@@ -929,21 +931,20 @@ export default class Editing extends Component {
             this.setState({
               actionPerformed: true
             });
-            // if (typeof fromDeleteStep === "undefined") {
-            //   console.log("line create why is this here");
-            //   this.setState({
-            //     eventHistory: [
-            //       {
-            //         type: "Line created",
-            //         startId: currentFirstPoint,
-            //         endId: id
-            //         // startSide: lineItemStart.side,
-            //         // endSide: lineItemEnd.side
-            //       },
-            //       ...this.state.eventHistory
-            //     ]
-            //   });
-            // }
+            if (typeof fromDeleteStep === "undefined") {
+              this.setState({
+                eventHistory: [
+                  {
+                    type: "Line created",
+                    startId: currentFirstPoint,
+                    endId: id
+                    // startSide: lineItemStart.side,
+                    // endSide: lineItemEnd.side
+                  },
+                  ...this.state.eventHistory
+                ]
+              });
+            }
             this.setState({
               lines: [lines],
               deltaPositions: [items],
@@ -1015,41 +1016,36 @@ export default class Editing extends Component {
                 });
               }
             }
-            this.state.redoHistory.unshift(this.state.eventHistory[0]);
+            this.setState({
+              redoHistory: [
+                this.state.eventHistory[0],
+                ...this.state.redoHistory
+              ]
+            });
             this.state.eventHistory.shift();
-          } else if (this.state.eventHistory[0].type === "Step created") {
-            for (let i = 0; i < deltaPositions[0].length; i++) {
-              if (
-                deltaPositions[0][i].key ===
-                parseInt(this.state.eventHistory[0].key)
-              ) {
-                let items = deltaPositions;
-                let innerItem = items[0][i];
-                innerItem.deleted = true;
-                console.log(innerItem);
-                this.setState({
-                  deltaPositions: items
-                });
-              }
-            }
-            this.state.redoHistory.unshift(this.state.eventHistory[0]);
-            this.state.eventHistory.shift();
-          } else if (this.state.eventHistory[0].type === "Line deleted") {
-            // recreate line using given and notifying not to create an action
-            this.lineCreate(
-              this.state.eventHistory[0].startSide,
-              this.state.eventHistory[0].startId,
-              true
-            );
-            this.lineCreate(
-              this.state.eventHistory[0].endSide,
-              this.state.eventHistory[0].endId,
-              true
-            );
-            this.state.redoHistory.unshift(this.state.eventHistory[0]);
-            this.state.eventHistory.shift();
-            console.log(this.state.redoHistory[0]);
           }
+          // else if (this.state.eventHistory[0].type === "Step created") {
+          //   for (let i = 0; i < deltaPositions[0].length; i++) {
+          //     if (
+          //       deltaPositions[0][i].key ===
+          //       parseInt(this.state.eventHistory[0].key)
+          //     ) {
+          //       let items = deltaPositions;
+          //       let innerItem = items[0][i];
+          //       innerItem.deleted = true;
+          //       console.log(innerItem);
+          //       this.setState({
+          //         deltaPositions: items
+          //       });
+          //     }
+          //   }
+          //   this.state.redoHistory.unshift(this.state.eventHistory[0]);
+          //   this.state.eventHistory.shift();
+          // }
+          // else if (this.state.eventHistory[0].type === "Line deleted") {
+          //   this.state.redoHistory.unshift(this.state.eventHistory[0]);
+          //   this.state.eventHistory.shift();
+          // }
         }
         this.toggle = 1;
       } else {
@@ -1081,33 +1077,35 @@ export default class Editing extends Component {
             }
             this.state.eventHistory.unshift(this.state.redoHistory[0]);
             this.state.redoHistory.shift();
-          } else if (this.state.redoHistory[0].type === "Step created") {
-            for (let i = 0; i < deltaPositions[0].length; i++) {
-              if (
-                deltaPositions[0][i].key ===
-                parseInt(this.state.redoHistory[0].key)
-              ) {
-                let items = deltaPositions;
-                let innerItem = items[0][i];
-                innerItem.deleted = false;
-
-                this.setState({
-                  deltaPositions: items
-                });
-              }
-            }
-            this.state.eventHistory.unshift(this.state.redoHistory[0]);
-            this.state.redoHistory.shift();
-          } else if (this.state.redoHistory[0].type === "Line deleted") {
-            this.setState({
-              eventHistory: [
-                this.state.redoHistory[0],
-                ...this.state.eventHistory
-              ]
-            });
-            this.state.redoHistory.shift();
-            this.onLineDelete(this.state.eventHistory[0].key, true);
           }
+          // else if (this.state.redoHistory[0].type === "Step created") {
+          //   for (let i = 0; i < deltaPositions[0].length; i++) {
+          //     if (
+          //       deltaPositions[0][i].key ===
+          //       parseInt(this.state.redoHistory[0].key)
+          //     ) {
+          //       let items = deltaPositions;
+          //       let innerItem = items[0][i];
+          //       innerItem.deleted = false;
+
+          //       this.setState({
+          //         deltaPositions: items
+          //       });
+          //     }
+          //   }
+          //   this.state.eventHistory.unshift(this.state.redoHistory[0]);
+          //   this.state.redoHistory.shift();
+          // }
+          // else if (this.state.redoHistory[0].type === "Line deleted") {
+          //   this.setState({
+          //     eventHistory: [
+          //       this.state.redoHistory[0],
+          //       ...this.state.eventHistory
+          //     ]
+          //   });
+          //   this.state.redoHistory.shift();
+          //   this.onLineDelete(this.state.eventHistory[0].key, true);
+          // }
         }
       } else {
         this.toggle = this.toggle + 1;
