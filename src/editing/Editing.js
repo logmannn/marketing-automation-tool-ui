@@ -949,10 +949,6 @@ export default class Editing extends Component {
       }
     };
 
-    this.onKeyDown = e => {
-      // e.preventDefault();
-    };
-
     const keyMap = {
       undo: ["meta+z", "command+z", "ctrl+z"],
       redo: [
@@ -1002,6 +998,23 @@ export default class Editing extends Component {
               }
               break;
             case "Step created":
+              for (let i = 0; i < deltaPositions[0].length; i++) {
+                if (
+                  deltaPositions[0][i].key ===
+                  parseInt(this.state.eventHistory[0].key)
+                ) {
+                  let items = deltaPositions;
+                  let innerItem = items[0][i];
+                  innerItem.deleted = true;
+                  console.log(innerItem);
+                  this.setState({
+                    deltaPositions: items
+                  });
+
+                  this.state.redoHistory.unshift(this.state.eventHistory[0]);
+                  this.state.eventHistory.shift();
+                }
+              }
               break;
             default:
               console.log("unknown");
@@ -1028,6 +1041,25 @@ export default class Editing extends Component {
                   let innerItem = items[0][i];
                   innerItem.x = this.state.redoHistory[0].xEnd;
                   innerItem.y = this.state.redoHistory[0].yEnd;
+
+                  this.setState({
+                    deltaPositions: items
+                  });
+
+                  this.state.eventHistory.unshift(this.state.redoHistory[0]);
+                  this.state.redoHistory.shift();
+                }
+              }
+              break;
+            case "Step created":
+              for (let i = 0; i < deltaPositions[0].length; i++) {
+                if (
+                  deltaPositions[0][i].key ===
+                  parseInt(this.state.redoHistory[0].key)
+                ) {
+                  let items = deltaPositions;
+                  let innerItem = items[0][i];
+                  innerItem.deleted = false;
 
                   this.setState({
                     deltaPositions: items
@@ -1122,7 +1154,10 @@ export default class Editing extends Component {
                     top: `calc(${mouseY}px - ${offsetY}px)`
                   }}
                 >
-                  <Step item={deltaPositions[0][parseInt(currentItem)]} />
+                  <Step
+                    item={deltaPositions[0][parseInt(currentItem)]}
+                    deleted={deltaPositions[0][parseInt(currentItem)].deleted}
+                  />
                 </div>
               )}
             <EditingContent id="EditingContent">
@@ -1158,6 +1193,7 @@ export default class Editing extends Component {
                           setCurrentStep={this.setCurrentStep}
                           deleteStep={this.deleteStep}
                           creation={this.state.creatingLine}
+                          deleted={deltaPositions[0][step.key].deleted}
                         />
                       </div>
                     </Draggable>

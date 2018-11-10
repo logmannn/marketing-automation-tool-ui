@@ -82,7 +82,7 @@ export default class Step extends Component {
 
     this.deleteStep = () => {
       this.props.deleteStep(item.key);
-      this.setState({ deleted: true });
+      // this.setState({ deleted: true });
     };
 
     const { hover } = this.state;
@@ -130,7 +130,7 @@ export default class Step extends Component {
 
     return (
       <>
-        {this.state.deleted === false ? (
+        {this.props.deleted === false ? (
           <Box className="box">
             <Circle
               side="left"
