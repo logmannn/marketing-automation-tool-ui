@@ -386,7 +386,8 @@ export default class Editing extends Component {
       start: false,
       creatingLine: false,
       eventHistory: [],
-      redoHistory: []
+      redoHistory: [],
+      simulatingClick: false
     });
   }
 
@@ -394,7 +395,8 @@ export default class Editing extends Component {
     const { newItem, clearNewItem } = this.props;
     const { eventHistory } = this.state;
 
-    if (this.state.actionPerformed) {
+    if (this.state.actionPerformed && !this.state.simulatingClick) {
+      console.log("actionPerformed");
       this.setState({
         actionPerformed: false,
         redoHistory: []
@@ -437,8 +439,8 @@ export default class Editing extends Component {
       });
 
       this.setState({
-        deltaPositions: items
-        // eventHistory: [{ type: "Step created", key }, ...eventHistory]
+        deltaPositions: items,
+        eventHistory: [{ type: "Step created", key }, ...eventHistory]
       });
 
       // remove the newItem state so that this is not called multiple times
@@ -752,28 +754,29 @@ export default class Editing extends Component {
             lines[0].splice(i, 1);
           }
         }
-        this.setState({
-          actionPerformed: true
-        });
-        // if (typeof fromDeleteStep === "undefined") {
-        //   this.setState({
-        //     eventHistory: [
-        //       {
-        //         type: "Line deleted",
-        //         startId: lineItemStart.item,
-        //         endId: lineItemEnd.item,
-        //         startSide: lineItemStart.side,
-        //         endSide: lineItemEnd.side,
-        //         key: id
-        //       },
-        //       ...this.state.eventHistory
-        //     ]
-        //   });
-        // }
+        if (!this.state.simulatingClick) {
+          if (typeof fromDeleteStep === "undefined") {
+            this.setState({
+              actionPerformed: true,
+              eventHistory: [
+                {
+                  type: "Line deleted",
+                  startId: lineItemStart.item,
+                  endId: lineItemEnd.item,
+                  startSide: lineItemStart.side,
+                  endSide: lineItemEnd.side,
+                  key: id,
+                  newLine: lines[0].length + 1
+                },
+                ...this.state.eventHistory
+              ]
+            });
+          }
+        }
       }
     };
 
-    this.lineCreate = (side, id, fromDeleteStep) => {
+    this.lineCreate = (side, id) => {
       if (creatingLine === false) {
         let parentItems = [];
         let tempItems = [];
@@ -912,8 +915,11 @@ export default class Editing extends Component {
             };
             const lines = this.state.lines[0];
 
+            let key;
+
             for (let i = 0; i < lines.length; i++) {
               if (lines[i].key === currentLineItem) {
+                key = lines[i].key;
                 lines[i] = {
                   ...lines[i],
                   end: [
@@ -926,23 +932,24 @@ export default class Editing extends Component {
                 };
               }
             }
-            this.setState({
-              actionPerformed: true
-            });
-            // if (typeof fromDeleteStep === "undefined") {
-            //   this.setState({
-            //     eventHistory: [
-            //       {
-            //         type: "Line created",
-            //         startId: currentFirstPoint,
-            //         endId: id
-            //         // startSide: lineItemStart.side,
-            //         // endSide: lineItemEnd.side
-            //       },
-            //       ...this.state.eventHistory
-            //     ]
-            //   });
-            // }
+            if (!this.state.simulatingClick) {
+              this.setState({
+                actionPerformed: true
+              });
+              this.setState({
+                eventHistory: [
+                  {
+                    type: "Line created",
+                    id: key,
+                    startId: currentFirstPoint,
+                    startSide: currentFirstSide,
+                    endId: id,
+                    endSide: side
+                  },
+                  ...this.state.eventHistory
+                ]
+              });
+            }
             this.setState({
               lines: [lines],
               deltaPositions: [items],
@@ -1030,7 +1037,6 @@ export default class Editing extends Component {
                 let items = deltaPositions;
                 let innerItem = items[0][i];
                 innerItem.deleted = true;
-                console.log(innerItem);
                 this.setState({
                   deltaPositions: items
                 });
@@ -1039,29 +1045,42 @@ export default class Editing extends Component {
             this.state.redoHistory.unshift(this.state.eventHistory[0]);
             this.state.eventHistory.shift();
           } else if (this.state.eventHistory[0].type === "Line deleted") {
-            console.log(this.state.eventHistory);
-            console.log(this.state.redoHistory);
-            const startSide = this.state.eventHistory[0].startSide;
+            this.setState({
+              simulatingClick: true
+            });
+            document
+              .getElementById(
+                `${this.state.eventHistory[0].startId}_${
+                  this.state.eventHistory[0].startSide
+                }`
+              )
+              .click();
+            document
+              .getElementById(
+                `${this.state.eventHistory[0].endId}_${
+                  this.state.eventHistory[0].endSide
+                }`
+              )
+              .click();
+            this.setState({
+              simulatingClick: false
+            });
 
             this.state.redoHistory.unshift(this.state.eventHistory[0]);
             this.state.eventHistory.shift();
+          } else if (this.state.eventHistory[0].type === "Line created") {
+            this.setState({
+              simulatingClick: true
+            });
+            document
+              .getElementById(`line_${this.state.eventHistory[0].id}_delete`)
+              .click();
+            this.setState({
+              simulatingClick: false
+            });
 
-            // this.lineCreate(
-            //   this.state.redoHistory[0].startSide,
-            //   this.state.redoHistory[0].startId,
-            //   true
-            // );
-            // this.lineCreate(
-            //   this.state.redoHistory[0].endSide,
-            //   this.state.redoHistory[0].endId,
-            //   true
-            // );
-
-            console.log(this.state.eventHistory);
-            console.log(this.state.redoHistory);
-
-            // this.state.redoHistory.unshift(this.state.eventHistory[0]);
-            // this.state.eventHistory.shift();
+            this.state.redoHistory.unshift(this.state.eventHistory[0]);
+            this.state.eventHistory.shift();
           }
         }
         this.toggle = 1;
@@ -1113,13 +1132,45 @@ export default class Editing extends Component {
             this.state.redoHistory.shift();
           } else if (this.state.redoHistory[0].type === "Line deleted") {
             this.setState({
-              eventHistory: [
-                this.state.redoHistory[0],
-                ...this.state.eventHistory
-              ]
+              simulatingClick: true
             });
+            document
+              .getElementById(
+                `line_${this.state.redoHistory[0].newLine}_delete`
+              )
+              .click();
+            this.setState({
+              simulatingClick: false
+            });
+
+            this.state.eventHistory.unshift(this.state.redoHistory[0]);
             this.state.redoHistory.shift();
-            this.onLineDelete(this.state.eventHistory[0].key, true);
+          } else if (this.state.redoHistory[0].type === "Line created") {
+            this.setState({
+              simulatingClick: true
+            });
+
+            document
+              .getElementById(
+                `${this.state.redoHistory[0].startId}_${
+                  this.state.redoHistory[0].startSide
+                }`
+              )
+              .click();
+            document
+              .getElementById(
+                `${this.state.redoHistory[0].endId}_${
+                  this.state.redoHistory[0].endSide
+                }`
+              )
+              .click();
+
+            this.setState({
+              simulatingClick: false
+            });
+
+            this.state.eventHistory.unshift(this.state.redoHistory[0]);
+            this.state.redoHistory.shift();
           }
         }
       } else {

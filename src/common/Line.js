@@ -154,6 +154,7 @@ export default class Line extends Component {
           onMouseOver={() => this.setState({ hover: true })}
           onMouseLeave={() => this.setState({ hover: false })}
           onClick={this.onDelete}
+          id={`line_${this.props.id}_delete`}
         />
         <SVG height="100%" width="100%">
           {/* <line x1={X1} y1={Y1} x2={X2} y2={Y2} stroke={color} /> */}
