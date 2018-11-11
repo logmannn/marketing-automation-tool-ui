@@ -212,7 +212,7 @@ export default class Editing extends Component {
               }
             ],
             connectedTo: [{ itemId: 3, status: "end", side: "left" }],
-            attachedLines: [6, 7],
+            attachedLines: [6],
             deleted: false
           },
           {
@@ -396,7 +396,6 @@ export default class Editing extends Component {
     const { eventHistory } = this.state;
 
     if (this.state.actionPerformed && !this.state.simulatingClick) {
-      console.log("actionPerformed");
       this.setState({
         actionPerformed: false,
         redoHistory: []
@@ -973,7 +972,33 @@ export default class Editing extends Component {
         let items = itemsDelete[0][id];
         const itemCount = items.attachedLines.length;
 
+        const attachedLines = [];
+        const lines = this.state.lines[0];
+
         for (let i = 0; i < itemCount; i++) {
+          // for lines where lines are equal to items.attachedLines[0] get side and id of step
+          let endId;
+          let startId;
+          let endSide;
+          let startSide;
+
+          for (let i = 0; i < lines.length; i++) {
+            if (lines[i].key === items.attachedLines[0]) {
+              endId = lines[i].end[0].item;
+              startId = lines[i].start[0].item;
+              endSide = lines[i].end[0].side;
+              startSide = lines[i].start[0].side;
+            }
+          }
+          // linesLength = linesLength + 1;
+          attachedLines.push({
+            id: items.attachedLines[0],
+            endId,
+            startId,
+            endSide,
+            startSide
+            // newLine: linesLength + 1
+          });
           this.onLineDelete(items.attachedLines[0], true);
         }
 
@@ -986,15 +1011,16 @@ export default class Editing extends Component {
 
         this.setState({
           deltaPositions: itemsDelete,
-          actionPerformed: true
-          // eventHistory: [
-          //   {
-          //     type: "Step deleted",
-          //     key: id,
-          //     deleted: true
-          //   },
-          //   ...this.state.eventHistory
-          // ]
+          actionPerformed: true,
+          eventHistory: [
+            {
+              type: "Step deleted",
+              key: id,
+              deleted: true,
+              attachedLines
+            },
+            ...this.state.eventHistory
+          ]
         });
       }
     };
@@ -1021,12 +1047,7 @@ export default class Editing extends Component {
                 });
               }
             }
-            this.setState({
-              redoHistory: [
-                this.state.eventHistory[0],
-                ...this.state.redoHistory
-              ]
-            });
+            this.state.redoHistory.unshift(this.state.eventHistory[0]);
             this.state.eventHistory.shift();
           } else if (this.state.eventHistory[0].type === "Step created") {
             for (let i = 0; i < deltaPositions[0].length; i++) {
@@ -1078,7 +1099,51 @@ export default class Editing extends Component {
             this.setState({
               simulatingClick: false
             });
+            this.state.redoHistory.unshift(this.state.eventHistory[0]);
+            this.state.eventHistory.shift();
+          } else if (this.state.eventHistory[0].type === "Step deleted") {
+            for (let i = 0; i < deltaPositions[0].length; i++) {
+              if (
+                deltaPositions[0][i].key ===
+                parseInt(this.state.eventHistory[0].key)
+              ) {
+                let items = deltaPositions;
+                let innerItem = items[0][i];
+                innerItem.deleted = false;
 
+                this.setState({
+                  simulatingClick: true
+                });
+                for (
+                  let i = 0;
+                  i < this.state.eventHistory[0].attachedLines.length;
+                  i++
+                ) {
+                  document
+                    .getElementById(
+                      `${this.state.eventHistory[0].attachedLines[i].startId}_${
+                        this.state.eventHistory[0].attachedLines[i].startSide
+                      }`
+                    )
+                    .click();
+                  document
+                    .getElementById(
+                      `${this.state.eventHistory[0].attachedLines[i].endId}_${
+                        this.state.eventHistory[0].attachedLines[i].endSide
+                      }`
+                    )
+                    .click();
+                }
+
+                this.setState({
+                  simulatingClick: false
+                });
+
+                this.setState({
+                  deltaPositions: items
+                });
+              }
+            }
             this.state.redoHistory.unshift(this.state.eventHistory[0]);
             this.state.eventHistory.shift();
           }
@@ -1134,9 +1199,10 @@ export default class Editing extends Component {
             this.setState({
               simulatingClick: true
             });
+
             document
               .getElementById(
-                `line_${this.state.redoHistory[0].newLine}_delete`
+                `line_${lines[0][lines[0].length - 1].key}_delete`
               )
               .click();
             this.setState({
@@ -1169,6 +1235,41 @@ export default class Editing extends Component {
               simulatingClick: false
             });
 
+            this.state.eventHistory.unshift(this.state.redoHistory[0]);
+            this.state.redoHistory.shift();
+          } else if (this.state.redoHistory[0].type === "Step deleted") {
+            for (let i = 0; i < deltaPositions[0].length; i++) {
+              if (
+                deltaPositions[0][i].key ===
+                parseInt(this.state.redoHistory[0].key)
+              ) {
+                let items = deltaPositions;
+                let innerItem = items[0][i];
+                innerItem.deleted = true;
+
+                for (
+                  let i = 0;
+                  i < this.state.redoHistory[0].attachedLines.length;
+                  i++
+                ) {
+                  this.setState({
+                    simulatingClick: true
+                  });
+                  document
+                    .getElementById(
+                      `line_${lines[0][lines[0].length - 1].key}_delete`
+                    )
+                    .click();
+                  this.setState({
+                    simulatingClick: false
+                  });
+                }
+
+                this.setState({
+                  deltaPositions: items
+                });
+              }
+            }
             this.state.eventHistory.unshift(this.state.redoHistory[0]);
             this.state.redoHistory.shift();
           }
