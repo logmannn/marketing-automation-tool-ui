@@ -85,6 +85,14 @@ export default class Step extends Component {
       // this.setState({ deleted: true });
     };
 
+    this.onMouseOver = () => {
+      this.setState({ hover: true });
+    };
+
+    this.onMouseLeave = () => {
+      this.setState({ hover: false });
+    };
+
     const { hover } = this.state;
     const { item, creation } = this.props;
 
@@ -166,8 +174,8 @@ export default class Step extends Component {
             />
             <IconWrapper
               className="IconWrapper"
-              onMouseOver={() => this.setState({ hover: true })}
-              onMouseLeave={() => this.setState({ hover: false })}
+              onMouseOver={this.onMouseOver}
+              onMouseLeave={this.onMouseLeave}
             >
               <Icon
                 id={item.key}
@@ -181,15 +189,15 @@ export default class Step extends Component {
                 }}
               >
                 <CloseWrapper>
-                  {hover &&
-                    !creation && (
-                      <div
-                        style={{ cursor: "pointer" }}
-                        onClick={this.deleteStep}
-                      >
-                        &#10006;
-                      </div>
-                    )}
+                  {!creation && (
+                    <div
+                      style={{ cursor: "pointer", height: "1rem" }}
+                      onClick={this.deleteStep}
+                      className="closeXStep"
+                    >
+                      &#10006;
+                    </div>
+                  )}
                 </CloseWrapper>
               </Icon>
             </IconWrapper>

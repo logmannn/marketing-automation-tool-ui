@@ -94,7 +94,8 @@ export default class Editing extends Component {
             ],
             connectedTo: [{ itemId: 5, status: "start", side: "right" }],
             attachedLines: [0],
-            deleted: false
+            deleted: false,
+            hoverFix: false
           },
           {
             key: 1,
@@ -115,7 +116,8 @@ export default class Editing extends Component {
               { itemId: 2, status: "start", side: "bottom" }
             ],
             attachedLines: [4, 5],
-            deleted: false
+            deleted: false,
+            hoverFix: false
           },
           {
             key: 2,
@@ -133,7 +135,8 @@ export default class Editing extends Component {
             ],
             connectedTo: [{ itemId: 1, status: "end", side: "top" }],
             attachedLines: [5],
-            deleted: false
+            deleted: false,
+            hoverFix: false
           },
           {
             key: 3,
@@ -155,7 +158,8 @@ export default class Editing extends Component {
               { itemId: 6, status: "start", side: "right" }
             ],
             attachedLines: [3, 4, 6],
-            deleted: false
+            deleted: false,
+            hoverFix: false
           },
           {
             key: 4,
@@ -173,7 +177,8 @@ export default class Editing extends Component {
             ],
             connectedTo: [{ itemId: 5, status: "start", side: "bottom" }],
             attachedLines: [1],
-            deleted: false
+            deleted: false,
+            hoverFix: false
           },
           {
             key: 5,
@@ -195,7 +200,8 @@ export default class Editing extends Component {
               { itemId: 4, status: "end", side: "top" }
             ],
             attachedLines: [0, 1, 2],
-            deleted: false
+            deleted: false,
+            hoverFix: false
           },
           {
             key: 6,
@@ -213,7 +219,8 @@ export default class Editing extends Component {
             ],
             connectedTo: [{ itemId: 3, status: "end", side: "left" }],
             attachedLines: [6],
-            deleted: false
+            deleted: false,
+            hoverFix: false
           },
           {
             key: 7,
@@ -234,7 +241,8 @@ export default class Editing extends Component {
               { itemId: 3, status: "start", side: "right" }
             ],
             attachedLines: [2, 3],
-            deleted: false
+            deleted: false,
+            hoverFix: false
           },
           {
             key: 8,
@@ -252,7 +260,8 @@ export default class Editing extends Component {
             ],
             connectedTo: [],
             attachedLines: [],
-            deleted: false
+            deleted: false,
+            hoverFix: false
           }
         ]
       ],
@@ -449,6 +458,7 @@ export default class Editing extends Component {
 
   checkForScroll = () => {
     if (this.state.activeDrags) {
+      // If at the edge of the screen and when in the dragging state edges the screen further towards that side
       let sizeOfScroll = 10;
       let sizeOfInfluence = 20;
       let height = document.getElementById("LeftSideBar").clientHeight;
@@ -1110,6 +1120,7 @@ export default class Editing extends Component {
                 let items = deltaPositions;
                 let innerItem = items[0][i];
                 innerItem.deleted = false;
+                innerItem.hoverFix = true;
 
                 this.setState({
                   simulatingClick: true
@@ -1134,12 +1145,8 @@ export default class Editing extends Component {
                     )
                     .click();
                 }
-
                 this.setState({
-                  simulatingClick: false
-                });
-
-                this.setState({
+                  simulatingClick: false,
                   deltaPositions: items
                 });
               }
